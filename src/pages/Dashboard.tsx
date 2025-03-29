@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Folder, Code, BookOpen, LayoutGrid, Plus, ArrowRight, FileText, Monitor } from "lucide-react";
 
-// Project creation form schema
 const projectFormSchema = z.object({
   name: z.string().min(3, {
     message: "Project name must be at least 3 characters.",
@@ -31,7 +29,6 @@ const projectFormSchema = z.object({
 
 type ProjectFormValues = z.infer<typeof projectFormSchema>;
 
-// Sample project data
 const recentProjects = [
   {
     id: "proj123",
@@ -65,7 +62,6 @@ const recentProjects = [
   }
 ];
 
-// Sample coding guidelines data
 const codingGuidelines = [
   {
     id: "lang1",
@@ -90,7 +86,6 @@ const codingGuidelines = [
   }
 ];
 
-// Sample recent activity data
 const recentActivity = [
   {
     id: "act1",
@@ -118,10 +113,54 @@ const recentActivity = [
   }
 ];
 
+const allActivity = [
+  ...recentActivity,
+  {
+    id: "act4",
+    title: "Created New Project Structure",
+    project: "Admin Dashboard",
+    user: "Alice Williams",
+    type: "project",
+    timestamp: "2024-03-15T11:30:00Z"
+  },
+  {
+    id: "act5",
+    title: "Updated Navigation Component",
+    project: "Customer Portal",
+    user: "John Doe",
+    type: "component",
+    timestamp: "2024-03-14T13:20:00Z"
+  },
+  {
+    id: "act6",
+    title: "Added Deployment Guide",
+    project: "API Gateway",
+    user: "Jane Smith",
+    type: "guide",
+    timestamp: "2024-03-13T09:15:00Z"
+  },
+  {
+    id: "act7",
+    title: "Updated Python Guidelines",
+    project: null,
+    user: "Bob Johnson",
+    type: "guideline",
+    timestamp: "2024-03-12T14:45:00Z"
+  },
+  {
+    id: "act8",
+    title: "Added Error Handling Module",
+    project: "API Gateway",
+    user: "Jane Smith",
+    type: "module",
+    timestamp: "2024-03-11T10:30:00Z"
+  }
+];
+
 const Dashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false);
   
-  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -131,7 +170,6 @@ const Dashboard = () => {
     }).format(date);
   };
   
-  // Format relative time for activity
   const formatRelativeTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -145,7 +183,6 @@ const Dashboard = () => {
     return formatDate(dateString);
   };
   
-  // Form for creating new project
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
@@ -155,29 +192,23 @@ const Dashboard = () => {
     }
   });
   
-  // Handle form submission
   const onSubmit = (data: ProjectFormValues) => {
-    // Process tags
     const processedData = {
       ...data,
       tags: data.tags ? data.tags.split(",").map(tag => tag.trim()) : []
     };
     
-    // In a real application, this would make an API call to create the project
     console.log("Creating project:", processedData);
     
-    // Show success toast
     toast({
       title: "Project created",
       description: `${data.name} has been created successfully.`,
     });
     
-    // Close dialog and reset form
     setIsDialogOpen(false);
     form.reset();
   };
 
-  // Function to get icon for project type
   const getProjectTypeIcon = (type: string) => {
     switch (type) {
       case "frontend":
@@ -195,7 +226,6 @@ const Dashboard = () => {
     }
   };
   
-  // Function to get icon for activity type
   const getActivityTypeIcon = (type: string) => {
     switch (type) {
       case "component":
@@ -204,6 +234,10 @@ const Dashboard = () => {
         return <BookOpen className="h-4 w-4" />;
       case "guideline":
         return <FileText className="h-4 w-4" />;
+      case "project":
+        return <Folder className="h-4 w-4" />;
+      case "module":
+        return <Code className="h-4 w-4" />;
       default:
         return <FileText className="h-4 w-4" />;
     }
@@ -460,9 +494,45 @@ const Dashboard = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full" size="sm">
-                View All Activity
-              </Button>
+              <Dialog open={isActivityDialogOpen} onOpenChange={setIsActivityDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full" size="sm">
+                    View All Activity
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh]">
+                  <DialogHeader>
+                    <DialogTitle>All Activity</DialogTitle>
+                    <DialogDescription>
+                      Recent activity across all projects and resources
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: "calc(80vh - 180px)" }}>
+                    {allActivity.map((activity) => (
+                      <div key={activity.id} className="flex gap-4 items-start border-b pb-4 last:border-0">
+                        <div className="bg-primary/10 text-primary rounded-full p-2 mt-0.5">
+                          {getActivityTypeIcon(activity.type)}
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-medium">{activity.title}</p>
+                          <div className="text-sm text-muted-foreground">
+                            {activity.project ? (
+                              <>in <span className="font-medium">{activity.project}</span> by </>
+                            ) : (
+                              <>by </>
+                            )}
+                            <span className="font-medium">{activity.user}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {formatRelativeTime(activity.timestamp)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardFooter>
           </Card>
         </div>

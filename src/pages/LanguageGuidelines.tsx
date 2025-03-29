@@ -6,7 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { FileText, Code, ArrowLeft, Check, X, ExternalLink } from "lucide-react";
+import { FileText, Code, ArrowLeft, Check, X, ExternalLink, PencilIcon, SaveIcon } from "lucide-react";
+import RichTextEditor from "@/components/RichTextEditor";
+import { toast } from "sonner";
 
 // Sample language data based on the provided interface
 const languageData = {
@@ -168,6 +170,8 @@ function setTheme(theme: Theme) {
 const LanguageGuidelines = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("guidelines");
+  const [isEditing, setIsEditing] = useState(false);
+  const [guidelinesContent, setGuidelinesContent] = useState(languageData.guidelines.content);
   
   // In a real application, you would fetch the language data based on the ID
   const language = languageData;
@@ -179,6 +183,15 @@ const LanguageGuidelines = () => {
       day: 'numeric',
       year: 'numeric'
     }).format(date);
+  };
+
+  const handleSaveGuidelines = () => {
+    // In a real application, this would make an API call to update the guidelines
+    languageData.guidelines.content = guidelinesContent;
+    languageData.guidelines.lastUpdated = new Date();
+    
+    toast.success("Guidelines updated successfully");
+    setIsEditing(false);
   };
 
   return (
@@ -259,14 +272,53 @@ const LanguageGuidelines = () => {
         {/* Guidelines Tab */}
         <TabsContent value="guidelines" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Coding Guidelines</CardTitle>
-              <CardDescription>
-                Standards and best practices for {language.name} development
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Coding Guidelines</CardTitle>
+                <CardDescription>
+                  Standards and best practices for {language.name} development
+                </CardDescription>
+              </div>
+              {isEditing ? (
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setIsEditing(false)}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={handleSaveGuidelines}
+                  >
+                    <SaveIcon className="h-4 w-4 mr-2" />
+                    Save
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setIsEditing(true)}
+                >
+                  <PencilIcon className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+              )}
             </CardHeader>
             <CardContent className="prose dark:prose-invert max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: language.guidelines.content }} />
+              {isEditing ? (
+                <RichTextEditor 
+                  value={guidelinesContent} 
+                  onChange={setGuidelinesContent} 
+                  allowHtml={true}
+                />
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: language.guidelines.content }} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

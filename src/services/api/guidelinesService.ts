@@ -1,43 +1,43 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
-export const componentService = {
-  getComponents: async () => {
+export const guidelinesService = {
+  getLanguages: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/components`);
+      const response = await fetch(`${API_BASE_URL}/languages`);
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Failed to fetch components:", error);
+      console.error("Failed to fetch languages:", error);
       throw error;
     }
   },
   
-  getComponentById: async (componentId: string) => {
+  getLanguageById: async (languageId: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/components/${componentId}`);
+      const response = await fetch(`${API_BASE_URL}/languages/${languageId}`);
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error(`Failed to fetch component ${componentId}:`, error);
+      console.error(`Failed to fetch language ${languageId}:`, error);
       throw error;
     }
   },
   
-  createComponent: async (componentData) => {
+  createLanguage: async (languageData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/components`, {
+      const response = await fetch(`${API_BASE_URL}/languages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(componentData),
+        body: JSON.stringify(languageData),
       });
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -45,19 +45,19 @@ export const componentService = {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Failed to create component:", error);
+      console.error("Failed to create language:", error);
       throw error;
     }
   },
   
-  updateComponent: async (componentId: string, componentData) => {
+  updateLanguage: async (languageId: string, languageData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/components/${componentId}`, {
+      const response = await fetch(`${API_BASE_URL}/languages/${languageId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(componentData),
+        body: JSON.stringify(languageData),
       });
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -65,7 +65,7 @@ export const componentService = {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error(`Failed to update component ${componentId}:`, error);
+      console.error(`Failed to update language ${languageId}:`, error);
       throw error;
     }
   }
