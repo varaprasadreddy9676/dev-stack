@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -48,10 +47,7 @@ export const ProjectForm = ({ onSubmit, onCancel }: ProjectFormProps) => {
     
     console.log("Creating project:", processedData);
     
-    toast({
-      title: "Project created",
-      description: `${data.name} has been created successfully.`,
-    });
+    toast.success("Project created successfully");
     
     onSubmit(data);
     form.reset();
