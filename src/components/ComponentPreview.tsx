@@ -65,6 +65,48 @@ export class ${name}Component implements OnInit {
 
 /* Styles for variant ${currentVariant + 1} */`;
 
+  // Create variant examples based on the current variant
+  const getVariantPreview = () => {
+    switch (currentVariant) {
+      case 0:
+        return (
+          <div className="p-4 border rounded">
+            <h3 className="text-lg font-medium mb-2">{name} - Primary Variant</h3>
+            <div className="bg-primary text-primary-foreground p-3 rounded">
+              Standard implementation
+            </div>
+          </div>
+        );
+      case 1:
+        return (
+          <div className="p-4 border rounded">
+            <h3 className="text-lg font-medium mb-2">{name} - Secondary Variant</h3>
+            <div className="bg-secondary text-secondary-foreground p-3 rounded">
+              Alternative implementation
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="p-4 border rounded">
+            <h3 className="text-lg font-medium mb-2">{name} - Outline Variant</h3>
+            <div className="border-2 border-primary text-primary p-3 rounded">
+              Outline implementation
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <div className="p-4 border rounded">
+            <h3 className="text-lg font-medium mb-2">{name} - Custom Variant {currentVariant + 1}</h3>
+            <div className="bg-muted p-3 rounded">
+              Custom implementation for variant {currentVariant + 1}
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="space-y-4">
       {variants > 1 && (
@@ -95,13 +137,7 @@ export class ${name}Component implements OnInit {
         
         <TabsContent value="preview" className="mt-0">
           <div className="bg-card border rounded-md p-8 flex items-center justify-center min-h-[200px]">
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">{name} Component</h3>
-              <p className="text-muted-foreground text-sm">Variant {currentVariant + 1} Preview</p>
-              <div className="mt-4 p-4 border rounded bg-muted/30">
-                <p className="text-center text-sm">Component visualization would appear here</p>
-              </div>
-            </div>
+            {getVariantPreview()}
           </div>
         </TabsContent>
         

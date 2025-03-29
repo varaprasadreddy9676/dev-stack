@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -16,7 +15,6 @@ import * as z from "zod";
 import { toast } from "sonner";
 import { ComponentPreview } from "@/components/ComponentPreview";
 
-// Component form schema
 const componentFormSchema = z.object({
   name: z.string().min(3, {
     message: "Component name must be at least 3 characters.",
@@ -32,7 +30,6 @@ const componentFormSchema = z.object({
 
 type ComponentFormValues = z.infer<typeof componentFormSchema>;
 
-// Sample component data
 const componentsData = [
   {
     id: "comp1",
@@ -99,7 +96,6 @@ const Components = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [currentVariant, setCurrentVariant] = useState(0);
   
-  // Filter components based on search term and active tab
   const filteredComponents = componentsData.filter(component => {
     const matchesSearch = 
       component.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -110,10 +106,8 @@ const Components = () => {
     return matchesSearch && component.tags.includes(activeTab.toLowerCase());
   });
   
-  // Extract unique tags for filtering
   const uniqueTags = Array.from(new Set(componentsData.flatMap(comp => comp.tags)));
   
-  // Function to format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -123,7 +117,6 @@ const Components = () => {
     }).format(date);
   };
 
-  // Form for creating new component
   const form = useForm<ComponentFormValues>({
     resolver: zodResolver(componentFormSchema),
     defaultValues: {
@@ -134,31 +127,30 @@ const Components = () => {
     }
   });
   
-  // Handle form submission
   const onSubmit = (data: ComponentFormValues) => {
-    // Process tags
     const processedData = {
       ...data,
       variants: parseInt(data.variants),
       tags: data.tags ? data.tags.split(",").map(tag => tag.trim()) : []
     };
     
-    // In a real application, this would make an API call to create the component
     console.log("Creating component:", processedData);
     
-    // Show success toast
     toast.success("Component created successfully");
     
-    // Close dialog and reset form
     setIsDialogOpen(false);
     form.reset();
   };
 
-  // Handle view component
   const handleViewComponent = (component: any) => {
     setSelectedComponent(component);
-    setCurrentVariant(0); // Reset to first variant
+    setCurrentVariant(0);
     setIsViewDialogOpen(true);
+  };
+
+  const handleEditComponent = (component: any) => {
+    setSelectedComponent(component);
+    toast.info("Edit component functionality coming soon");
   };
 
   return (
@@ -271,7 +263,6 @@ const Components = () => {
           </DialogContent>
         </Dialog>
         
-        {/* Dialog for viewing component details */}
         {selectedComponent && (
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
             <DialogContent className="sm:max-w-[700px]">
@@ -318,7 +309,7 @@ const Components = () => {
               </div>
               
               <DialogFooter>
-                <Button>Edit Component</Button>
+                <Button onClick={() => handleEditComponent(selectedComponent)}>Edit Component</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
