@@ -1,0 +1,180 @@
+
+// Mock data for all entities in the application
+import { ProjectData } from "@/types/project";
+
+// Sample project data
+export const mockProjects: ProjectData[] = [
+  {
+    _id: "proj123",
+    name: "Customer Portal",
+    description: "Frontend application for customer account management and service requests",
+    overview: "The Customer Portal serves as the primary interface for customers to manage their accounts, submit service requests, and view usage analytics. It's built with a focus on user experience and performance.",
+    architecture: {
+      description: "Microservices architecture with React frontend",
+      diagrams: [
+        {
+          title: "Architecture Overview",
+          imageUrl: "/images/customer-portal-architecture.svg",
+          description: "High-level architecture showing service integrations"
+        }
+      ]
+    },
+    structure: {
+      description: "Feature-based organization with shared components",
+      folders: [
+        {
+          path: "/src/features",
+          purpose: "Feature-specific components and logic"
+        },
+        {
+          path: "/src/shared",
+          purpose: "Cross-feature shared components and utilities"
+        }
+      ]
+    },
+    customFrameworks: [
+      {
+        name: "DataFetcherHOC",
+        description: "Higher-order component for data fetching with loading states",
+        documentation: "# DataFetcherHOC\n\nThis HOC simplifies data fetching patterns across the application.",
+        examples: [
+          {
+            title: "Basic Usage",
+            code: "const EnhancedComponent = withDataFetcher(MyComponent, {\n  fetchData: (props) => api.fetchData(props.id)\n});",
+            description: "Wraps a component with data fetching capability"
+          }
+        ]
+      }
+    ],
+    modules: [
+      {
+        name: "Authentication",
+        description: "Handles user authentication and authorization",
+        documentation: "# Authentication Module\n\nProvides login, logout, and permission checking capabilities.",
+        dependencies: ["axios", "jwt-decode"]
+      }
+    ],
+    guidelines: {
+      content: "# Project Guidelines\n\n## Coding Standards\n\n- Use TypeScript for all new code\n- Follow the project's ESLint configuration\n- Write unit tests for all business logic",
+      lastUpdated: new Date("2024-03-15"),
+      updatedBy: "user123"
+    },
+    components: ["comp1", "comp2", "comp3"],
+    resources: [
+      {
+        title: "API Documentation",
+        type: "link",
+        url: "https://api-docs.example.com",
+        description: "Official API documentation for the backend services"
+      },
+      {
+        title: "Design System",
+        type: "link",
+        url: "https://design.example.com",
+        description: "Company design system and component library"
+      }
+    ],
+    tags: ["react", "typescript", "customer-facing"],
+    createdAt: new Date("2024-02-15"),
+    updatedAt: new Date("2024-03-10")
+  },
+  {
+    _id: "proj456",
+    name: "Admin Dashboard",
+    description: "Internal tool for managing system settings and user accounts",
+    overview: "The Admin Dashboard provides administrative capabilities for internal staff. It enables user management, system configuration, and monitoring of application performance.",
+    architecture: {
+      description: "Monolithic architecture with React frontend",
+      diagrams: [
+        {
+          title: "Dashboard Components",
+          imageUrl: "/images/admin-dashboard-components.svg",
+          description: "Component hierarchy and data flow"
+        }
+      ]
+    },
+    structure: {
+      description: "Module-based organization",
+      folders: [
+        {
+          path: "/src/modules",
+          purpose: "Feature modules with components and logic"
+        },
+        {
+          path: "/src/core",
+          purpose: "Core application functionality"
+        }
+      ]
+    },
+    customFrameworks: [],
+    modules: [
+      {
+        name: "User Management",
+        description: "Handles user creation, editing, and permission assignment",
+        documentation: "# User Management Module\n\nProvides CRUD operations for user accounts.",
+        dependencies: ["axios", "react-hook-form"]
+      }
+    ],
+    guidelines: {
+      content: "# Admin Dashboard Guidelines\n\n## Security Considerations\n\n- All API calls must include the admin token\n- Implement proper input validation\n- Log all administrative actions",
+      lastUpdated: new Date("2024-02-28"),
+      updatedBy: "user456"
+    },
+    components: ["UserTable", "PermissionEditor", "ActivityLog"],
+    resources: [
+      {
+        title: "Admin API Documentation",
+        type: "link",
+        url: "https://admin-api-docs.example.com",
+        description: "Documentation for admin-specific API endpoints"
+      }
+    ],
+    tags: ["react", "admin", "internal-tool"],
+    createdAt: new Date("2024-01-10"),
+    updatedAt: new Date("2024-02-28")
+  }
+];
+
+// Mock data for languages, components, guidelines, etc. can be added here
+export const mockLanguages = [
+  {
+    id: "lang1",
+    name: "JavaScript",
+    description: "A lightweight, interpreted programming language.",
+    guidelines: "# JavaScript Guidelines\n\n## Best Practices\n\n- Use ES6+ features\n- Implement proper error handling\n- Write unit tests"
+  },
+  {
+    id: "lang2",
+    name: "TypeScript",
+    description: "A strongly typed programming language that builds on JavaScript.",
+    guidelines: "# TypeScript Guidelines\n\n## Best Practices\n\n- Define interfaces for all data structures\n- Use union types instead of enums\n- Implement proper error handling"
+  }
+];
+
+export const mockComponents = [
+  {
+    id: "comp1",
+    name: "Button",
+    description: "A customizable button component",
+    usage: "import { Button } from '@/components/ui/button';\n\n<Button variant='primary'>Click Me</Button>"
+  },
+  {
+    id: "comp2",
+    name: "Card",
+    description: "A container component for displaying content",
+    usage: "import { Card } from '@/components/ui/card';\n\n<Card>\n  <CardHeader>Title</CardHeader>\n  <CardContent>Content</CardContent>\n</Card>"
+  }
+];
+
+export const mockGuides = [
+  {
+    id: "guide1",
+    title: "Getting Started",
+    content: "# Getting Started\n\nThis guide will help you set up your development environment."
+  },
+  {
+    id: "guide2",
+    title: "Component Library",
+    content: "# Component Library\n\nThis guide explains how to use the component library."
+  }
+];

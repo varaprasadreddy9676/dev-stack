@@ -1,153 +1,36 @@
 
 import { useState, useEffect } from 'react';
+import { projectService } from '@/services/serviceFactory';
+import { ProjectData } from '@/types/project';
 
-// Sample project data - in a real app, this would come from an API
-const sampleProject = {
-  _id: "proj123",
-  name: "Customer Portal",
-  description: "Frontend application for customer account management and service requests",
-  overview: "The Customer Portal serves as the primary interface for customers to manage their accounts, submit service requests, and view usage analytics. It's built with a focus on user experience and performance.",
-  architecture: {
-    description: "Microservices architecture with React frontend",
-    diagrams: [
-      {
-        title: "Architecture Overview",
-        imageUrl: "/images/customer-portal-architecture.svg",
-        description: "High-level architecture showing service integrations"
-      }
-    ]
-  },
-  structure: {
-    description: "Feature-based organization with shared components",
-    folders: [
-      {
-        path: "/src/features",
-        purpose: "Feature-specific components and logic"
-      },
-      {
-        path: "/src/shared",
-        purpose: "Cross-feature shared components and utilities"
-      }
-    ]
-  },
-  customFrameworks: [
-    {
-      name: "DataFetcherHOC",
-      description: "Higher-order component for data fetching with loading states",
-      documentation: "# DataFetcherHOC\n\nThis HOC simplifies data fetching patterns across the application.",
-      examples: [
-        {
-          title: "Basic Usage",
-          code: "const EnhancedComponent = withDataFetcher(MyComponent, {\n  fetchData: (props) => api.fetchData(props.id)\n});",
-          description: "Wraps a component with data fetching capability"
-        }
-      ]
-    }
-  ],
-  modules: [
-    {
-      name: "Authentication",
-      description: "Handles user authentication and authorization",
-      documentation: "# Authentication Module\n\nProvides login, logout, and permission checking capabilities.",
-      dependencies: ["axios", "jwt-decode"]
-    }
-  ],
-  guidelines: {
-    content: "# Project Guidelines\n\n## Coding Standards\n\n- Use TypeScript for all new code\n- Follow the project's ESLint configuration\n- Write unit tests for all business logic",
-    lastUpdated: new Date("2024-03-15"),
-    updatedBy: "user123"
-  },
-  components: ["comp1", "comp2", "comp3"],
-  resources: [
-    {
-      title: "API Documentation",
-      type: "link",
-      url: "https://api-docs.example.com",
-      description: "Official API documentation for the backend services"
-    },
-    {
-      title: "Design System",
-      type: "link",
-      url: "https://design.example.com",
-      description: "Company design system and component library"
-    }
-  ],
-  tags: ["react", "typescript", "customer-facing"],
-  createdAt: new Date("2024-02-15"),
-  updatedAt: new Date("2024-03-10")
-};
-
-export interface ProjectData {
-  _id: string;
-  name: string;
-  description: string;
-  overview: string;
-  architecture: {
-    description: string;
-    diagrams: Array<{
-      title: string;
-      imageUrl: string;
-      description: string;
-    }>;
-  };
-  structure: {
-    description: string;
-    folders: Array<{
-      path: string;
-      purpose: string;
-    }>;
-  };
-  customFrameworks: Array<{
-    name: string;
-    description: string;
-    documentation: string;
-    examples: Array<{
-      title: string;
-      code: string;
-      description: string;
-    }>;
-  }>;
-  modules: Array<{
-    name: string;
-    description: string;
-    documentation: string;
-    dependencies: string[];
-  }>;
-  guidelines: {
-    content: string;
-    lastUpdated: Date;
-    updatedBy: string;
-  };
-  components: string[];
-  resources: Array<{
-    title: string;
-    type: string;
-    url: string;
-    description: string;
-  }>;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+export interface ProjectDataHookResult {
+  project: ProjectData | null;
+  loading: boolean;
+  error: Error | null;
+  saveProject: (updatedData: Partial<ProjectData>) => Promise<ProjectData | void>;
 }
 
-export const useProjectData = (projectId: string | undefined) => {
+export const useProjectData = (projectId: string | undefined): ProjectDataHookResult => {
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchProject = async () => {
+      if (!projectId) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
+      setError(null);
+      
       try {
-        // In a real app, this would be an API call
-        // For now, we'll just return the sample project if IDs match
-        if (projectId === sampleProject._id) {
-          setProject(sampleProject as ProjectData);
-        } else {
-          // Project not found
-          setProject(null);
-        }
-      } catch (error) {
-        console.error("Error fetching project:", error);
+        const data = await projectService.getProjectById(projectId);
+        setProject(data);
+      } catch (err) {
+        console.error("Error fetching project:", err);
+        setError(err instanceof Error ? err : new Error('Failed to fetch project'));
         setProject(null);
       } finally {
         setLoading(false);
@@ -158,22 +41,18 @@ export const useProjectData = (projectId: string | undefined) => {
   }, [projectId]);
 
   const saveProject = async (updatedData: Partial<ProjectData>) => {
-    if (!project) return;
+    if (!project || !projectId) return;
     
     try {
-      // In a real app, this would be an API call
-      console.log("Saving project data:", updatedData);
-      
-      // Create a new project object with the updated data
-      const updatedProject = { ...project, ...updatedData };
+      const updatedProject = await projectService.updateProject(projectId, updatedData);
       setProject(updatedProject);
-      
       return updatedProject;
-    } catch (error) {
-      console.error("Error saving project:", error);
-      throw error;
+    } catch (err) {
+      console.error("Error saving project:", err);
+      setError(err instanceof Error ? err : new Error('Failed to save project'));
+      throw err;
     }
   };
 
-  return { project, loading, saveProject };
+  return { project, loading, error, saveProject };
 };
