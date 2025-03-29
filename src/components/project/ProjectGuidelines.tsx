@@ -13,6 +13,7 @@ import RichTextEditor from "@/components/RichTextEditor";
 import { ProjectData } from "@/types/project";
 import { formatDate } from "@/utils/projectHelpers";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 interface ProjectGuidelinesProps {
   project: ProjectData;
@@ -84,6 +85,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
               <RichTextEditor 
                 value={content} 
                 onChange={setContent}
+                allowHtml={true}
               />
               <p className="text-xs text-muted-foreground mt-2">
                 Last updated: {formatDate(project.guidelines.lastUpdated)}
@@ -93,7 +95,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
         ) : (
           <div className="space-y-6">
             <div className="prose max-w-none dark:prose-invert">
-              <ReactMarkdown>{project.guidelines.content}</ReactMarkdown>
+              <ReactMarkdown rehypePlugins={[rehypeRaw]}>{project.guidelines.content}</ReactMarkdown>
             </div>
             
             <div className="text-sm text-muted-foreground">

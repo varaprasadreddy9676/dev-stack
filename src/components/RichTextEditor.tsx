@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -146,12 +147,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       />
       
       <div className="bg-muted p-2 border-t text-xs text-muted-foreground">
-        <ReactMarkdown 
-          rehypePlugins={allowHtml ? [rehypeRaw] : []}
-          className="prose"
-        >
-          {value}
-        </ReactMarkdown>
+        <div className="prose max-w-none dark:prose-invert">
+          <ReactMarkdown rehypePlugins={allowHtml ? [rehypeRaw] : []}>
+            {value}
+          </ReactMarkdown>
+        </div>
         <p>
           {allowHtml 
             ? "HTML and Markdown supported" 
