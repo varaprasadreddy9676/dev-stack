@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -16,10 +16,13 @@ import ProjectComponents from "./ProjectComponents";
 import ProjectResources from "./ProjectResources";
 import { useProjectData } from "@/hooks/useProjectData";
 
-const ProjectManagement: React.FC = () => {
-  const { id } = useParams();
+interface ProjectManagementProps {
+  projectId: string;
+}
+
+const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
   const navigate = useNavigate();
-  const { project, loading, saveProject } = useProjectData(id);
+  const { project, loading, saveProject } = useProjectData(projectId);
   const [activeTab, setActiveTab] = useState("overview");
 
   if (loading) {
@@ -48,7 +51,7 @@ const ProjectManagement: React.FC = () => {
           <p className="text-muted-foreground">{project.description}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => navigate(`/projects/${id}`)}>View Project</Button>
+          <Button onClick={() => navigate(`/projects/${projectId}`)}>View Project</Button>
         </div>
       </div>
 

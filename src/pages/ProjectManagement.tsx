@@ -12,7 +12,7 @@ const ProjectManagementPage: React.FC = () => {
     return null;
   }
 
-  return <ProjectManagement />;
+  return <ProjectManagement projectId={id} />;
 };
 
 export default ProjectManagementPage;

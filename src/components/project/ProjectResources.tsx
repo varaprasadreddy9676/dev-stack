@@ -46,7 +46,12 @@ const ResourceTypeIcons = {
 
 const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [resources, setResources] = useState<ResourceType[]>([...project.resources]);
+  const [resources, setResources] = useState<ResourceType[]>(
+    project.resources.map(resource => ({
+      ...resource,
+      type: resource.type as "link" | "pdf" | "video"
+    }))
+  );
   const [showNewResourceForm, setShowNewResourceForm] = useState<boolean>(false);
   const [newResource, setNewResource] = useState<ResourceType>({
     title: "",
@@ -184,9 +189,9 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
                     <Label htmlFor="resource-type">Type</Label>
                     <Select 
                       value={newResource.type}
-                      onValueChange={(value) => setNewResource(prev => ({ 
+                      onValueChange={(value: "link" | "pdf" | "video") => setNewResource(prev => ({ 
                         ...prev, 
-                        type: value as "link" | "pdf" | "video" 
+                        type: value
                       }))}
                     >
                       <SelectTrigger id="resource-type">
@@ -290,7 +295,7 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
                   <div key={index} className="py-4 first:pt-0 last:pb-0">
                     <div className="flex items-start">
                       <div className="mr-3 mt-1">
-                        {ResourceTypeIcons[resource.type]}
+                        {ResourceTypeIcons[resource.type as "link" | "pdf" | "video"]}
                       </div>
                       <div className="flex-1">
                         <h3 className="text-lg font-medium">{resource.title}</h3>
