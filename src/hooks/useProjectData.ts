@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { projectService } from '@/services/serviceFactory';
 import { ProjectData } from '@/types/project';
+import { toast } from 'sonner';
 
 export interface ProjectDataHookResult {
   project: ProjectData | null;
@@ -26,11 +27,14 @@ export const useProjectData = (projectId: string | undefined): ProjectDataHookRe
       setError(null);
       
       try {
+        console.log(`Fetching project with ID: ${projectId}`);
         const data = await projectService.getProjectById(projectId);
+        console.log(`Project data received:`, data);
         setProject(data);
       } catch (err) {
         console.error("Error fetching project:", err);
         setError(err instanceof Error ? err : new Error('Failed to fetch project'));
+        toast.error("Failed to load project. Please try again later.");
         setProject(null);
       } finally {
         setLoading(false);

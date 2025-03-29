@@ -13,6 +13,32 @@ const mockProjects = [
     tags: ["react", "typescript", "customer-facing"],
     updatedAt: "2024-03-10T09:15:00Z",
     createdAt: "2024-02-10T09:15:00Z",
+    architecture: {
+      description: "Microservices architecture with React frontend",
+      diagrams: []
+    },
+    structure: {
+      description: "Feature-based organization with shared components",
+      folders: [
+        {
+          path: "/src/features",
+          purpose: "Feature-specific components and logic"
+        },
+        {
+          path: "/src/shared",
+          purpose: "Cross-feature shared components and utilities"
+        }
+      ]
+    },
+    customFrameworks: [],
+    modules: [],
+    guidelines: {
+      content: "Follow these guidelines when contributing...",
+      lastUpdated: "2024-03-01T10:30:00Z"
+    },
+    components: [],
+    resources: [],
+    team: []
   },
   {
     _id: "proj456",
@@ -21,6 +47,23 @@ const mockProjects = [
     tags: ["react", "redux", "internal"],
     updatedAt: "2024-03-05T14:30:00Z",
     createdAt: "2024-02-05T14:30:00Z",
+    architecture: {
+      description: "Single-page application architecture",
+      diagrams: []
+    },
+    structure: {
+      description: "Feature-based organization",
+      folders: []
+    },
+    customFrameworks: [],
+    modules: [],
+    guidelines: {
+      content: "Admin dashboard guidelines...",
+      lastUpdated: "2024-03-01T10:30:00Z"
+    },
+    components: [],
+    resources: [],
+    team: []
   }
 ];
 
@@ -47,7 +90,10 @@ export const projectService = {
       if (!response.ok) {
         console.warn("API call failed, using mock data");
         const mockProject = mockProjects.find(p => p._id === projectId);
-        if (!mockProject) throw new Error("Project not found");
+        if (!mockProject) {
+          console.error(`Project with ID ${projectId} not found in mock data`);
+          throw new Error("Project not found");
+        }
         return mockProject;
       }
       const data = await response.json();
@@ -58,6 +104,82 @@ export const projectService = {
       const mockProject = mockProjects.find(p => p._id === projectId);
       if (mockProject) return mockProject;
       throw error;
+    }
+  },
+  
+  createProject: async (projectData: Omit<ProjectData, "_id" | "createdAt" | "updatedAt">) => {
+    try {
+      console.log("Creating new project with data:", projectData);
+      const response = await fetch(`${API_BASE_URL}/projects`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectData),
+      });
+      
+      if (!response.ok) {
+        console.warn("API call failed, creating mock project");
+        // For mock creation, let's create a new project with a unique ID
+        const newProject = {
+          _id: `proj-${Date.now()}`,
+          ...projectData,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          architecture: {
+            description: "",
+            diagrams: []
+          },
+          structure: {
+            description: "",
+            folders: []
+          },
+          customFrameworks: [],
+          modules: [],
+          guidelines: {
+            content: "",
+            lastUpdated: new Date().toISOString()
+          },
+          components: [],
+          resources: [],
+          team: []
+        };
+        // Add to mock projects
+        mockProjects.push(newProject);
+        return newProject;
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      // For mock creation, let's create a new project with a unique ID
+      const newProject = {
+        _id: `proj-${Date.now()}`,
+        ...projectData,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        architecture: {
+          description: "",
+          diagrams: []
+        },
+        structure: {
+          description: "",
+          folders: []
+        },
+        customFrameworks: [],
+        modules: [],
+        guidelines: {
+          content: "",
+          lastUpdated: new Date().toISOString()
+        },
+        components: [],
+        resources: [],
+        team: []
+      };
+      // Add to mock projects
+      mockProjects.push(newProject);
+      return newProject;
     }
   },
   
@@ -73,38 +195,41 @@ export const projectService = {
       
       if (!response.ok) {
         console.warn("API call failed, using mock data");
-        // For mock updates, let's simulate a successful update
-        return { ...mockProjects.find(p => p._id === projectId), ...updatedData };
+        // For mock updates, let's find the project and update it
+        const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+        if (projectIndex === -1) {
+          throw new Error("Project not found");
+        }
+        
+        const updatedProject = {
+          ...mockProjects[projectIndex],
+          ...updatedData,
+          updatedAt: new Date().toISOString()
+        };
+        
+        mockProjects[projectIndex] = updatedProject;
+        return updatedProject;
       }
       
       const data = await response.json();
       return data;
     } catch (error) {
       console.error(`Failed to update project ${projectId}:`, error);
-      // For mock updates, let's simulate a successful update
-      return { ...mockProjects.find(p => p._id === projectId), ...updatedData };
-    }
-  },
-  
-  createProject: async (projectData: Omit<ProjectData, "_id" | "createdAt" | "updatedAt">) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/projects`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(projectData),
-      });
       
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      // For mock updates, let's find the project and update it
+      const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+      if (projectIndex === -1) {
+        throw new Error("Project not found");
       }
       
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Failed to create project:", error);
-      throw error;
+      const updatedProject = {
+        ...mockProjects[projectIndex],
+        ...updatedData,
+        updatedAt: new Date().toISOString()
+      };
+      
+      mockProjects[projectIndex] = updatedProject;
+      return updatedProject;
     }
   },
   

@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import ProjectExplorer from "./pages/ProjectExplorer";
 import ProjectDetail from "./pages/ProjectDetail";
 import ProjectManagement from "./pages/ProjectManagement";
+import NewProject from "./pages/NewProject";
 import Components from "./pages/Components";
 import CodingGuidelines from "./pages/CodingGuidelines";
 import LanguageGuidelines from "./pages/LanguageGuidelines";
@@ -37,6 +38,7 @@ function App() {
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="projects" element={<ProjectExplorer />} />
+              <Route path="projects/new" element={<NewProject />} />
               <Route path="projects/:id" element={<ProjectDetail />} />
               <Route path="projects/:id/edit" element={<ProjectManagement />} />
               <Route path="components" element={<Components />} />
