@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -7,17 +6,25 @@ import {
   Italic, 
   Underline,
   ArrowDown,
-  ArrowRight
+  ArrowRight,
+  Code
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
-// This is a simple markdown-aware text editor
 interface RichTextEditorProps {
   id?: string;
   value: string;
   onChange: (value: string) => void;
+  allowHtml?: boolean;  // New prop to enable HTML
 }
 
-const RichTextEditor: React.FC<RichTextEditorProps> = ({ id, value, onChange }) => {
+const RichTextEditor: React.FC<RichTextEditorProps> = ({ 
+  id, 
+  value, 
+  onChange, 
+  allowHtml = false  // Default to false for safety
+}) => {
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   
   const insertMarkdown = (prefix: string, suffix: string = "") => {
@@ -37,7 +44,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ id, value, onChange }) 
     
     onChange(newText);
     
-    // Set new cursor position after the insertion is rendered
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(
@@ -54,6 +60,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ id, value, onChange }) 
   const formatList = () => insertMarkdown("- ");
   const formatCode = () => insertMarkdown("```\n", "\n```");
   const formatLink = () => insertMarkdown("[", "](url)");
+  const formatHtml = () => insertMarkdown("<div>", "</div>");
   
   return (
     <div className="border rounded-md">
@@ -115,27 +122,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ id, value, onChange }) 
           <span className="sr-only">List</span>
         </Button>
         
-        <Button 
-          type="button" 
-          variant="ghost" 
-          size="sm"
-          className="h-8 px-2"
-          onClick={formatCode}
-        >
-          <span className="text-xs font-mono">{"</>"}</span>
-          <span className="sr-only">Code</span>
-        </Button>
-        
-        <Button 
-          type="button" 
-          variant="ghost" 
-          size="sm"
-          className="h-8 px-2"
-          onClick={formatLink}
-        >
-          <ArrowDown className="h-4 w-4" />
-          <span className="sr-only">Link</span>
-        </Button>
+        {allowHtml && (
+          <Button 
+            type="button" 
+            variant="ghost" 
+            size="sm"
+            className="h-8 px-2"
+            onClick={formatHtml}
+          >
+            <Code className="h-4 w-4" />
+            <span className="sr-only">HTML</span>
+          </Button>
+        )}
       </div>
       
       <Textarea
@@ -144,11 +142,22 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ id, value, onChange }) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="min-h-[200px] border-0 focus-visible:ring-0 resize-y font-mono text-sm"
-        placeholder="Enter markdown content..."
+        placeholder="Enter markdown or HTML content..."
       />
       
       <div className="bg-muted p-2 border-t text-xs text-muted-foreground">
-        <p>Markdown supported: **bold**, *italic*, ## headings, - lists, ```code blocks```</p>
+        <ReactMarkdown 
+          rehypePlugins={allowHtml ? [rehypeRaw] : []}
+          className="prose"
+        >
+          {value}
+        </ReactMarkdown>
+        <p>
+          {allowHtml 
+            ? "HTML and Markdown supported" 
+            : "Markdown supported: **bold**, *italic*, ## headings, - lists, ```code blocks```"
+          }
+        </p>
       </div>
     </div>
   );
