@@ -8,6 +8,9 @@ import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import ProjectExplorer from "./pages/ProjectExplorer";
 import ProjectDetail from "./pages/ProjectDetail";
+import Components from "./pages/Components";
+import CodingGuidelines from "./pages/CodingGuidelines";
+import LanguageGuidelines from "./pages/LanguageGuidelines";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +27,9 @@ const App = () => (
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<ProjectExplorer />} />
             <Route path="projects/:id" element={<ProjectDetail />} />
+            <Route path="components" element={<Components />} />
+            <Route path="guidelines" element={<CodingGuidelines />} />
+            <Route path="guidelines/:id" element={<LanguageGuidelines />} />
             <Route path="search" element={<SearchResults />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

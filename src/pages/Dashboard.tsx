@@ -1,63 +1,127 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, Star, GitBranch, Code, BookOpen, ArrowRight, Folder } from "lucide-react";
+
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "@/hooks/use-toast";
+import { Folder, Code, BookOpen, LayoutGrid, Plus, ArrowRight, FileText, Monitor } from "lucide-react";
+
+// Project creation form schema
+const projectFormSchema = z.object({
+  name: z.string().min(3, {
+    message: "Project name must be at least 3 characters.",
+  }),
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
+  type: z.enum(["frontend", "backend", "fullstack", "mobile", "library"], {
+    required_error: "Please select a project type.",
+  }),
+  tags: z.string().optional(),
+});
+
+type ProjectFormValues = z.infer<typeof projectFormSchema>;
+
+// Sample project data
+const recentProjects = [
+  {
+    id: "proj123",
+    name: "Customer Portal",
+    description: "Frontend application for customer account management and service requests",
+    type: "frontend",
+    tags: ["react", "typescript", "customer-facing"],
+    updatedAt: "2024-03-10T09:15:00Z",
+    components: 12,
+    guides: 5
+  },
+  {
+    id: "proj456",
+    name: "API Gateway",
+    description: "Backend service for API management and request routing",
+    type: "backend",
+    tags: ["node.js", "express", "microservices"],
+    updatedAt: "2024-03-05T14:30:00Z",
+    components: 5,
+    guides: 3
+  },
+  {
+    id: "proj789",
+    name: "Admin Dashboard",
+    description: "Internal tool for system administration and monitoring",
+    type: "fullstack",
+    tags: ["react", "node.js", "internal"],
+    updatedAt: "2024-02-28T11:20:00Z",
+    components: 18,
+    guides: 7
+  }
+];
+
+// Sample coding guidelines data
+const codingGuidelines = [
+  {
+    id: "lang1",
+    name: "TypeScript",
+    description: "Guidelines for TypeScript development",
+    updatedAt: "2024-03-15T14:20:00Z",
+    tags: ["frontend", "backend", "typing"]
+  },
+  {
+    id: "lang2",
+    name: "JavaScript",
+    description: "Best practices for JavaScript development",
+    updatedAt: "2024-03-10T09:15:00Z",
+    tags: ["frontend", "backend", "scripting"]
+  },
+  {
+    id: "lang3",
+    name: "Python",
+    description: "Standards for Python development",
+    updatedAt: "2024-03-05T14:30:00Z",
+    tags: ["backend", "data", "scripting"]
+  }
+];
+
+// Sample recent activity data
+const recentActivity = [
+  {
+    id: "act1",
+    title: "Updated Button Component",
+    project: "Customer Portal",
+    user: "John Doe",
+    type: "component",
+    timestamp: "2024-03-18T10:30:00Z"
+  },
+  {
+    id: "act2",
+    title: "Added Authentication Guide",
+    project: "API Gateway",
+    user: "Jane Smith",
+    type: "guide",
+    timestamp: "2024-03-17T15:45:00Z"
+  },
+  {
+    id: "act3",
+    title: "Updated TypeScript Coding Guidelines",
+    project: null,
+    user: "Bob Johnson",
+    type: "guideline",
+    timestamp: "2024-03-16T09:20:00Z"
+  }
+];
 
 const Dashboard = () => {
-  const recentProjects = [
-    {
-      id: "proj123",
-      name: "Customer Portal",
-      description: "Frontend application for customer account management and service requests",
-      tags: ["react", "typescript", "customer-facing"],
-      updatedAt: "2024-03-10T09:15:00Z"
-    },
-    {
-      id: "proj456",
-      name: "Admin Dashboard",
-      description: "Internal tool for system administration",
-      tags: ["react", "redux", "internal"],
-      updatedAt: "2024-03-05T14:30:00Z"
-    },
-    {
-      id: "proj789",
-      name: "API Gateway",
-      description: "Centralized API gateway for microservices",
-      tags: ["node.js", "express", "microservices"],
-      updatedAt: "2024-02-28T11:20:00Z"
-    }
-  ];
-
-  const recentGuides = [
-    {
-      id: "guide123",
-      title: "Implementing OAuth Authentication",
-      description: "How to integrate OAuth in Customer Portal",
-      project: "Customer Portal"
-    },
-    {
-      id: "guide456",
-      title: "Creating Reusable Components",
-      description: "Best practices for component design",
-      project: "Admin Dashboard"
-    }
-  ];
-
-  const popularComponents = [
-    {
-      id: "comp123",
-      name: "Button",
-      description: "Interactive button elements with various styles",
-      variants: 4
-    },
-    {
-      id: "comp456",
-      name: "DataTable",
-      description: "Sortable and filterable data table component",
-      variants: 2
-    }
-  ];
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -66,211 +130,341 @@ const Dashboard = () => {
       year: 'numeric'
     }).format(date);
   };
+  
+  // Format relative time for activity
+  const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    
+    return formatDate(dateString);
+  };
+  
+  // Form for creating new project
+  const form = useForm<ProjectFormValues>({
+    resolver: zodResolver(projectFormSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      tags: ""
+    }
+  });
+  
+  // Handle form submission
+  const onSubmit = (data: ProjectFormValues) => {
+    // Process tags
+    const processedData = {
+      ...data,
+      tags: data.tags ? data.tags.split(",").map(tag => tag.trim()) : []
+    };
+    
+    // In a real application, this would make an API call to create the project
+    console.log("Creating project:", processedData);
+    
+    // Show success toast
+    toast({
+      title: "Project created",
+      description: `${data.name} has been created successfully.`,
+    });
+    
+    // Close dialog and reset form
+    setIsDialogOpen(false);
+    form.reset();
+  };
+
+  // Function to get icon for project type
+  const getProjectTypeIcon = (type: string) => {
+    switch (type) {
+      case "frontend":
+        return <Monitor className="h-4 w-4" />;
+      case "backend":
+        return <Code className="h-4 w-4" />;
+      case "fullstack":
+        return <LayoutGrid className="h-4 w-4" />;
+      case "mobile":
+        return <Folder className="h-4 w-4" />;
+      case "library":
+        return <FileText className="h-4 w-4" />;
+      default:
+        return <Folder className="h-4 w-4" />;
+    }
+  };
+  
+  // Function to get icon for activity type
+  const getActivityTypeIcon = (type: string) => {
+    switch (type) {
+      case "component":
+        return <LayoutGrid className="h-4 w-4" />;
+      case "guide":
+        return <BookOpen className="h-4 w-4" />;
+      case "guideline":
+        return <FileText className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
+    }
+  };
 
   return (
-    <div className="container py-10 animate-fade-in">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Welcome to DevHub</h1>
-        <p className="text-muted-foreground mt-2">
-          Your centralized development knowledge hub
-        </p>
+    <div className="container py-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-1">Developer Portal</h1>
+          <p className="text-muted-foreground">Centralized hub for all development resources</p>
+        </div>
+        
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              New Project
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[525px]">
+            <DialogHeader>
+              <DialogTitle>Create New Project</DialogTitle>
+              <DialogDescription>
+                Add a new project to the developer portal. Fill in the details below to get started.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter project name" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        This is the name that will be displayed across the portal.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Brief description of the project" 
+                          {...field} 
+                          rows={3}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Type</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select project type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="frontend">Frontend</SelectItem>
+                          <SelectItem value="backend">Backend</SelectItem>
+                          <SelectItem value="fullstack">Full Stack</SelectItem>
+                          <SelectItem value="mobile">Mobile</SelectItem>
+                          <SelectItem value="library">Library</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="tags"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tags</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="react, typescript, api (comma separated)" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Comma-separated list of tags for easier searching.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <DialogFooter>
+                  <Button type="submit">Create Project</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-lg">
-              <Folder className="mr-2 h-5 w-5 text-primary" />
-              Projects
-            </CardTitle>
-            <CardDescription>All project documentation</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">24</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-lg">
-              <BookOpen className="mr-2 h-5 w-5 text-secondary" />
-              Guides
-            </CardTitle>
-            <CardDescription>Implementation guides</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">86</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-lg">
-              <Code className="mr-2 h-5 w-5 text-accent" />
-              Components
-            </CardTitle>
-            <CardDescription>Reusable UI components</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">132</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card className="col-span-1">
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center text-lg">
-                <Clock className="mr-2 h-5 w-5 text-primary" />
-                Recent Projects
-              </CardTitle>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/projects" className="text-xs flex items-center">
-                  View all <ArrowRight className="ml-1 h-3 w-3" />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Recent Projects</h2>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/projects">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {recentProjects.map((project) => (
-                <div key={project.id} className="flex flex-col space-y-2 p-3 rounded-lg hover-scale bg-muted/50">
-                  <div className="flex justify-between">
-                    <Link to={`/projects/${project.id}`} className="font-medium hover:text-primary">
-                      {project.name}
-                    </Link>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(project.updatedAt)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {project.tags.map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                        {tag}
+                <Card key={project.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-2">
+                    <CardTitle>
+                      <Link to={`/projects/${project.id}`} className="hover:text-primary transition-colors">
+                        {project.name}
+                      </Link>
+                    </CardTitle>
+                    <CardDescription>{project.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <Badge className="flex items-center gap-1">
+                        {getProjectTypeIcon(project.type)}
+                        <span>{project.type}</span>
+                      </Badge>
+                      {project.tags.slice(0, 2).map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {project.tags.length > 2 && (
+                        <Badge variant="outline">+{project.tags.length - 2}</Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-between pt-0">
+                    <div className="text-xs text-muted-foreground">
+                      Updated {formatDate(project.updatedAt)}
+                    </div>
+                    <div className="flex gap-3 text-xs text-muted-foreground">
+                      <span className="flex items-center">
+                        <LayoutGrid className="h-3.5 w-3.5 mr-1" />
+                        {project.components}
                       </span>
-                    ))}
-                  </div>
-                </div>
+                      <span className="flex items-center">
+                        <BookOpen className="h-3.5 w-3.5 mr-1" />
+                        {project.guides}
+                      </span>
+                    </div>
+                  </CardFooter>
+                </Card>
               ))}
             </div>
-          </CardContent>
-        </Card>
-
-        <div className="col-span-1 space-y-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="flex items-center text-lg">
-                  <BookOpen className="mr-2 h-5 w-5 text-secondary" />
-                  Recent Guides
-                </CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/guides" className="text-xs flex items-center">
-                    View all <ArrowRight className="ml-1 h-3 w-3" />
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {recentGuides.map((guide) => (
-                  <div key={guide.id} className="flex flex-col space-y-1 p-3 rounded-lg hover-scale bg-muted/50">
-                    <Link to={`/guides/${guide.id}`} className="font-medium hover:text-secondary">
-                      {guide.title}
-                    </Link>
-                    <p className="text-xs text-muted-foreground">{guide.project}</p>
-                    <p className="text-sm text-muted-foreground">{guide.description}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="flex items-center text-lg">
-                  <Code className="mr-2 h-5 w-5 text-accent" />
-                  Popular Components
-                </CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/components" className="text-xs flex items-center">
-                    View all <ArrowRight className="ml-1 h-3 w-3" />
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {popularComponents.map((component) => (
-                  <div key={component.id} className="flex flex-col space-y-1 p-3 rounded-lg hover-scale bg-muted/50">
-                    <Link to={`/components/${component.id}`} className="font-medium hover:text-accent">
-                      {component.name}
-                    </Link>
-                    <p className="text-sm text-muted-foreground">{component.description}</p>
-                    <p className="text-xs text-muted-foreground">{component.variants} variants</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <Card className="mb-8">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center text-lg">
-            <Star className="mr-2 h-5 w-5 text-accent" />
-            Featured Content
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg glass-morphism hover-scale">
-              <h3 className="font-semibold mb-2">Getting Started Guide</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                A complete introduction to using the DevHub platform
-              </p>
-              <Button size="sm" asChild>
-                <Link to="/guides/getting-started">Read Guide</Link>
-              </Button>
-            </div>
-            <div className="p-4 rounded-lg glass-morphism hover-scale">
-              <h3 className="font-semibold mb-2">Component Design System</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Learn about our UI component design principles
-              </p>
-              <Button size="sm" variant="secondary" asChild>
-                <Link to="/guides/design-system">View System</Link>
-              </Button>
-            </div>
-            <div className="p-4 rounded-lg glass-morphism hover-scale">
-              <h3 className="font-semibold mb-2">Architecture Patterns</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Recommended patterns for project architecture
-              </p>
-              <Button size="sm" variant="outline" asChild>
-                <Link to="/guides/architecture">Explore</Link>
-              </Button>
-            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      <div className="rounded-lg p-6 bg-gradient-to-br from-primary/20 to-secondary/20 border">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          
           <div>
-            <h2 className="text-xl font-semibold mb-2">Need to add documentation?</h2>
-            <p className="text-muted-foreground">
-              Contribute to the knowledge base by adding new guides, components, or code snippets.
-            </p>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Coding Guidelines</h2>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/guidelines">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {codingGuidelines.map((guideline) => (
+                <Card key={guideline.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">
+                      <Link to={`/guidelines/${guideline.id}`} className="hover:text-primary transition-colors">
+                        {guideline.name}
+                      </Link>
+                    </CardTitle>
+                    <CardDescription>{guideline.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="flex flex-wrap gap-2">
+                      {guideline.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-0">
+                    <div className="text-xs text-muted-foreground">
+                      Updated {formatDate(guideline.updatedAt)}
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
           </div>
-          <Button size="lg" className="whitespace-nowrap" asChild>
-            <Link to="/contribute">
-              <GitBranch className="mr-2 h-5 w-5" />
-              Contribute
-            </Link>
-          </Button>
+        </div>
+        
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Latest updates across the portal</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {recentActivity.map((activity) => (
+                  <div key={activity.id} className="flex gap-4 items-start">
+                    <div className="bg-primary/10 text-primary rounded-full p-2 mt-0.5">
+                      {getActivityTypeIcon(activity.type)}
+                    </div>
+                    <div className="space-y-1">
+                      <p className="font-medium">{activity.title}</p>
+                      <div className="text-sm text-muted-foreground">
+                        {activity.project ? (
+                          <>in <span className="font-medium">{activity.project}</span> by </>
+                        ) : (
+                          <>by </>
+                        )}
+                        <span className="font-medium">{activity.user}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {formatRelativeTime(activity.timestamp)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full" size="sm">
+                View All Activity
+              </Button>
+            </CardFooter>
+          </Card>
         </div>
       </div>
     </div>
