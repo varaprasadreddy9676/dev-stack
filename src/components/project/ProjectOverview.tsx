@@ -16,6 +16,7 @@ import { PencilIcon, XIcon, SaveIcon } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import { ProjectData } from "@/types/project";
 import { tagsStringToArray } from "@/utils/projectHelpers";
+import ReactMarkdown from "react-markdown";
 
 interface ProjectOverviewProps {
   project: ProjectData;
@@ -136,7 +137,7 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({ project, onSave }) =>
             <div>
               <h3 className="text-lg font-medium">Overview</h3>
               <div className="prose max-w-none dark:prose-invert">
-                <p>{project.overview}</p>
+                <ReactMarkdown>{project.overview}</ReactMarkdown>
               </div>
             </div>
             

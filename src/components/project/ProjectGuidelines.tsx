@@ -12,6 +12,7 @@ import { PencilIcon, XIcon, SaveIcon } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import { ProjectData } from "@/types/project";
 import { formatDate } from "@/utils/projectHelpers";
+import ReactMarkdown from "react-markdown";
 
 interface ProjectGuidelinesProps {
   project: ProjectData;
@@ -92,7 +93,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
         ) : (
           <div className="space-y-6">
             <div className="prose max-w-none dark:prose-invert">
-              <p>{project.guidelines.content}</p>
+              <ReactMarkdown>{project.guidelines.content}</ReactMarkdown>
             </div>
             
             <div className="text-sm text-muted-foreground">

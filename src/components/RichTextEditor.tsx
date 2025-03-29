@@ -1,9 +1,16 @@
 
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { 
+  Bold, 
+  Italic, 
+  Underline,
+  ArrowDown,
+  ArrowRight
+} from "lucide-react";
 
-// This is a simple placeholder for a rich text editor
-// In a real application, you would use a library like TipTap, Slate, or React-Quill
+// This is a simple markdown-aware text editor
 interface RichTextEditorProps {
   id?: string;
   value: string;
@@ -11,40 +18,137 @@ interface RichTextEditorProps {
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ id, value, onChange }) => {
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+  
+  const insertMarkdown = (prefix: string, suffix: string = "") => {
+    if (!textAreaRef.current) return;
+    
+    const textarea = textAreaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    
+    const newText = 
+      value.substring(0, start) + 
+      prefix + 
+      selectedText + 
+      suffix + 
+      value.substring(end);
+    
+    onChange(newText);
+    
+    // Set new cursor position after the insertion is rendered
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + prefix.length, 
+        start + prefix.length + selectedText.length
+      );
+    }, 0);
+  };
+
+  const formatBold = () => insertMarkdown("**", "**");
+  const formatItalic = () => insertMarkdown("*", "*");
+  const formatUnderline = () => insertMarkdown("__", "__");
+  const formatHeading = () => insertMarkdown("## ");
+  const formatList = () => insertMarkdown("- ");
+  const formatCode = () => insertMarkdown("```\n", "\n```");
+  const formatLink = () => insertMarkdown("[", "](url)");
+  
   return (
     <div className="border rounded-md">
-      <div className="bg-muted p-2 border-b flex gap-2">
-        <button type="button" className="p-1 hover:bg-background rounded">
-          <span className="font-bold">B</span>
-        </button>
-        <button type="button" className="p-1 hover:bg-background rounded">
-          <span className="italic">I</span>
-        </button>
-        <button type="button" className="p-1 hover:bg-background rounded">
-          <span className="underline">U</span>
-        </button>
+      <div className="bg-muted p-2 border-b flex flex-wrap gap-2">
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="h-8 px-2"
+          onClick={formatBold}
+        >
+          <Bold className="h-4 w-4" />
+          <span className="sr-only">Bold</span>
+        </Button>
+        
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="h-8 px-2"
+          onClick={formatItalic}
+        >
+          <Italic className="h-4 w-4" />
+          <span className="sr-only">Italic</span>
+        </Button>
+        
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="h-8 px-2"
+          onClick={formatUnderline}
+        >
+          <Underline className="h-4 w-4" />
+          <span className="sr-only">Underline</span>
+        </Button>
+        
         <div className="h-5 w-px bg-border mx-1"></div>
-        <button type="button" className="p-1 hover:bg-background rounded">
-          <span># Heading</span>
-        </button>
-        <button type="button" className="p-1 hover:bg-background rounded">
-          <span>• List</span>
-        </button>
-        <button type="button" className="p-1 hover:bg-background rounded">
-          <span>{"```"} Code</span>
-        </button>
+        
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="h-8 px-2"
+          onClick={formatHeading}
+        >
+          <span className="text-xs font-bold">H2</span>
+          <span className="sr-only">Heading</span>
+        </Button>
+        
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="h-8 px-2"
+          onClick={formatList}
+        >
+          <ArrowRight className="h-4 w-4" />
+          <span className="sr-only">List</span>
+        </Button>
+        
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="h-8 px-2"
+          onClick={formatCode}
+        >
+          <span className="text-xs font-mono">{"</>"}</span>
+          <span className="sr-only">Code</span>
+        </Button>
+        
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm"
+          className="h-8 px-2"
+          onClick={formatLink}
+        >
+          <ArrowDown className="h-4 w-4" />
+          <span className="sr-only">Link</span>
+        </Button>
       </div>
       
       <Textarea
+        ref={textAreaRef}
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="min-h-[200px] border-0 focus-visible:ring-0 resize-y"
+        className="min-h-[200px] border-0 focus-visible:ring-0 resize-y font-mono text-sm"
         placeholder="Enter markdown content..."
       />
       
       <div className="bg-muted p-2 border-t text-xs text-muted-foreground">
-        Markdown supported
+        <p>Markdown supported: **bold**, *italic*, ## headings, - lists, ```code blocks```</p>
       </div>
     </div>
   );
