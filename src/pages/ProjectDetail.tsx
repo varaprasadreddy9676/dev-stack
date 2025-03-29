@@ -16,7 +16,10 @@ import {
   CalendarDays, 
   Users, 
   BookMarked,
-  PencilIcon
+  PencilIcon,
+  PackageIcon,
+  FileIcon,
+  GalleryHorizontalEndIcon
 } from "lucide-react";
 
 // Sample project data
@@ -60,6 +63,39 @@ const projectData = {
           description: "Wraps a component with data fetching capability"
         }
       ]
+    }
+  ],
+  modules: [
+    {
+      name: "Authentication",
+      description: "User authentication and authorization"
+    },
+    {
+      name: "Dashboard",
+      description: "User dashboard with analytics"
+    }
+  ],
+  guidelines: {
+    content: "Follow these guidelines when contributing to the project...",
+    lastUpdated: "2024-03-01T10:30:00Z"
+  },
+  components: [
+    "Button",
+    "Form Controls",
+    "DataTable"
+  ],
+  resources: [
+    {
+      title: "API Documentation",
+      description: "Reference for backend API endpoints",
+      url: "https://api-docs.example.com",
+      type: "link"
+    },
+    {
+      title: "Design System",
+      description: "UI component design guidelines",
+      url: "https://design.example.com",
+      type: "link"
     }
   ],
   tags: ["react", "typescript", "customer-facing"],
@@ -125,6 +161,22 @@ const ProjectDetail = () => {
       day: 'numeric',
       year: 'numeric'
     }).format(date);
+  };
+
+  // Handle view component click
+  const handleViewComponent = (componentId: string) => {
+    // In a real app, this would navigate to the component detail page
+    console.log(`Navigate to component detail: ${componentId}`);
+    // You could implement this with:
+    // navigate(`/components/${componentId}`);
+  };
+
+  // Handle read guide click
+  const handleReadGuide = (guideId: string) => {
+    // In a real app, this would navigate to the guide detail page
+    console.log(`Navigate to guide detail: ${guideId}`);
+    // You could implement this with:
+    // navigate(`/guides/${guideId}`);
   };
 
   return (
@@ -193,16 +245,40 @@ const ProjectDetail = () => {
               Architecture
             </TabsTrigger>
             <TabsTrigger
+              value="structure"
+              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            >
+              Structure
+            </TabsTrigger>
+            <TabsTrigger
+              value="frameworks"
+              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            >
+              Frameworks
+            </TabsTrigger>
+            <TabsTrigger
+              value="modules"
+              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            >
+              Modules
+            </TabsTrigger>
+            <TabsTrigger
+              value="guidelines"
+              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            >
+              Guidelines
+            </TabsTrigger>
+            <TabsTrigger
               value="components"
               className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
             >
               Components
             </TabsTrigger>
             <TabsTrigger
-              value="guides"
+              value="resources"
               className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
             >
-              Implementation Guides
+              Resources
             </TabsTrigger>
           </TabsList>
         </div>
@@ -394,6 +470,92 @@ const ProjectDetail = () => {
           </Card>
         </TabsContent>
         
+        {/* Structure Tab */}
+        <TabsContent value="structure" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Structure</CardTitle>
+              <CardDescription>{projectData.structure.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {projectData.structure.folders.map((folder, idx) => (
+                  <div key={idx} className="p-3 bg-muted/50 rounded-md">
+                    <div className="font-mono text-sm">{folder.path}</div>
+                    <div className="text-sm text-muted-foreground mt-1">{folder.purpose}</div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Frameworks Tab */}
+        <TabsContent value="frameworks" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Custom Frameworks</CardTitle>
+              <CardDescription>Custom utilities and frameworks used in this project</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {projectData.customFrameworks.map((framework, idx) => (
+                  <div key={idx} className="p-4 border rounded-lg">
+                    <h3 className="text-lg font-medium mb-2">{framework.name}</h3>
+                    <p className="text-muted-foreground mb-4">{framework.description}</p>
+                    <div className="bg-muted p-3 rounded-md overflow-auto">
+                      <pre className="text-sm font-mono">{framework.examples[0].code}</pre>
+                    </div>
+                    <p className="text-sm mt-2">{framework.examples[0].description}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Modules Tab */}
+        <TabsContent value="modules" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Modules</CardTitle>
+              <CardDescription>Main functional modules in this project</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {projectData.modules.map((module, idx) => (
+                  <div key={idx} className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <PackageIcon className="h-5 w-5 text-muted-foreground" />
+                      <h3 className="text-lg font-medium">{module.name}</h3>
+                    </div>
+                    <p className="text-muted-foreground mt-2">{module.description}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Guidelines Tab */}
+        <TabsContent value="guidelines" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Guidelines</CardTitle>
+              <CardDescription>Best practices and development standards</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="prose dark:prose-invert max-w-none">
+                <p>{projectData.guidelines.content}</p>
+              </div>
+              
+              <div className="text-sm text-muted-foreground mt-4">
+                Last updated: {formatDate(projectData.guidelines.lastUpdated)}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
         {/* Components Tab */}
         <TabsContent value="components" className="space-y-6">
           <div className="flex justify-between items-center">
@@ -406,64 +568,67 @@ const ProjectDetail = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {components.map((component) => (
-              <Link
-                to={`/projects/${id}/components/${component.id}`}
-                key={component.id}
-                className="hover-scale"
-              >
-                <Card className="h-full overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">{component.name}</CardTitle>
-                    <CardDescription>{component.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm text-muted-foreground">
-                      {component.variants} {component.variants === 1 ? 'variant' : 'variants'}
-                    </div>
-                    <Button variant="link" className="p-0 h-auto text-primary mt-2">
-                      View Component
-                      <Code className="ml-1 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
+              <Card key={component.id} className="h-full overflow-hidden hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">{component.name}</CardTitle>
+                  <CardDescription>{component.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm text-muted-foreground">
+                    {component.variants} {component.variants === 1 ? 'variant' : 'variants'}
+                  </div>
+                  <Button 
+                    variant="link" 
+                    className="p-0 h-auto text-primary mt-2"
+                    onClick={() => handleViewComponent(component.id)}
+                  >
+                    View Component
+                    <Code className="ml-1 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </TabsContent>
         
-        {/* Guides Tab */}
-        <TabsContent value="guides" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold">Implementation Guides</h2>
+        {/* Resources Tab */}
+        <TabsContent value="resources" className="space-y-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Project Resources</h2>
             <Button size="sm">
-              <BookOpen className="mr-2 h-4 w-4" />
-              New Guide
+              <FileIcon className="mr-2 h-4 w-4" />
+              Add Resource
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {guides.map((guide) => (
-              <Link
-                to={`/projects/${id}/guides/${guide.id}`}
-                key={guide.id}
-                className="hover-scale"
-              >
-                <Card className="h-full overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">{guide.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">{guide.description}</p>
-                    <Button variant="link" className="p-0 h-auto text-secondary">
-                      Read Guide
-                      <GitBranch className="ml-1 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {projectData.resources.map((resource, index) => (
+              <Card key={index} className="h-full overflow-hidden hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    {resource.type === "link" && <GalleryHorizontalEndIcon className="h-5 w-5 text-blue-500" />}
+                    {resource.type === "pdf" && <FileIcon className="h-5 w-5 text-red-500" />}
+                    {resource.type === "video" && <BookOpen className="h-5 w-5 text-green-500" />}
+                    <CardTitle className="text-lg">{resource.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">{resource.description}</p>
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto text-primary"
+                    onClick={() => window.open(resource.url, "_blank")}
+                  >
+                    Access Resource
+                    <GitBranch className="ml-1 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </TabsContent>
+        
+        {/* Guides Tab (Removed as it's not in the edit mode) */}
       </Tabs>
     </div>
   );
