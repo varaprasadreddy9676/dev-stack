@@ -68,5 +68,20 @@ export const componentService = {
       console.error(`Failed to update component ${componentId}:`, error);
       throw error;
     }
+  },
+  
+  deleteComponent: async (componentId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/components/${componentId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      return true;
+    } catch (error) {
+      console.error(`Failed to delete component ${componentId}:`, error);
+      throw error;
+    }
   }
 };
