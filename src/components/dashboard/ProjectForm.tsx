@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -29,6 +30,7 @@ interface ProjectFormProps {
   onCancel?: () => void;
 }
 
+// Changed to named export instead of default export
 export const ProjectForm = ({ onSubmit, onCancel }: ProjectFormProps) => {
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
@@ -47,9 +49,7 @@ export const ProjectForm = ({ onSubmit, onCancel }: ProjectFormProps) => {
     
     console.log("Creating project:", processedData);
     
-    toast.success("Project created successfully");
-    
-    onSubmit(data);
+    onSubmit(processedData);
     form.reset();
   };
 

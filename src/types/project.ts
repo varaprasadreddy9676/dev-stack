@@ -3,7 +3,7 @@ export interface ProjectData {
   _id: string;
   name: string;
   description: string;
-  overview: string;
+  overview?: string;
   architecture: {
     description: string;
     diagrams: Array<{
@@ -48,6 +48,6 @@ export interface ProjectData {
     description: string;
   }>;
   tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

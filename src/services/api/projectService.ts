@@ -34,7 +34,8 @@ const mockProjects = [
     modules: [],
     guidelines: {
       content: "Follow these guidelines when contributing...",
-      lastUpdated: "2024-03-01T10:30:00Z"
+      lastUpdated: "2024-03-01T10:30:00Z",
+      updatedBy: "Admin"  // Added missing updatedBy field
     },
     components: [],
     resources: [],
@@ -120,12 +121,13 @@ export const projectService = {
       
       if (!response.ok) {
         console.warn("API call failed, creating mock project");
-        // For mock creation, let's create a new project with a unique ID
-        const newProject = {
+        // Fix: Ensure createdAt and updatedAt are strings
+        const now = new Date().toISOString();
+        const newProject: ProjectData = {
           _id: `proj-${Date.now()}`,
           ...projectData,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          createdAt: now,
+          updatedAt: now,
           architecture: {
             description: "",
             diagrams: []
@@ -138,11 +140,11 @@ export const projectService = {
           modules: [],
           guidelines: {
             content: "",
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date(),
+            updatedBy: "System"
           },
           components: [],
-          resources: [],
-          team: []
+          resources: []
         };
         // Add to mock projects
         mockProjects.push(newProject);
@@ -153,12 +155,13 @@ export const projectService = {
       return data;
     } catch (error) {
       console.error("Failed to create project:", error);
-      // For mock creation, let's create a new project with a unique ID
-      const newProject = {
+      // Fix: Ensure createdAt and updatedAt are strings
+      const now = new Date().toISOString();
+      const newProject: ProjectData = {
         _id: `proj-${Date.now()}`,
         ...projectData,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now,
+        updatedAt: now,
         architecture: {
           description: "",
           diagrams: []
@@ -171,11 +174,11 @@ export const projectService = {
         modules: [],
         guidelines: {
           content: "",
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date(),
+          updatedBy: "System"
         },
         components: [],
-        resources: [],
-        team: []
+        resources: []
       };
       // Add to mock projects
       mockProjects.push(newProject);

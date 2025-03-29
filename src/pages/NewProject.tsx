@@ -3,7 +3,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import ProjectForm from "@/components/dashboard/ProjectForm";
+// Fix: Import ProjectForm correctly using named import instead of default import
+import { ProjectForm } from "@/components/dashboard/ProjectForm";
 import { projectService } from "@/services/serviceFactory";
 
 const NewProject: React.FC = () => {
