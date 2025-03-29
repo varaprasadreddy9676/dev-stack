@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
+import { ComponentPreview } from "@/components/ComponentPreview";
 
 // Component form schema
 const componentFormSchema = z.object({
@@ -94,8 +95,9 @@ const Components = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [viewTab, setViewTab] = useState("grid");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedComponent, setSelectedComponent] = useState(null);
+  const [selectedComponent, setSelectedComponent] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [currentVariant, setCurrentVariant] = useState(0);
   
   // Filter components based on search term and active tab
   const filteredComponents = componentsData.filter(component => {
@@ -153,8 +155,9 @@ const Components = () => {
   };
 
   // Handle view component
-  const handleViewComponent = (component) => {
+  const handleViewComponent = (component: any) => {
     setSelectedComponent(component);
+    setCurrentVariant(0); // Reset to first variant
     setIsViewDialogOpen(true);
   };
 
@@ -286,7 +289,7 @@ const Components = () => {
                 <div>
                   <h3 className="text-sm font-medium mb-2">Tags</h3>
                   <div className="flex flex-wrap gap-2">
-                    {selectedComponent.tags.map(tag => (
+                    {selectedComponent.tags.map((tag: string) => (
                       <Badge key={tag} variant="secondary">
                         {tag}
                       </Badge>
@@ -306,12 +309,12 @@ const Components = () => {
                   </p>
                 </div>
                 
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Component Example</h3>
-                  <div className="bg-muted/30 border rounded-md p-4">
-                    <p className="text-center text-muted-foreground">Component preview would appear here</p>
-                  </div>
-                </div>
+                <ComponentPreview 
+                  name={selectedComponent.name}
+                  variants={selectedComponent.variants}
+                  currentVariant={currentVariant}
+                  onVariantChange={setCurrentVariant}
+                />
               </div>
               
               <DialogFooter>
@@ -344,7 +347,7 @@ const Components = () => {
               >
                 All
               </Badge>
-              {uniqueTags.map(tag => (
+              {uniqueTags.map((tag) => (
                 <Badge 
                   key={tag} 
                   variant={activeTab === tag ? "default" : "outline"}
@@ -378,12 +381,13 @@ const Components = () => {
             
             <TabsContent value="grid" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredComponents.map((component, index) => (
+                {filteredComponents.map((component) => (
                   <Card key={component.id} className="hover:shadow-md transition-shadow">
                     <CardHeader className="pb-2">
                       <CardTitle className="flex justify-between items-center text-lg">
                         {component.name}
-                        <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-1">
+                        <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-1 cursor-pointer"
+                              onClick={() => handleViewComponent(component)}>
                           {component.variants} {component.variants === 1 ? 'variant' : 'variants'}
                         </span>
                       </CardTitle>
@@ -391,7 +395,7 @@ const Components = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2 mb-3">
-                        {component.tags.map(tag => (
+                        {component.tags.map((tag) => (
                           <Badge key={tag} variant="secondary" className="text-xs">
                             {tag}
                           </Badge>
@@ -415,7 +419,7 @@ const Components = () => {
             
             <TabsContent value="list" className="mt-6">
               <div className="space-y-4">
-                {filteredComponents.map((component, index) => (
+                {filteredComponents.map((component) => (
                   <Card key={component.id} className="hover:shadow-md transition-shadow">
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
@@ -423,14 +427,15 @@ const Components = () => {
                           <CardTitle className="text-lg">{component.name}</CardTitle>
                           <CardDescription className="mt-1">{component.description}</CardDescription>
                         </div>
-                        <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-1">
+                        <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-1 cursor-pointer"
+                              onClick={() => handleViewComponent(component)}>
                           {component.variants} {component.variants === 1 ? 'variant' : 'variants'}
                         </span>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2 mb-3">
-                        {component.tags.map(tag => (
+                        {component.tags.map((tag) => (
                           <Badge key={tag} variant="secondary" className="text-xs">
                             {tag}
                           </Badge>

@@ -46,6 +46,7 @@ export function ThemeProvider({
     }
     
     root.classList.add(theme);
+    console.log("Theme set to:", theme);
   }, [theme]);
 
   const value = {

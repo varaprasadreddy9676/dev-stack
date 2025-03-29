@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Home, Folder, BookOpen, Layout, Code, Search, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, Folder, BookOpen, Layout, Settings, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SidebarProps {
   className?: string;
@@ -21,7 +21,7 @@ export function Sidebar({ className }: SidebarProps) {
     { name: "Dashboard", href: "/", icon: Home },
     { name: "Projects", href: "/projects", icon: Folder },
     { name: "Components", href: "/components", icon: Layout },
-    { name: "Code Snippets", href: "/snippets", icon: Code },
+    { name: "Coding Guidelines", href: "/guidelines", icon: BookOpen },
   ];
 
   const utilities = [
