@@ -15,7 +15,8 @@ import {
   GitBranch, 
   CalendarDays, 
   Users, 
-  BookMarked
+  BookMarked,
+  PencilIcon
 } from "lucide-react";
 
 // Sample project data
@@ -152,6 +153,11 @@ const ProjectDetail = () => {
             </Button>
             <Button variant="outline" size="sm">
               <Share className="mr-1 h-4 w-4" /> Share
+            </Button>
+            <Button variant="default" size="sm" asChild>
+              <Link to={`/projects/${id}/edit`}>
+                <PencilIcon className="mr-1 h-4 w-4" /> Edit Project
+              </Link>
             </Button>
           </div>
         </div>
