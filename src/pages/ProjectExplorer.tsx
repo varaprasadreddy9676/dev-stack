@@ -211,84 +211,86 @@ const ProjectExplorer = () => {
           </div>
 
           {/* Projects Grid/List */}
-          <TabsContent value="grid" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-              {filteredProjects.map((project) => (
-                <Link 
-                  key={project.id} 
-                  to={`/projects/${project.id}`}
-                  className="hover-scale"
-                >
-                  <Card className="h-full overflow-hidden border">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="flex items-center gap-2 text-lg">
-                        <Folder className="h-5 w-5 text-primary" />
-                        {project.name}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {project.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="text-xs text-muted-foreground border-t pt-4">
-                      Updated {formatDate(project.updatedAt)}
-                    </CardFooter>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </TabsContent>
+          <Tabs value={viewMode} defaultValue="grid">
+            <TabsContent value="grid" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                {filteredProjects.map((project) => (
+                  <Link 
+                    key={project.id} 
+                    to={`/projects/${project.id}`}
+                    className="hover-scale"
+                  >
+                    <Card className="h-full overflow-hidden border">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                          <Folder className="h-5 w-5 text-primary" />
+                          {project.name}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {project.tags.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
+                      <CardFooter className="text-xs text-muted-foreground border-t pt-4">
+                        Updated {formatDate(project.updatedAt)}
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </TabsContent>
 
-          <TabsContent value="list" className="mt-0">
-            <div className="space-y-3">
-              {filteredProjects.map((project) => (
-                <Link
-                  key={project.id}
-                  to={`/projects/${project.id}`}
-                >
-                  <Card className={cn(
-                    "hover:border-primary/50 transition-all duration-200",
-                    "flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4"
-                  )}>
-                    <div className="flex-shrink-0 p-2 rounded-md bg-primary/10">
-                      <Folder className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-grow min-w-0">
-                      <h3 className="font-medium">{project.name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-1">
-                        {project.description}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-2 sm:min-w-32">
-                      <div className="flex flex-wrap gap-1 justify-end">
-                        {project.tags.slice(0, 2).map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {project.tags.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{project.tags.length - 2}
-                          </Badge>
-                        )}
+            <TabsContent value="list" className="mt-0">
+              <div className="space-y-3">
+                {filteredProjects.map((project) => (
+                  <Link
+                    key={project.id}
+                    to={`/projects/${project.id}`}
+                  >
+                    <Card className={cn(
+                      "hover:border-primary/50 transition-all duration-200",
+                      "flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4"
+                    )}>
+                      <div className="flex-shrink-0 p-2 rounded-md bg-primary/10">
+                        <Folder className="h-6 w-6 text-primary" />
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(project.updatedAt)}
-                      </span>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </TabsContent>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="font-medium">{project.name}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {project.description}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2 sm:min-w-32">
+                        <div className="flex flex-wrap gap-1 justify-end">
+                          {project.tags.slice(0, 2).map((tag) => (
+                            <Badge key={tag} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {project.tags.length > 2 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{project.tags.length - 2}
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDate(project.updatedAt)}
+                        </span>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
 
           {filteredProjects.length === 0 && (
             <div className="text-center py-10">
