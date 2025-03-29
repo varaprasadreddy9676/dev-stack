@@ -18,7 +18,7 @@ import {
   TrashIcon, 
   SaveIcon 
 } from "lucide-react";
-import { ProjectData } from "@/hooks/useProjectData";
+import { ProjectData } from "@/types/project";
 import { updateArrayItem, removeArrayItem, addArrayItem } from "@/utils/projectHelpers";
 
 interface ProjectStructureProps {

@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { PencilIcon, XIcon, SaveIcon } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
-import { ProjectData } from "@/hooks/useProjectData";
+import { ProjectData } from "@/types/project";
 import { formatDate } from "@/utils/projectHelpers";
 
 interface ProjectGuidelinesProps {

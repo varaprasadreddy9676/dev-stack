@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { PencilIcon, XIcon, SaveIcon } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
-import { ProjectData } from "@/hooks/useProjectData";
+import { ProjectData } from "@/types/project";
 import { tagsStringToArray } from "@/utils/projectHelpers";
 
 interface ProjectOverviewProps {

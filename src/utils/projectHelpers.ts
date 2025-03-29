@@ -1,5 +1,5 @@
 
-import { ProjectData } from "@/hooks/useProjectData";
+import { ProjectData } from "@/types/project";
 
 /**
  * Helper function to convert comma-separated tags string to array

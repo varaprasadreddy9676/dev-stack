@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -16,7 +15,7 @@ import {
   TrashIcon
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { ProjectData } from "@/hooks/useProjectData";
+import { ProjectData } from "@/types/project";
 
 interface ProjectComponentsProps {
   project: ProjectData;

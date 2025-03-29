@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import CodeEditor from "@/components/CodeEditor";
-import { ProjectData } from "@/hooks/useProjectData";
+import { ProjectData } from "@/types/project";
 import { updateArrayItem, removeArrayItem } from "@/utils/projectHelpers";
 
 interface CustomFrameworksProps {
