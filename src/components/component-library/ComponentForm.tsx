@@ -29,12 +29,15 @@ interface ComponentFormProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: ComponentFormValues) => void;
+  initialValues?: ComponentFormValues;
 }
 
-const ComponentForm = ({ isOpen, onOpenChange, onSubmit }: ComponentFormProps) => {
+const ComponentForm = ({ isOpen, onOpenChange, onSubmit, initialValues }: ComponentFormProps) => {
+  const isEditing = !!initialValues;
+  
   const form = useForm<ComponentFormValues>({
     resolver: zodResolver(componentFormSchema),
-    defaultValues: {
+    defaultValues: initialValues || {
       name: "",
       description: "",
       variants: "1",
@@ -44,16 +47,20 @@ const ComponentForm = ({ isOpen, onOpenChange, onSubmit }: ComponentFormProps) =
   
   const handleSubmit = (data: ComponentFormValues) => {
     onSubmit(data);
-    form.reset();
+    if (!isEditing) {
+      form.reset();
+    }
   };
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Create New Component</DialogTitle>
+          <DialogTitle>{isEditing ? 'Edit Component' : 'Create New Component'}</DialogTitle>
           <DialogDescription>
-            Add a new component to the library. Fill in the details below to get started.
+            {isEditing 
+              ? 'Update the component details below.'
+              : 'Add a new component to the library. Fill in the details below to get started.'}
           </DialogDescription>
         </DialogHeader>
         
@@ -137,7 +144,7 @@ const ComponentForm = ({ isOpen, onOpenChange, onSubmit }: ComponentFormProps) =
             />
             
             <DialogFooter>
-              <Button type="submit">Create Component</Button>
+              <Button type="submit">{isEditing ? 'Save Changes' : 'Create Component'}</Button>
             </DialogFooter>
           </form>
         </Form>

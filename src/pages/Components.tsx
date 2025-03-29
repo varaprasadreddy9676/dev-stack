@@ -11,16 +11,22 @@ import ComponentList from "@/components/component-library/ComponentList";
 import ComponentDetailView from "@/components/component-library/ComponentDetailView";
 
 const Components = () => {
+  // State for filtered components
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [viewTab, setViewTab] = useState("grid");
+  
+  // State for components data
+  const [components, setComponents] = useState([...componentsData]);
+  
+  // State for dialogs
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [currentVariant, setCurrentVariant] = useState(0);
   
-  const filteredComponents = filterComponents(componentsData, searchTerm, activeTab);
-  const uniqueTags = getUniqueTags(componentsData);
+  const filteredComponents = filterComponents(components, searchTerm, activeTab);
+  const uniqueTags = getUniqueTags(components);
 
   const handleViewComponent = (component: any) => {
     setSelectedComponent(component);
@@ -28,22 +34,30 @@ const Components = () => {
     setIsViewDialogOpen(true);
   };
 
-  const handleEditComponent = (component: any) => {
-    setSelectedComponent(component);
-    toast.info("Edit component functionality coming soon");
+  const handleEditComponent = (updatedComponent: any) => {
+    // Replace the component in the array with the updated one
+    const updatedComponents = components.map(comp => 
+      comp.id === updatedComponent.id ? updatedComponent : comp
+    );
+    
+    setComponents(updatedComponents);
+    toast.success("Component updated successfully");
   };
   
   const handleCreateComponent = (data: ComponentFormValues) => {
     const processedData = {
+      id: `component-${Date.now()}`, // Generate a simple ID
       ...data,
       variants: parseInt(data.variants),
-      tags: data.tags ? data.tags.split(",").map(tag => tag.trim()) : []
+      tags: data.tags ? data.tags.split(",").map(tag => tag.trim()) : [],
+      usage: "Standard component usage guidelines. Follow accessibility best practices.",
+      updatedAt: new Date().toISOString()
     };
     
-    console.log("Creating component:", processedData);
+    // Add the new component to the state
+    setComponents([processedData, ...components]);
     
     toast.success("Component created successfully");
-    
     setIsDialogOpen(false);
   };
 
