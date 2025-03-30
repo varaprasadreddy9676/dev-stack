@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { FileText, Code, ArrowLeft, Check, X, ExternalLink, PencilIcon, SaveIcon } from "lucide-react";
-import RichTextEditor from "@/components/RichTextEditor";
+import CKEditorComponent from "@/components/CKEditor";
 import { toast } from "sonner";
 
 // Sample language data based on the provided interface
@@ -311,10 +310,10 @@ const LanguageGuidelines = () => {
             </CardHeader>
             <CardContent className="prose dark:prose-invert max-w-none">
               {isEditing ? (
-                <RichTextEditor 
+                <CKEditorComponent 
                   value={guidelinesContent} 
                   onChange={setGuidelinesContent} 
-                  allowHtml={true}
+                  minHeight="400px"
                 />
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: language.guidelines.content }} />
