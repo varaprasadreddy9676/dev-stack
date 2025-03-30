@@ -52,16 +52,20 @@ const CKEditorComponent: React.FC<CKEditorProps> = ({
             'redo'
           ],
           language: 'en',
+          // This removes the warning about the license key - it's allowed for the free version
+          licenseKey: '',
         }}
         onReady={(editor) => {
           // You can store the "editor" and use when it is needed.
-          editor.editing.view.change((writer) => {
-            writer.setStyle(
-              'min-height',
-              minHeight,
-              editor.editing.view.document.getRoot()
-            );
-          });
+          if (editor && editor.editing && editor.editing.view) {
+            editor.editing.view.change((writer) => {
+              writer.setStyle(
+                'min-height',
+                minHeight,
+                editor.editing.view.document.getRoot()
+              );
+            });
+          }
         }}
         onChange={(event, editor) => {
           const data = editor.getData();
