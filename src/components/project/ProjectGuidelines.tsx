@@ -29,7 +29,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
       guidelines: {
         ...project.guidelines,
         content,
-        lastUpdated: new Date(),
+        lastUpdated: new Date().toISOString(), // Convert Date to ISO string
         // In a real app, this would be the current user's ID
         updatedBy: "user123"
       }
