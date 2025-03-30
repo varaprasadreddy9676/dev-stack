@@ -51,7 +51,7 @@ export const mockProjectService = {
     return {
       ...mockProjects[projectIndex],
       ...updatedData,
-      updatedAt: new Date()
+      updatedAt: new Date().toISOString()
     };
   },
   
@@ -63,17 +63,33 @@ export const mockProjectService = {
     
     // Generate a new ID
     const newId = `proj${Date.now()}`;
+    const now = new Date().toISOString();
     
     // Create new project
     const newProject: ProjectData = {
       _id: newId,
       ...projectData,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: now,
+      updatedAt: now,
+      architecture: projectData.architecture || {
+        description: "",
+        diagrams: []
+      },
+      structure: projectData.structure || {
+        description: "",
+        folders: []
+      },
+      customFrameworks: projectData.customFrameworks || [],
+      modules: projectData.modules || [],
+      guidelines: projectData.guidelines || {
+        content: "",
+        lastUpdated: now,
+        updatedBy: "System"
+      },
+      components: projectData.components || [],
+      resources: projectData.resources || []
     };
     
-    // In a real implementation, this would add to the backend
-    // For the mock, we'll just return the new project
     return newProject;
   },
   

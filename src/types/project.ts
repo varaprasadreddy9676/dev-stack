@@ -37,7 +37,7 @@ export interface ProjectData {
   }>;
   guidelines: {
     content: string;
-    lastUpdated: Date;
+    lastUpdated: string;
     updatedBy: string;
   };
   components: string[];
@@ -50,4 +50,5 @@ export interface ProjectData {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+  team?: any[]; // Adding team as optional to match usage in projectService
 }

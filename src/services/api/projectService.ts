@@ -35,7 +35,7 @@ const mockProjects = [
     guidelines: {
       content: "Follow these guidelines when contributing...",
       lastUpdated: "2024-03-01T10:30:00Z",
-      updatedBy: "Admin"  // Added missing updatedBy field
+      updatedBy: "Admin"
     },
     components: [],
     resources: [],
@@ -60,7 +60,8 @@ const mockProjects = [
     modules: [],
     guidelines: {
       content: "Admin dashboard guidelines...",
-      lastUpdated: "2024-03-01T10:30:00Z"
+      lastUpdated: "2024-03-01T10:30:00Z",
+      updatedBy: "Admin"
     },
     components: [],
     resources: [],
@@ -123,7 +124,7 @@ export const projectService = {
         console.warn("API call failed, creating mock project");
         // Fix: Ensure createdAt and updatedAt are strings
         const now = new Date().toISOString();
-        const newProject: ProjectData = {
+        const newProject = {
           _id: `proj-${Date.now()}`,
           ...projectData,
           createdAt: now,
@@ -140,11 +141,12 @@ export const projectService = {
           modules: [],
           guidelines: {
             content: "",
-            lastUpdated: new Date(),
+            lastUpdated: now,
             updatedBy: "System"
           },
           components: [],
-          resources: []
+          resources: [],
+          team: []
         };
         // Add to mock projects
         mockProjects.push(newProject);
@@ -157,7 +159,7 @@ export const projectService = {
       console.error("Failed to create project:", error);
       // Fix: Ensure createdAt and updatedAt are strings
       const now = new Date().toISOString();
-      const newProject: ProjectData = {
+      const newProject = {
         _id: `proj-${Date.now()}`,
         ...projectData,
         createdAt: now,
@@ -174,11 +176,12 @@ export const projectService = {
         modules: [],
         guidelines: {
           content: "",
-          lastUpdated: new Date(),
+          lastUpdated: now,
           updatedBy: "System"
         },
         components: [],
-        resources: []
+        resources: [],
+        team: []
       };
       // Add to mock projects
       mockProjects.push(newProject);

@@ -2,7 +2,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { toast } from "sonner";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,14 +41,9 @@ export const ProjectForm = ({ onSubmit, onCancel }: ProjectFormProps) => {
   });
   
   const handleSubmit = (data: ProjectFormValues) => {
-    const processedData = {
-      ...data,
-      tags: data.tags ? data.tags.split(",").map(tag => tag.trim()) : []
-    };
-    
-    console.log("Creating project:", processedData);
-    
-    onSubmit(processedData);
+    // Just pass the data to the parent component without processing
+    // Let the parent component handle the processing
+    onSubmit(data);
     form.reset();
   };
 

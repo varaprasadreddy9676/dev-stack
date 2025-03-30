@@ -56,7 +56,7 @@ export const mockProjects: ProjectData[] = [
     ],
     guidelines: {
       content: "# Project Guidelines\n\n## Coding Standards\n\n- Use TypeScript for all new code\n- Follow the project's ESLint configuration\n- Write unit tests for all business logic",
-      lastUpdated: new Date("2024-03-15"),
+      lastUpdated: "2024-03-15T00:00:00Z",
       updatedBy: "user123"
     },
     components: ["comp1", "comp2", "comp3"],
@@ -75,8 +75,8 @@ export const mockProjects: ProjectData[] = [
       }
     ],
     tags: ["react", "typescript", "customer-facing"],
-    createdAt: new Date("2024-02-15"),
-    updatedAt: new Date("2024-03-10")
+    createdAt: "2024-02-15T00:00:00Z",
+    updatedAt: "2024-03-10T00:00:00Z"
   },
   {
     _id: "proj456",
@@ -117,7 +117,7 @@ export const mockProjects: ProjectData[] = [
     ],
     guidelines: {
       content: "# Admin Dashboard Guidelines\n\n## Security Considerations\n\n- All API calls must include the admin token\n- Implement proper input validation\n- Log all administrative actions",
-      lastUpdated: new Date("2024-02-28"),
+      lastUpdated: "2024-02-28T00:00:00Z",
       updatedBy: "user456"
     },
     components: ["UserTable", "PermissionEditor", "ActivityLog"],
@@ -130,8 +130,8 @@ export const mockProjects: ProjectData[] = [
       }
     ],
     tags: ["react", "admin", "internal-tool"],
-    createdAt: new Date("2024-01-10"),
-    updatedAt: new Date("2024-02-28")
+    createdAt: "2024-01-10T00:00:00Z",
+    updatedAt: "2024-02-28T00:00:00Z"
   }
 ];
 

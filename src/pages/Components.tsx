@@ -47,7 +47,8 @@ const Components = () => {
   const handleCreateComponent = (data: ComponentFormValues) => {
     const processedData = {
       id: `component-${Date.now()}`, // Generate a simple ID
-      ...data,
+      name: data.name,
+      description: data.description,
       variants: parseInt(data.variants),
       tags: data.tags ? data.tags.split(",").map(tag => tag.trim()) : [],
       usage: "Standard component usage guidelines. Follow accessibility best practices.",

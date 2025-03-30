@@ -3,16 +3,22 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-// Fix: Import ProjectForm correctly using named import instead of default import
 import { ProjectForm } from "@/components/dashboard/ProjectForm";
 import { projectService } from "@/services/serviceFactory";
+import { tagsStringToArray } from "@/utils/projectHelpers";
 
 const NewProject: React.FC = () => {
   const navigate = useNavigate();
 
   const handleCreateProject = async (projectData) => {
     try {
-      const createdProject = await projectService.createProject(projectData);
+      // Process tags from string to array
+      const processedData = {
+        ...projectData,
+        tags: projectData.tags ? tagsStringToArray(projectData.tags) : []
+      };
+      
+      const createdProject = await projectService.createProject(processedData);
       toast.success("Project created successfully");
       navigate(`/projects/${createdProject._id}`);
     } catch (error) {
