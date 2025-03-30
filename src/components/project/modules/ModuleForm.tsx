@@ -1,36 +1,15 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { XIcon, SaveIcon } from "lucide-react";
 import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
-import { 
-  dependenciesToString, 
-  stringToDependencies 
-} from "@/utils/projectHelpers";
-
-interface ModuleType {
-  name: string;
-  description: string;
-  documentation: string;
-  dependencies: string[];
-}
+import { ModuleFormData } from "./moduleTypes";
 
 interface ModuleFormProps {
-  moduleData: {
-    name: string;
-    description: string;
-    documentation: string;
-    dependencies: string;
-  };
-  setModuleForm: React.Dispatch<React.SetStateAction<{
-    name: string;
-    description: string;
-    documentation: string;
-    dependencies: string;
-  }>>;
+  moduleData: ModuleFormData;
+  setModuleForm: React.Dispatch<React.SetStateAction<ModuleFormData>>;
   onCancel: () => void;
   onSave: () => void;
   isNew: boolean;

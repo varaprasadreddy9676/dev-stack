@@ -1,6 +1,7 @@
 
-import React, { useEffect, useRef, useState } from "react";
-import { Editor } from '@tinymce/tinymce-react';
+import React from "react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface EnhancedRichTextEditorProps {
   id?: string;
@@ -19,54 +20,47 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
   minHeight = 300,
   placeholder = "Enter content here..."
 }) => {
-  const editorRef = useRef<any>(null);
-  const [isReady, setIsReady] = useState(false);
-
   // Configure toolbar based on whether HTML is allowed
-  const getToolbar = () => {
-    const basicFormatting = 'undo redo | formatselect | bold italic underline | bullist numlist | link';
-    const advancedFormatting = allowHtml 
-      ? ' | alignleft aligncenter alignright | removeformat | code'
-      : ' | removeformat';
-    
-    return `${basicFormatting}${advancedFormatting}`;
+  const modules = {
+    toolbar: allowHtml 
+      ? [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['link'],
+          [{ 'align': [] }],
+          ['clean'],
+          ...(allowHtml ? [['code-block']] : [])
+        ]
+      : [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['link'],
+          ['clean']
+        ]
   };
+
+  const formats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet',
+    'link',
+    'align',
+    ...(allowHtml ? ['code-block'] : [])
+  ];
 
   return (
     <div className="border rounded-md overflow-hidden">
-      <Editor
+      <ReactQuill
         id={id}
-        apiKey="no-api-key" // For TinyMCE free version
-        onInit={(evt, editor) => {
-          editorRef.current = editor;
-          setIsReady(true);
-        }}
-        initialValue={value}
         value={value}
-        onEditorChange={(newValue) => onChange(newValue)}
-        init={{
-          height: minHeight,
-          menubar: false,
-          plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'charmap',
-            'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'table', 'wordcount'
-          ],
-          toolbar: getToolbar(),
-          content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
-          placeholder: placeholder,
-          branding: false,
-          promotion: false,
-          browser_spellcheck: true,
-          contextmenu: false,
-          entity_encoding: 'raw',
-          convert_urls: false,
-          setup: function (editor) {
-            editor.on('change', function () {
-              onChange(editor.getContent());
-            });
-          }
-        }}
+        onChange={onChange}
+        modules={modules}
+        formats={formats}
+        placeholder={placeholder}
+        style={{ height: minHeight }}
+        theme="snow"
       />
       <div className="bg-muted p-2 border-t text-xs text-muted-foreground">
         {allowHtml 
