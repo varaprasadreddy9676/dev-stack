@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,10 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { FileText, Code, ArrowLeft, Check, X, ExternalLink, PencilIcon, SaveIcon } from "lucide-react";
-import RichTextEditor from "@/components/RichTextEditor";
+import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
 import { toast } from "sonner";
 
-// Sample language data based on the provided interface
 const languageData = {
   _id: "typescript",
   name: "TypeScript",
@@ -173,10 +171,8 @@ const LanguageGuidelines = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [guidelinesContent, setGuidelinesContent] = useState(languageData.guidelines.content);
   
-  // In a real application, you would fetch the language data based on the ID
   const language = languageData;
   
-  // Format date for display
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       month: 'long',
@@ -186,7 +182,6 @@ const LanguageGuidelines = () => {
   };
 
   const handleSaveGuidelines = () => {
-    // In a real application, this would make an API call to update the guidelines
     languageData.guidelines.content = guidelinesContent;
     languageData.guidelines.lastUpdated = new Date();
     
@@ -196,7 +191,6 @@ const LanguageGuidelines = () => {
 
   return (
     <div className="container py-10 animate-fade-in">
-      {/* Breadcrumb Navigation */}
       <Breadcrumb className="mb-6">
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
@@ -211,7 +205,6 @@ const LanguageGuidelines = () => {
         </BreadcrumbItem>
       </Breadcrumb>
       
-      {/* Language Header */}
       <div className="mb-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <div className="space-y-1">
@@ -239,7 +232,6 @@ const LanguageGuidelines = () => {
         </div>
       </div>
 
-      {/* Content Tabs */}
       <Tabs
         defaultValue={activeTab}
         value={activeTab}
@@ -269,7 +261,6 @@ const LanguageGuidelines = () => {
           </TabsList>
         </div>
         
-        {/* Guidelines Tab */}
         <TabsContent value="guidelines" className="space-y-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -311,10 +302,11 @@ const LanguageGuidelines = () => {
             </CardHeader>
             <CardContent className="prose dark:prose-invert max-w-none">
               {isEditing ? (
-                <RichTextEditor 
+                <EnhancedRichTextEditor 
                   value={guidelinesContent} 
                   onChange={setGuidelinesContent} 
                   allowHtml={true}
+                  minHeight={400}
                 />
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: language.guidelines.content }} />
@@ -323,7 +315,6 @@ const LanguageGuidelines = () => {
           </Card>
         </TabsContent>
         
-        {/* Examples Tab */}
         <TabsContent value="examples" className="space-y-8">
           <div>
             <h2 className="text-2xl font-bold mb-4">Good Examples</h2>
@@ -382,7 +373,6 @@ const LanguageGuidelines = () => {
           </div>
         </TabsContent>
         
-        {/* Resources Tab */}
         <TabsContent value="resources" className="space-y-6">
           <Card>
             <CardHeader>

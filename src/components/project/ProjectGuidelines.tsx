@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PencilIcon, XIcon, SaveIcon } from "lucide-react";
-import RichTextEditor from "@/components/RichTextEditor";
+import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
 import { ProjectData } from "@/types/project";
 import { formatDate } from "@/utils/projectHelpers";
 import ReactMarkdown from "react-markdown";
@@ -31,7 +31,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
       guidelines: {
         ...project.guidelines,
         content,
-        lastUpdated: new Date(),
+        lastUpdated: new Date().toISOString(),
         // In a real app, this would be the current user's ID
         updatedBy: "user123"
       }
@@ -82,10 +82,11 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <RichTextEditor 
+              <EnhancedRichTextEditor 
                 value={content} 
                 onChange={setContent}
                 allowHtml={true}
+                minHeight={300}
               />
               <p className="text-xs text-muted-foreground mt-2">
                 Last updated: {formatDate(project.guidelines.lastUpdated)}

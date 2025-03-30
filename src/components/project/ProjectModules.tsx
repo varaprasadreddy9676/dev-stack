@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -19,7 +18,7 @@ import {
   TrashIcon, 
   SaveIcon 
 } from "lucide-react";
-import RichTextEditor from "@/components/RichTextEditor";
+import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
 import { ProjectData } from "@/types/project";
 import { updateArrayItem, removeArrayItem } from "@/utils/projectHelpers";
 import { 
@@ -235,10 +234,11 @@ const ProjectModules: React.FC<ProjectModulesProps> = ({ project, onSave }) => {
               
               <div className="space-y-2">
                 <Label htmlFor="module-documentation">Documentation</Label>
-                <RichTextEditor 
+                <EnhancedRichTextEditor 
                   id="module-documentation" 
                   value={moduleForm.documentation} 
                   onChange={(value) => setModuleForm(prev => ({ ...prev, documentation: value }))}
+                  minHeight={250}
                 />
               </div>
               
@@ -273,7 +273,6 @@ const ProjectModules: React.FC<ProjectModulesProps> = ({ project, onSave }) => {
             </div>
           </div>
         ) : (
-          // View mode
           <div className="space-y-6">
             {project.modules.length === 0 ? (
               <p className="text-muted-foreground italic">No modules defined for this project.</p>
