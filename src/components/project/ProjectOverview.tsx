@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { PencilIcon, XIcon, SaveIcon } from "lucide-react";
-import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
+import RichTextEditor from "@/components/RichTextEditor";
 import { ProjectData } from "@/types/project";
 import { tagsStringToArray } from "@/utils/projectHelpers";
 import ReactMarkdown from "react-markdown";
@@ -95,11 +95,10 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({ project, onSave }) =>
             
             <div className="space-y-2">
               <Label htmlFor="overview">Project Overview</Label>
-              <EnhancedRichTextEditor 
+              <RichTextEditor 
                 id="overview" 
-                value={formData.overview || ''} 
+                value={formData.overview} 
                 onChange={(value) => setFormData(prev => ({ ...prev, overview: value }))}
-                minHeight={250}
               />
             </div>
             

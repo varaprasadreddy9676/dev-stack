@@ -9,11 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PencilIcon, XIcon, SaveIcon } from "lucide-react";
-import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
+import CKEditorComponent from "@/components/CKEditor";
 import { ProjectData } from "@/types/project";
 import { formatDate } from "@/utils/projectHelpers";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 
 interface ProjectGuidelinesProps {
   project: ProjectData;
@@ -31,7 +29,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
       guidelines: {
         ...project.guidelines,
         content,
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: new Date().toISOString(), // Convert Date to ISO string
         // In a real app, this would be the current user's ID
         updatedBy: "user123"
       }
@@ -82,11 +80,10 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <EnhancedRichTextEditor 
+              <CKEditorComponent 
                 value={content} 
                 onChange={setContent}
-                allowHtml={true}
-                minHeight={300}
+                minHeight="300px"
               />
               <p className="text-xs text-muted-foreground mt-2">
                 Last updated: {formatDate(project.guidelines.lastUpdated)}
@@ -95,9 +92,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
           </form>
         ) : (
           <div className="space-y-6">
-            <div className="prose max-w-none dark:prose-invert">
-              <ReactMarkdown rehypePlugins={[rehypeRaw]}>{project.guidelines.content}</ReactMarkdown>
-            </div>
+            <div className="prose max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: content }} />
             
             <div className="text-sm text-muted-foreground">
               Last updated: {formatDate(project.guidelines.lastUpdated)}
