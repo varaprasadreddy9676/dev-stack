@@ -195,7 +195,7 @@ export const projectService = {
         console.warn("API call failed, creating mock project");
         // Fix: Ensure createdAt and updatedAt are strings
         const now = new Date().toISOString();
-        const newProject = {
+        const newProject: ProjectData = {
           _id: `proj-${Date.now()}`,
           ...projectData,
           createdAt: now,
@@ -231,30 +231,30 @@ export const projectService = {
       console.error("Failed to create project:", error);
       // Fix: Ensure createdAt and updatedAt are strings
       const now = new Date().toISOString();
-      const newProject = {
-        _id: `proj-${Date.now()}`,
-        ...projectData,
-        createdAt: now,
-        updatedAt: now,
-        architecture: {
-          description: "",
-          diagrams: []
-        },
-        structure: {
-          description: "",
-          folders: []
-        },
-        customFrameworks: [],
-        modules: [],
-        guidelines: {
-          content: "",
-          lastUpdated: now,
-          updatedBy: "System"
-        },
-        components: [],
-        resources: [],
-        team: [],
-        troubleshooting: []
+      const newProject: ProjectData = {
+          _id: `proj-${Date.now()}`,
+          ...projectData,
+          createdAt: now,
+          updatedAt: now,
+          architecture: {
+            description: "",
+            diagrams: []
+          },
+          structure: {
+            description: "",
+            folders: []
+          },
+          customFrameworks: [],
+          modules: [],
+          guidelines: {
+            content: "",
+            lastUpdated: now,
+            updatedBy: "System"
+          },
+          components: [],
+          resources: [],
+          team: [],
+          troubleshooting: []
       };
       // Add to mock projects
       mockProjects.push(newProject);
@@ -280,7 +280,7 @@ export const projectService = {
           throw new Error("Project not found");
         }
         
-        const updatedProject = {
+        const updatedProject: ProjectData = {
           ...mockProjects[projectIndex],
           ...updatedData,
           updatedAt: new Date().toISOString(),
@@ -304,7 +304,7 @@ export const projectService = {
         throw new Error("Project not found");
       }
       
-      const updatedProject = {
+      const updatedProject: ProjectData = {
         ...mockProjects[projectIndex],
         ...updatedData,
         updatedAt: new Date().toISOString(),
