@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PencilIcon, SaveIcon, X } from "lucide-react";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
-import CKEditorComponent from "@/components/CKEditor";
+import RichTextEditor from "@/components/RichTextEditor";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 interface GuidelinesEditorProps {
   content: string;
@@ -69,13 +71,17 @@ const GuidelinesEditor: React.FC<GuidelinesEditorProps> = ({
       </CardHeader>
       <CardContent className="prose dark:prose-invert max-w-none">
         {isEditing ? (
-          <CKEditorComponent 
+          <RichTextEditor 
             value={guidelinesContent} 
             onChange={setGuidelinesContent} 
-            minHeight="400px"
+            allowHtml={true}
           />
         ) : (
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <div>
+            <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+              {content}
+            </ReactMarkdown>
+          </div>
         )}
         <div className="text-sm text-muted-foreground mt-4">
           Last updated on {formatDate(lastUpdated)}
