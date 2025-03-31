@@ -88,10 +88,18 @@ const GuidelinesEditor: React.FC<GuidelinesEditorProps> = ({
                 ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4" {...props} />,
                 ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4" {...props} />,
                 li: ({node, ...props}) => <li className="mb-1" {...props} />,
-                code: ({node, inline, ...props}) => 
-                  inline 
-                    ? <code className="bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5 text-sm" {...props} />
-                    : <pre className="bg-gray-100 dark:bg-gray-800 rounded p-3 overflow-x-auto mb-4"><code {...props} /></pre>,
+                code: ({node, className, ...props}: any) => {
+                  const match = /language-(\w+)/.exec(className || '');
+                  const isInline = !match && !className;
+                  
+                  return isInline ? (
+                    <code className="bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5 text-sm" {...props} />
+                  ) : (
+                    <pre className="bg-gray-100 dark:bg-gray-800 rounded p-3 overflow-x-auto mb-4">
+                      <code className={className} {...props} />
+                    </pre>
+                  );
+                },
                 blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-300 dark:border-gray-700 pl-4 italic my-4" {...props} />,
                 a: ({node, ...props}) => <a className="text-primary hover:underline" {...props} />
               }}
