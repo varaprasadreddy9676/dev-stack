@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,10 +18,10 @@ import {
   PencilIcon,
   PackageIcon,
   FileIcon,
-  GalleryHorizontalEndIcon
+  GalleryHorizontalEndIcon,
+  Bug
 } from "lucide-react";
 
-// Sample project data
 const projectData = {
   id: "proj123",
   name: "Customer Portal",
@@ -98,6 +97,42 @@ const projectData = {
       type: "link"
     }
   ],
+  troubleshooting: [
+    {
+      id: "issue1",
+      issue: "Authentication Failure",
+      description: "Users unable to log in despite using correct credentials",
+      symptoms: [
+        "Login form returns 'Invalid credentials' error", 
+        "Authentication tokens not being stored"
+      ],
+      solutions: [
+        {
+          steps: "Clear browser cookies and cache, then attempt login again",
+          code: "// No code needed for this solution"
+        }
+      ],
+      tags: ["authentication", "login"],
+      lastUpdated: "2024-03-20T00:00:00Z"
+    },
+    {
+      id: "issue2",
+      issue: "Slow Dashboard Loading",
+      description: "Dashboard takes more than 10 seconds to load for some users",
+      symptoms: [
+        "Dashboard shows loading spinner for extended periods", 
+        "Network requests take longer than expected"
+      ],
+      solutions: [
+        {
+          steps: "Implement data pagination to reduce initial load",
+          code: "// Example code for pagination"
+        }
+      ],
+      tags: ["performance", "dashboard"],
+      lastUpdated: "2024-03-18T00:00:00Z"
+    }
+  ],
   tags: ["react", "typescript", "customer-facing"],
   createdAt: "2024-02-15T12:00:00Z",
   updatedAt: "2024-03-10T09:15:00Z",
@@ -108,7 +143,6 @@ const projectData = {
   ]
 };
 
-// Sample components data
 const components = [
   {
     id: "comp1",
@@ -130,7 +164,6 @@ const components = [
   }
 ];
 
-// Sample guides data
 const guides = [
   {
     id: "guide1",
@@ -153,7 +186,6 @@ const ProjectDetail = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -163,25 +195,16 @@ const ProjectDetail = () => {
     }).format(date);
   };
 
-  // Handle view component click
   const handleViewComponent = (componentId: string) => {
-    // In a real app, this would navigate to the component detail page
     console.log(`Navigate to component detail: ${componentId}`);
-    // You could implement this with:
-    // navigate(`/components/${componentId}`);
   };
 
-  // Handle read guide click
   const handleReadGuide = (guideId: string) => {
-    // In a real app, this would navigate to the guide detail page
     console.log(`Navigate to guide detail: ${guideId}`);
-    // You could implement this with:
-    // navigate(`/guides/${guideId}`);
   };
 
   return (
     <div className="container py-10 animate-fade-in">
-      {/* Project Header */}
       <div className="mb-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <div className="space-y-1">
@@ -223,14 +246,13 @@ const ProjectDetail = () => {
         </div>
       </div>
 
-      {/* Project Tabs Navigation */}
       <Tabs
         defaultValue="overview"
         value={activeTab}
         onValueChange={setActiveTab}
         className="space-y-6"
       >
-        <div className="border-b">
+        <div className="border-b overflow-x-auto">
           <TabsList className="w-full justify-start h-auto p-0 bg-transparent">
             <TabsTrigger
               value="overview"
@@ -280,10 +302,15 @@ const ProjectDetail = () => {
             >
               Resources
             </TabsTrigger>
+            <TabsTrigger
+              value="troubleshooting"
+              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            >
+              Troubleshooting
+            </TabsTrigger>
           </TabsList>
         </div>
         
-        {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
@@ -428,7 +455,6 @@ const ProjectDetail = () => {
           </div>
         </TabsContent>
         
-        {/* Architecture Tab */}
         <TabsContent value="architecture" className="space-y-6">
           <Card>
             <CardHeader>
@@ -470,7 +496,6 @@ const ProjectDetail = () => {
           </Card>
         </TabsContent>
         
-        {/* Structure Tab */}
         <TabsContent value="structure" className="space-y-6">
           <Card>
             <CardHeader>
@@ -490,7 +515,6 @@ const ProjectDetail = () => {
           </Card>
         </TabsContent>
         
-        {/* Frameworks Tab */}
         <TabsContent value="frameworks" className="space-y-6">
           <Card>
             <CardHeader>
@@ -514,7 +538,6 @@ const ProjectDetail = () => {
           </Card>
         </TabsContent>
         
-        {/* Modules Tab */}
         <TabsContent value="modules" className="space-y-6">
           <Card>
             <CardHeader>
@@ -537,7 +560,6 @@ const ProjectDetail = () => {
           </Card>
         </TabsContent>
         
-        {/* Guidelines Tab */}
         <TabsContent value="guidelines" className="space-y-6">
           <Card>
             <CardHeader>
@@ -556,7 +578,6 @@ const ProjectDetail = () => {
           </Card>
         </TabsContent>
         
-        {/* Components Tab */}
         <TabsContent value="components" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">Project Components</h2>
@@ -591,7 +612,6 @@ const ProjectDetail = () => {
           </div>
         </TabsContent>
         
-        {/* Resources Tab */}
         <TabsContent value="resources" className="space-y-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold">Project Resources</h2>
@@ -628,7 +648,61 @@ const ProjectDetail = () => {
           </div>
         </TabsContent>
         
-        {/* Guides Tab (Removed as it's not in the edit mode) */}
+        <TabsContent value="troubleshooting" className="space-y-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold flex items-center">
+              <Bug className="mr-2 h-5 w-5 text-amber-500" />
+              Troubleshooting
+            </h2>
+            <Button size="sm" asChild>
+              <Link to={`/projects/${id}/edit?tab=troubleshooting`}>
+                <PencilIcon className="mr-1 h-4 w-4" /> Manage Issues
+              </Link>
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {projectData.troubleshooting.map((issue) => (
+              <Card key={issue.id} className="h-full hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Bug className="h-5 w-5 text-amber-500" />
+                    <CardTitle className="text-lg">{issue.issue}</CardTitle>
+                  </div>
+                  <CardDescription>{issue.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-sm font-medium mb-1">Symptoms</h4>
+                      <ul className="list-disc list-inside text-sm text-muted-foreground">
+                        {issue.symptoms.map((symptom, index) => (
+                          <li key={index}>{symptom}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-1">
+                      {issue.tags.map(tag => (
+                        <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
+                      <div className="flex items-center">
+                        <CalendarDays className="h-3 w-3 mr-1" />
+                        {formatDate(issue.lastUpdated)}
+                      </div>
+                      <Button variant="link" size="sm" className="p-0 h-auto">
+                        View Solutions
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );

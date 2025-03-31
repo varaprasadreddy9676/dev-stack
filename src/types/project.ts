@@ -47,6 +47,7 @@ export interface ProjectData {
     url: string;
     description: string;
   }>;
+  troubleshooting?: Array<import('./troubleshooting').TroubleshootingIssue>;
   tags: string[];
   createdAt: string;
   updatedAt: string;

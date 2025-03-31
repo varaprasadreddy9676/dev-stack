@@ -14,6 +14,7 @@ import ProjectModules from "./ProjectModules";
 import ProjectGuidelines from "./ProjectGuidelines";
 import ProjectComponents from "./ProjectComponents";
 import ProjectResources from "./ProjectResources";
+import ProjectTroubleshooting from "./troubleshooting/ProjectTroubleshooting";
 import { useProjectData } from "@/hooks/useProjectData";
 
 interface ProjectManagementProps {
@@ -69,7 +70,7 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
         onValueChange={setActiveTab}
         className="space-y-6"
       >
-        <div className="border-b">
+        <div className="border-b overflow-x-auto">
           <TabsList className="w-full justify-start h-auto p-0 bg-transparent">
             <TabsTrigger
               value="overview"
@@ -119,6 +120,12 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
             >
               Resources
             </TabsTrigger>
+            <TabsTrigger
+              value="troubleshooting"
+              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            >
+              Troubleshooting
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -152,6 +159,13 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
 
         <TabsContent value="resources">
           <ProjectResources project={project} onSave={handleSaveProject} />
+        </TabsContent>
+        
+        <TabsContent value="troubleshooting">
+          <ProjectTroubleshooting 
+            project={{ _id: project._id, name: project.name }} 
+            onSave={handleSaveProject} 
+          />
         </TabsContent>
       </Tabs>
     </div>

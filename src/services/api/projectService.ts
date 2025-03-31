@@ -1,5 +1,5 @@
-
 import { ProjectData } from "@/types/project";
+import { TroubleshootingIssue } from "@/types/troubleshooting";
 
 // Base API URL from environment or config
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
@@ -39,7 +39,32 @@ const mockProjects = [
     },
     components: [],
     resources: [],
-    team: []
+    team: [],
+    troubleshooting: [
+      {
+        id: "issue1",
+        issue: "API Connection Error",
+        description: "Users are experiencing API connection errors when submitting forms",
+        symptoms: ["Form submission fails", "Console shows 403 error", "User gets error toast"],
+        solutions: [
+          {
+            steps: "Verify API credentials in configuration",
+            code: "// Check if API keys are correctly set\nconst apiKey = config.API_KEY;\nconsole.log('Using API key:', apiKey);",
+            resources: [
+              {
+                title: "API Documentation",
+                type: "link",
+                url: "https://api-docs.example.com"
+              }
+            ]
+          }
+        ],
+        relatedIssues: [],
+        tags: ["api", "forms", "configuration"],
+        lastUpdated: "2024-03-15T14:30:00Z",
+        updatedBy: "user123"
+      }
+    ]
   },
   {
     _id: "proj456",
@@ -254,6 +279,196 @@ export const projectService = {
     } catch (error) {
       console.error(`Failed to delete project ${projectId}:`, error);
       throw error;
+    }
+  },
+  
+  getTroubleshootingIssues: async (projectId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects/${projectId}/troubleshooting`);
+      
+      if (!response.ok) {
+        console.warn("API call failed, using mock data");
+        const mockProject = mockProjects.find(p => p._id === projectId);
+        if (!mockProject) {
+          throw new Error("Project not found");
+        }
+        return mockProject.troubleshooting || [];
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Failed to fetch troubleshooting issues for project ${projectId}:`, error);
+      
+      // Try to find in mock data
+      const mockProject = mockProjects.find(p => p._id === projectId);
+      if (mockProject) return mockProject.troubleshooting || [];
+      
+      return [];
+    }
+  },
+  
+  createTroubleshootingIssue: async (projectId: string, issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects/${projectId}/troubleshooting`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(issueData),
+      });
+      
+      if (!response.ok) {
+        console.warn("API call failed, using mock data");
+        // Create a mock issue
+        const newIssue: TroubleshootingIssue = {
+          id: `issue-${Date.now()}`,
+          ...issueData,
+          lastUpdated: new Date().toISOString(),
+          relatedIssues: issueData.relatedIssues || []
+        };
+        
+        // Add to mock project
+        const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+        if (projectIndex !== -1) {
+          if (!mockProjects[projectIndex].troubleshooting) {
+            mockProjects[projectIndex].troubleshooting = [];
+          }
+          mockProjects[projectIndex].troubleshooting.push(newIssue);
+        }
+        
+        return newIssue;
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Failed to create troubleshooting issue for project ${projectId}:`, error);
+      
+      // Create a mock issue
+      const newIssue: TroubleshootingIssue = {
+        id: `issue-${Date.now()}`,
+        ...issueData,
+        lastUpdated: new Date().toISOString(),
+        relatedIssues: issueData.relatedIssues || []
+      };
+      
+      // Add to mock project
+      const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+      if (projectIndex !== -1) {
+        if (!mockProjects[projectIndex].troubleshooting) {
+          mockProjects[projectIndex].troubleshooting = [];
+        }
+        mockProjects[projectIndex].troubleshooting.push(newIssue);
+      }
+      
+      return newIssue;
+    }
+  },
+  
+  updateTroubleshootingIssue: async (projectId: string, issueId: string, updatedData: Partial<TroubleshootingIssue>) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects/${projectId}/troubleshooting/${issueId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+      
+      if (!response.ok) {
+        console.warn("API call failed, using mock data");
+        
+        // For mock updates, find the project and update the issue
+        const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+        if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
+          throw new Error("Project or issue not found");
+        }
+        
+        const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
+        if (issueIndex === -1) {
+          throw new Error("Issue not found");
+        }
+        
+        const updatedIssue = {
+          ...mockProjects[projectIndex].troubleshooting[issueIndex],
+          ...updatedData,
+          lastUpdated: new Date().toISOString()
+        };
+        
+        mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
+        return updatedIssue;
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Failed to update troubleshooting issue ${issueId} for project ${projectId}:`, error);
+      
+      // For mock updates, find the project and update the issue
+      const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+      if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
+        throw new Error("Project or issue not found");
+      }
+      
+      const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
+      if (issueIndex === -1) {
+        throw new Error("Issue not found");
+      }
+      
+      const updatedIssue = {
+        ...mockProjects[projectIndex].troubleshooting[issueIndex],
+        ...updatedData,
+        lastUpdated: new Date().toISOString()
+      };
+      
+      mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
+      return updatedIssue;
+    }
+  },
+  
+  deleteTroubleshootingIssue: async (projectId: string, issueId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects/${projectId}/troubleshooting/${issueId}`, {
+        method: "DELETE",
+      });
+      
+      if (!response.ok) {
+        console.warn("API call failed, using mock data");
+        
+        // For mock deletion, find the project and remove the issue
+        const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+        if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
+          throw new Error("Project or issue not found");
+        }
+        
+        const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
+        if (issueIndex === -1) {
+          throw new Error("Issue not found");
+        }
+        
+        mockProjects[projectIndex].troubleshooting.splice(issueIndex, 1);
+        return { success: true };
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Failed to delete troubleshooting issue ${issueId} for project ${projectId}:`, error);
+      
+      // For mock deletion, find the project and remove the issue
+      const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+      if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
+        throw new Error("Project or issue not found");
+      }
+      
+      const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
+      if (issueIndex === -1) {
+        throw new Error("Issue not found");
+      }
+      
+      mockProjects[projectIndex].troubleshooting.splice(issueIndex, 1);
+      return { success: true };
     }
   }
 };

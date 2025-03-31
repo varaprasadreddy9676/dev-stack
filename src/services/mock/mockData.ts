@@ -1,6 +1,7 @@
 
 // Mock data for all entities in the application
 import { ProjectData } from "@/types/project";
+import { TroubleshootingIssue } from "@/types/troubleshooting";
 
 // Sample project data
 export const mockProjects: ProjectData[] = [
@@ -74,6 +75,63 @@ export const mockProjects: ProjectData[] = [
         description: "Company design system and component library"
       }
     ],
+    troubleshooting: [
+      {
+        id: "issue1",
+        issue: "Authentication Failure",
+        description: "Users unable to log in despite using correct credentials",
+        symptoms: [
+          "Login form returns 'Invalid credentials' error",
+          "Authentication tokens not being stored",
+          "Automatic session renewal fails"
+        ],
+        solutions: [
+          {
+            steps: "Clear browser cookies and cache, then attempt login again",
+            code: "// No code needed for this solution"
+          },
+          {
+            steps: "Verify that the authentication service is configured correctly",
+            code: "// Check authentication configuration\nconst authConfig = {\n  baseUrl: process.env.AUTH_API_URL,\n  clientId: process.env.AUTH_CLIENT_ID\n};\n\nconsole.log('Using auth config:', authConfig);",
+            resources: [
+              {
+                title: "Authentication Troubleshooting Guide",
+                type: "pdf",
+                url: "https://example.com/auth-troubleshooting.pdf"
+              }
+            ]
+          }
+        ],
+        relatedIssues: [],
+        tags: ["authentication", "login", "user-account"],
+        lastUpdated: "2024-03-20T00:00:00Z",
+        updatedBy: "user123"
+      },
+      {
+        id: "issue2",
+        issue: "Slow Dashboard Loading",
+        description: "Dashboard takes more than 10 seconds to load for some users",
+        symptoms: [
+          "Dashboard shows loading spinner for extended periods",
+          "Browser console shows multiple timeouts",
+          "Network requests take longer than expected"
+        ],
+        solutions: [
+          {
+            steps: "Implement data pagination to reduce initial load",
+            code: "// Modify the data fetching to use pagination\nconst fetchDashboardData = async (page = 1, limit = 10) => {\n  const response = await api.get(`/dashboard?page=${page}&limit=${limit}`);\n  return response.data;\n};"
+          },
+          {
+            steps: "Use React.memo and useMemo to optimize rendering",
+            code: "// Optimize with memo\nconst DashboardItem = React.memo(({ data }) => {\n  // Component code\n});\n\n// Use memoization for expensive calculations\nconst processedData = useMemo(() => {\n  return expensiveDataProcessing(rawData);\n}, [rawData]);"
+          }
+        ],
+        relatedIssues: [],
+        tags: ["performance", "dashboard", "optimization"],
+        lastUpdated: "2024-03-18T00:00:00Z",
+        updatedBy: "user456"
+      }
+    ],
     tags: ["react", "typescript", "customer-facing"],
     createdAt: "2024-02-15T00:00:00Z",
     updatedAt: "2024-03-10T00:00:00Z"
@@ -127,6 +185,32 @@ export const mockProjects: ProjectData[] = [
         type: "link",
         url: "https://admin-api-docs.example.com",
         description: "Documentation for admin-specific API endpoints"
+      }
+    ],
+    troubleshooting: [
+      {
+        id: "issue3",
+        issue: "Permission Denied Errors",
+        description: "Administrators receiving permission denied errors when accessing certain features",
+        symptoms: [
+          "403 Forbidden responses from API",
+          "Features disabled in the UI despite having admin role",
+          "Console errors related to authorization"
+        ],
+        solutions: [
+          {
+            steps: "Verify the user has the correct role assignments in the database",
+            code: "// SQL query to check user roles\n-- SELECT u.username, r.role_name\n-- FROM users u\n-- JOIN user_roles ur ON u.id = ur.user_id\n-- JOIN roles r ON r.id = ur.role_id\n-- WHERE u.username = 'admin@example.com';"
+          },
+          {
+            steps: "Clear the user's session and have them log in again",
+            code: "// Client-side logout function\nconst forceLogout = () => {\n  localStorage.removeItem('auth_token');\n  sessionStorage.removeItem('user_data');\n  window.location.href = '/login';\n};"
+          }
+        ],
+        relatedIssues: [],
+        tags: ["permissions", "authorization", "admin"],
+        lastUpdated: "2024-03-05T00:00:00Z",
+        updatedBy: "user789"
       }
     ],
     tags: ["react", "admin", "internal-tool"],
