@@ -95,7 +95,17 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
         ) : (
           <div className="space-y-6">
             <div className="prose max-w-none dark:prose-invert">
-              <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+              <ReactMarkdown 
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  h1: ({node, ...props}) => <h1 className="text-3xl font-bold mb-4" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-2xl font-semibold mt-6 mb-3" {...props} />,
+                  p: ({node, ...props}) => <p className="mb-4 leading-relaxed" {...props} />,
+                  ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4" {...props} />,
+                  ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4" {...props} />,
+                  code: ({node, ...props}) => <code className="bg-gray-100 rounded px-1 py-0.5 text-sm" {...props} />
+                }}
+              >
                 {content}
               </ReactMarkdown>
             </div>
