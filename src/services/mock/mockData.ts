@@ -1,4 +1,3 @@
-
 // Mock data for all entities in the application
 import { ProjectData } from "@/types/project";
 import { TroubleshootingIssue } from "@/types/troubleshooting";
@@ -88,7 +87,8 @@ export const mockProjects: ProjectData[] = [
         solutions: [
           {
             steps: "Clear browser cookies and cache, then attempt login again",
-            code: "// No code needed for this solution"
+            code: "// No code needed for this solution",
+            resources: []
           },
           {
             steps: "Verify that the authentication service is configured correctly",
@@ -119,11 +119,13 @@ export const mockProjects: ProjectData[] = [
         solutions: [
           {
             steps: "Implement data pagination to reduce initial load",
-            code: "// Modify the data fetching to use pagination\nconst fetchDashboardData = async (page = 1, limit = 10) => {\n  const response = await api.get(`/dashboard?page=${page}&limit=${limit}`);\n  return response.data;\n};"
+            code: "// Modify the data fetching to use pagination\nconst fetchDashboardData = async (page = 1, limit = 10) => {\n  const response = await api.get(`/dashboard?page=${page}&limit=${limit}`);\n  return response.data;\n};",
+            resources: []
           },
           {
             steps: "Use React.memo and useMemo to optimize rendering",
-            code: "// Optimize with memo\nconst DashboardItem = React.memo(({ data }) => {\n  // Component code\n});\n\n// Use memoization for expensive calculations\nconst processedData = useMemo(() => {\n  return expensiveDataProcessing(rawData);\n}, [rawData]);"
+            code: "// Optimize with memo\nconst DashboardItem = React.memo(({ data }) => {\n  // Component code\n});\n\n// Use memoization for expensive calculations\nconst processedData = useMemo(() => {\n  return expensiveDataProcessing(rawData);\n}, [rawData]);",
+            resources: []
           }
         ],
         relatedIssues: [],
@@ -134,7 +136,8 @@ export const mockProjects: ProjectData[] = [
     ],
     tags: ["react", "typescript", "customer-facing"],
     createdAt: "2024-02-15T00:00:00Z",
-    updatedAt: "2024-03-10T00:00:00Z"
+    updatedAt: "2024-03-10T00:00:00Z",
+    team: []
   },
   {
     _id: "proj456",
@@ -200,11 +203,13 @@ export const mockProjects: ProjectData[] = [
         solutions: [
           {
             steps: "Verify the user has the correct role assignments in the database",
-            code: "// SQL query to check user roles\n-- SELECT u.username, r.role_name\n-- FROM users u\n-- JOIN user_roles ur ON u.id = ur.user_id\n-- JOIN roles r ON r.id = ur.role_id\n-- WHERE u.username = 'admin@example.com';"
+            code: "// SQL query to check user roles\n-- SELECT u.username, r.role_name\n-- FROM users u\n-- JOIN user_roles ur ON u.id = ur.user_id\n-- JOIN roles r ON r.id = ur.role_id\n-- WHERE u.username = 'admin@example.com';",
+            resources: []
           },
           {
             steps: "Clear the user's session and have them log in again",
-            code: "// Client-side logout function\nconst forceLogout = () => {\n  localStorage.removeItem('auth_token');\n  sessionStorage.removeItem('user_data');\n  window.location.href = '/login';\n};"
+            code: "// Client-side logout function\nconst forceLogout = () => {\n  localStorage.removeItem('auth_token');\n  sessionStorage.removeItem('user_data');\n  window.location.href = '/login';\n};",
+            resources: []
           }
         ],
         relatedIssues: [],
@@ -215,7 +220,8 @@ export const mockProjects: ProjectData[] = [
     ],
     tags: ["react", "admin", "internal-tool"],
     createdAt: "2024-01-10T00:00:00Z",
-    updatedAt: "2024-02-28T00:00:00Z"
+    updatedAt: "2024-02-28T00:00:00Z",
+    team: []
   }
 ];
 
