@@ -283,8 +283,11 @@ export const projectService = {
         const updatedProject = {
           ...mockProjects[projectIndex],
           ...updatedData,
-          updatedAt: new Date().toISOString()
-        } as ProjectData;
+          updatedAt: new Date().toISOString(),
+          // Ensure required fields are present
+          team: mockProjects[projectIndex].team || [],
+          troubleshooting: mockProjects[projectIndex].troubleshooting || []
+        };
         
         mockProjects[projectIndex] = updatedProject;
         return updatedProject;
@@ -304,8 +307,11 @@ export const projectService = {
       const updatedProject = {
         ...mockProjects[projectIndex],
         ...updatedData,
-        updatedAt: new Date().toISOString()
-      } as ProjectData;
+        updatedAt: new Date().toISOString(),
+        // Ensure required fields are present
+        team: mockProjects[projectIndex].team || [],
+        troubleshooting: mockProjects[projectIndex].troubleshooting || []
+      };
       
       mockProjects[projectIndex] = updatedProject;
       return updatedProject;
@@ -436,11 +442,19 @@ export const projectService = {
           throw new Error("Issue not found");
         }
         
-        const updatedIssue = {
-          ...mockProjects[projectIndex].troubleshooting[issueIndex],
-          ...updatedData,
-          lastUpdated: new Date().toISOString()
-        } as TroubleshootingIssue;
+        // Create a properly typed updated issue
+        const currentIssue = mockProjects[projectIndex].troubleshooting[issueIndex];
+        const updatedIssue: TroubleshootingIssue = {
+          id: currentIssue.id,
+          issue: updatedData.issue || currentIssue.issue,
+          description: updatedData.description || currentIssue.description,
+          symptoms: updatedData.symptoms || currentIssue.symptoms,
+          solutions: updatedData.solutions || currentIssue.solutions,
+          relatedIssues: updatedData.relatedIssues || currentIssue.relatedIssues,
+          tags: updatedData.tags || currentIssue.tags,
+          lastUpdated: new Date().toISOString(),
+          updatedBy: updatedData.updatedBy || currentIssue.updatedBy
+        };
         
         mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
         return updatedIssue;
@@ -462,11 +476,19 @@ export const projectService = {
         throw new Error("Issue not found");
       }
       
-      const updatedIssue = {
-        ...mockProjects[projectIndex].troubleshooting[issueIndex],
-        ...updatedData,
-        lastUpdated: new Date().toISOString()
-      } as TroubleshootingIssue;
+      // Create a properly typed updated issue
+      const currentIssue = mockProjects[projectIndex].troubleshooting[issueIndex];
+      const updatedIssue: TroubleshootingIssue = {
+        id: currentIssue.id,
+        issue: updatedData.issue || currentIssue.issue,
+        description: updatedData.description || currentIssue.description,
+        symptoms: updatedData.symptoms || currentIssue.symptoms,
+        solutions: updatedData.solutions || currentIssue.solutions,
+        relatedIssues: updatedData.relatedIssues || currentIssue.relatedIssues,
+        tags: updatedData.tags || currentIssue.tags,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: updatedData.updatedBy || currentIssue.updatedBy
+      };
       
       mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
       return updatedIssue;
