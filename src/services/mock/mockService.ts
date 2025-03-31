@@ -1,4 +1,3 @@
-
 import { 
   mockProjects, 
   mockLanguages, 
@@ -6,7 +5,7 @@ import {
   mockGuides 
 } from "./mockData";
 import { ProjectData } from "@/types/project";
-import { TroubleshootingIssue } from "@/types/troubleshooting";
+import { TroubleshootingIssue, Solution } from "@/types/troubleshooting";
 
 // Helper to simulate network delay
 const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -52,7 +51,9 @@ export const mockProjectService = {
     return {
       ...mockProjects[projectIndex],
       ...updatedData,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      team: mockProjects[projectIndex].team || [],
+      troubleshooting: mockProjects[projectIndex].troubleshooting || []
     };
   },
   
@@ -111,7 +112,6 @@ export const mockProjectService = {
     return { success: true };
   },
   
-  // Add troubleshooting methods
   getTroubleshootingIssues: async (projectId: string) => {
     await delay();
     if (simulateError()) {
@@ -158,7 +158,7 @@ export const mockProjectService = {
   updateTroubleshootingIssue: async (
     projectId: string, 
     issueId: string, 
-    issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">
+    issueData: Partial<Omit<TroubleshootingIssue, "id" | "lastUpdated">>
   ) => {
     await delay();
     if (simulateError()) {
@@ -175,10 +175,18 @@ export const mockProjectService = {
       throw new Error("Issue not found");
     }
     
+    // Create a properly typed updated issue
+    const currentIssue = mockProjects[projectIndex].troubleshooting[issueIndex];
     const updatedIssue: TroubleshootingIssue = {
       id: issueId,
-      ...issueData,
-      lastUpdated: new Date().toISOString()
+      issue: issueData.issue || currentIssue.issue,
+      description: issueData.description || currentIssue.description,
+      symptoms: issueData.symptoms || currentIssue.symptoms,
+      solutions: issueData.solutions || currentIssue.solutions,
+      relatedIssues: issueData.relatedIssues || currentIssue.relatedIssues,
+      tags: issueData.tags || currentIssue.tags,
+      lastUpdated: new Date().toISOString(),
+      updatedBy: issueData.updatedBy || currentIssue.updatedBy
     };
     
     mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
