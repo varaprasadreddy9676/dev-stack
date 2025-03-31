@@ -51,5 +51,5 @@ export interface ProjectData {
   tags: string[];
   createdAt: string;
   updatedAt: string;
-  team?: any[]; // Adding team as optional to match usage in projectService
+  team: any[]; // Changed from optional to required
 }

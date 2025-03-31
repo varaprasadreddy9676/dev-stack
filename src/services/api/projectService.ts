@@ -1,4 +1,3 @@
-
 import { ProjectData } from "@/types/project";
 import { TroubleshootingIssue, Solution, Resource } from "@/types/troubleshooting";
 
@@ -195,30 +194,30 @@ export const projectService = {
         console.warn("API call failed, creating mock project");
         // Fix: Ensure createdAt and updatedAt are strings
         const now = new Date().toISOString();
-        const newProject: ProjectData = {
+        const newProject = {
           _id: `proj-${Date.now()}`,
           ...projectData,
           createdAt: now,
           updatedAt: now,
-          architecture: {
+          architecture: projectData.architecture || {
             description: "",
             diagrams: []
           },
-          structure: {
+          structure: projectData.structure || {
             description: "",
             folders: []
           },
-          customFrameworks: [],
-          modules: [],
-          guidelines: {
+          customFrameworks: projectData.customFrameworks || [],
+          modules: projectData.modules || [],
+          guidelines: projectData.guidelines || {
             content: "",
             lastUpdated: now,
             updatedBy: "System"
           },
-          components: [],
-          resources: [],
-          team: [],
-          troubleshooting: []
+          components: projectData.components || [],
+          resources: projectData.resources || [],
+          team: projectData.team || [], // Ensure team is always present
+          troubleshooting: projectData.troubleshooting || []
         };
         // Add to mock projects
         mockProjects.push(newProject);
@@ -231,30 +230,30 @@ export const projectService = {
       console.error("Failed to create project:", error);
       // Fix: Ensure createdAt and updatedAt are strings
       const now = new Date().toISOString();
-      const newProject: ProjectData = {
+      const newProject = {
           _id: `proj-${Date.now()}`,
           ...projectData,
           createdAt: now,
           updatedAt: now,
-          architecture: {
+          architecture: projectData.architecture || {
             description: "",
             diagrams: []
           },
-          structure: {
+          structure: projectData.structure || {
             description: "",
             folders: []
           },
-          customFrameworks: [],
-          modules: [],
-          guidelines: {
+          customFrameworks: projectData.customFrameworks || [],
+          modules: projectData.modules || [],
+          guidelines: projectData.guidelines || {
             content: "",
             lastUpdated: now,
             updatedBy: "System"
           },
-          components: [],
-          resources: [],
-          team: [],
-          troubleshooting: []
+          components: projectData.components || [],
+          resources: projectData.resources || [],
+          team: projectData.team || [], // Ensure team is always present
+          troubleshooting: projectData.troubleshooting || []
       };
       // Add to mock projects
       mockProjects.push(newProject);
@@ -280,13 +279,13 @@ export const projectService = {
           throw new Error("Project not found");
         }
         
-        const updatedProject: ProjectData = {
+        const updatedProject = {
           ...mockProjects[projectIndex],
           ...updatedData,
           updatedAt: new Date().toISOString(),
           // Ensure required fields are present
-          team: mockProjects[projectIndex].team || [],
-          troubleshooting: mockProjects[projectIndex].troubleshooting || []
+          team: updatedData.team || mockProjects[projectIndex].team || [],
+          troubleshooting: updatedData.troubleshooting || mockProjects[projectIndex].troubleshooting || []
         };
         
         mockProjects[projectIndex] = updatedProject;
@@ -304,13 +303,13 @@ export const projectService = {
         throw new Error("Project not found");
       }
       
-      const updatedProject: ProjectData = {
+      const updatedProject = {
         ...mockProjects[projectIndex],
         ...updatedData,
         updatedAt: new Date().toISOString(),
         // Ensure required fields are present
-        team: mockProjects[projectIndex].team || [],
-        troubleshooting: mockProjects[projectIndex].troubleshooting || []
+        team: updatedData.team || mockProjects[projectIndex].team || [],
+        troubleshooting: updatedData.troubleshooting || mockProjects[projectIndex].troubleshooting || []
       };
       
       mockProjects[projectIndex] = updatedProject;
@@ -378,6 +377,13 @@ export const projectService = {
         const newIssue: TroubleshootingIssue = {
           id: `issue-${Date.now()}`,
           ...issueData,
+          // Ensure solutions have required fields
+          solutions: issueData.solutions.map(solution => ({
+            steps: solution.steps,
+            code: solution.code || "", // Provide default for code
+            screenshots: solution.screenshots || [],
+            resources: solution.resources || []
+          })),
           lastUpdated: new Date().toISOString(),
         };
         
@@ -402,6 +408,13 @@ export const projectService = {
       const newIssue: TroubleshootingIssue = {
         id: `issue-${Date.now()}`,
         ...issueData,
+        // Ensure solutions have required fields
+        solutions: issueData.solutions.map(solution => ({
+          steps: solution.steps,
+          code: solution.code || "", // Provide default for code
+          screenshots: solution.screenshots || [],
+          resources: solution.resources || []
+        })),
         lastUpdated: new Date().toISOString(),
       };
       
@@ -449,7 +462,12 @@ export const projectService = {
           issue: updatedData.issue || currentIssue.issue,
           description: updatedData.description || currentIssue.description,
           symptoms: updatedData.symptoms || currentIssue.symptoms,
-          solutions: updatedData.solutions || currentIssue.solutions,
+          solutions: updatedData.solutions ? updatedData.solutions.map(s => ({
+            steps: s.steps,
+            code: s.code || "", // Ensure code is always defined
+            screenshots: s.screenshots || [],
+            resources: s.resources || []
+          })) : currentIssue.solutions,
           relatedIssues: updatedData.relatedIssues || currentIssue.relatedIssues,
           tags: updatedData.tags || currentIssue.tags,
           lastUpdated: new Date().toISOString(),
@@ -483,7 +501,12 @@ export const projectService = {
         issue: updatedData.issue || currentIssue.issue,
         description: updatedData.description || currentIssue.description,
         symptoms: updatedData.symptoms || currentIssue.symptoms,
-        solutions: updatedData.solutions || currentIssue.solutions,
+        solutions: updatedData.solutions ? updatedData.solutions.map(s => ({
+          steps: s.steps,
+          code: s.code || "", // Ensure code is always defined
+          screenshots: s.screenshots || [],
+          resources: s.resources || []
+        })) : currentIssue.solutions,
         relatedIssues: updatedData.relatedIssues || currentIssue.relatedIssues,
         tags: updatedData.tags || currentIssue.tags,
         lastUpdated: new Date().toISOString(),

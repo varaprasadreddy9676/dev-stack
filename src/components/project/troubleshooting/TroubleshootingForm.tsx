@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -33,7 +32,7 @@ const troubleshootingSchema = z.object({
   tags: z.array(z.string()),
   solutions: z.array(z.object({
     steps: z.string().min(10, "Solution steps must be at least 10 characters"),
-    code: z.string().optional(),
+    code: z.string(),
   })).min(1, "Add at least one solution"),
 });
 
@@ -64,7 +63,7 @@ const TroubleshootingForm: React.FC<TroubleshootingFormProps> = ({
       solutions: initialData?.solutions ? 
         initialData.solutions.map(s => ({ 
           steps: s.steps, 
-          code: s.code || "" 
+          code: s.code || ""
         })) : 
         [{ steps: "", code: "" }],
     },
@@ -110,7 +109,6 @@ const TroubleshootingForm: React.FC<TroubleshootingFormProps> = ({
   };
   
   const handleFormSubmit = async (values: TroubleshootingFormValues) => {
-    // Convert form values to TroubleshootingIssue format
     const troubleshootingData: Omit<TroubleshootingIssue, "id" | "lastUpdated"> = {
       issue: values.issue,
       description: values.description,
@@ -123,7 +121,7 @@ const TroubleshootingForm: React.FC<TroubleshootingFormProps> = ({
         screenshots: [],
         resources: []
       })),
-      updatedBy: "current-user" // This would be dynamically set in a real app
+      updatedBy: "current-user"
     };
     
     await onSubmit(troubleshootingData);
@@ -300,7 +298,7 @@ const TroubleshootingForm: React.FC<TroubleshootingFormProps> = ({
                     name={`solutions.${index}.code`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Code Example (Optional)</FormLabel>
+                        <FormLabel>Code Example</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="// Add code example if applicable" 
