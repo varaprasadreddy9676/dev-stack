@@ -1,13 +1,12 @@
+
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { FileText, Code, ArrowLeft, Check, X, ExternalLink, PencilIcon, SaveIcon } from "lucide-react";
-import CKEditorComponent from "@/components/CKEditor";
-import { toast } from "sonner";
+import LanguageHeader from "@/components/languages/LanguageHeader";
+import GuidelinesEditor from "@/components/languages/GuidelinesEditor";
+import CodeExamplesSection from "@/components/languages/CodeExamplesSection";
+import ResourcesList from "@/components/languages/ResourcesList";
 
 // Sample language data based on the provided interface
 const languageData = {
@@ -169,8 +168,6 @@ function setTheme(theme: Theme) {
 const LanguageGuidelines = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("guidelines");
-  const [isEditing, setIsEditing] = useState(false);
-  const [guidelinesContent, setGuidelinesContent] = useState(languageData.guidelines.content);
   
   // In a real application, you would fetch the language data based on the ID
   const language = languageData;
@@ -184,13 +181,10 @@ const LanguageGuidelines = () => {
     }).format(date);
   };
 
-  const handleSaveGuidelines = () => {
+  const handleSaveGuidelines = (updatedContent: string) => {
     // In a real application, this would make an API call to update the guidelines
-    languageData.guidelines.content = guidelinesContent;
+    languageData.guidelines.content = updatedContent;
     languageData.guidelines.lastUpdated = new Date();
-    
-    toast.success("Guidelines updated successfully");
-    setIsEditing(false);
   };
 
   return (
@@ -211,32 +205,13 @@ const LanguageGuidelines = () => {
       </Breadcrumb>
       
       {/* Language Header */}
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-          <div className="space-y-1">
-            <Button variant="ghost" size="sm" className="-ml-2 mb-2" asChild>
-              <Link to="/guidelines">
-                <ArrowLeft className="mr-1 h-4 w-4" />
-                Back to Guidelines
-              </Link>
-            </Button>
-            <h1 className="text-3xl font-bold tracking-tight">{language.name}</h1>
-            <p className="text-muted-foreground">{language.description}</p>
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-2 mb-4">
-          {language.tags.map((tag) => (
-            <Badge key={tag} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-        
-        <div className="text-sm text-muted-foreground">
-          Last updated on {formatDate(language.guidelines.lastUpdated)}
-        </div>
-      </div>
+      <LanguageHeader
+        name={language.name}
+        description={language.description}
+        tags={language.tags}
+        lastUpdated={language.guidelines.lastUpdated}
+        formatDate={formatDate}
+      />
 
       {/* Content Tabs */}
       <Tabs
@@ -270,170 +245,28 @@ const LanguageGuidelines = () => {
         
         {/* Guidelines Tab */}
         <TabsContent value="guidelines" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Coding Guidelines</CardTitle>
-                <CardDescription>
-                  Standards and best practices for {language.name} development
-                </CardDescription>
-              </div>
-              {isEditing ? (
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setIsEditing(false)}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-                  <Button 
-                    variant="default" 
-                    size="sm" 
-                    onClick={handleSaveGuidelines}
-                  >
-                    <SaveIcon className="h-4 w-4 mr-2" />
-                    Save
-                  </Button>
-                </div>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsEditing(true)}
-                >
-                  <PencilIcon className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-              )}
-            </CardHeader>
-            <CardContent className="prose dark:prose-invert max-w-none">
-              {isEditing ? (
-                <CKEditorComponent 
-                  value={guidelinesContent} 
-                  onChange={setGuidelinesContent} 
-                  minHeight="400px"
-                />
-              ) : (
-                <div dangerouslySetInnerHTML={{ __html: language.guidelines.content }} />
-              )}
-            </CardContent>
-          </Card>
+          <GuidelinesEditor
+            content={language.guidelines.content}
+            lastUpdated={language.guidelines.lastUpdated}
+            onSave={handleSaveGuidelines}
+            formatDate={formatDate}
+          />
         </TabsContent>
         
         {/* Examples Tab */}
         <TabsContent value="examples" className="space-y-8">
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Good Examples</h2>
-            <div className="space-y-6">
-              {language.examples.good.map((example, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <CardHeader className="bg-green-500/5 border-b">
-                    <div className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-green-500" />
-                      <CardTitle className="text-lg">{example.title}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <p className="mb-4 text-muted-foreground">{example.description}</p>
-                    <div className="bg-card/50 border rounded-md p-4 overflow-auto">
-                      <pre className="text-sm font-mono whitespace-pre">
-                        <code>{example.code}</code>
-                      </pre>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Bad Examples</h2>
-            <div className="space-y-6">
-              {language.examples.bad.map((example, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <CardHeader className="bg-red-500/5 border-b">
-                    <div className="flex items-center gap-2">
-                      <X className="h-5 w-5 text-red-500" />
-                      <CardTitle className="text-lg">{example.title}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <p className="mb-4 text-muted-foreground">{example.description}</p>
-                    <div className="bg-card/50 border rounded-md p-4 overflow-auto mb-4">
-                      <pre className="text-sm font-mono whitespace-pre">
-                        <code>{example.code}</code>
-                      </pre>
-                    </div>
-                    
-                    <div className="bg-green-500/10 border border-green-500/20 rounded-md p-4">
-                      <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-                        <Check className="h-4 w-4 text-green-500" />
-                        Improvement
-                      </h3>
-                      <p className="text-sm">{example.improvement}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+          <CodeExamplesSection
+            goodExamples={language.examples.good}
+            badExamples={language.examples.bad}
+          />
         </TabsContent>
         
         {/* Resources Tab */}
         <TabsContent value="resources" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Learning Resources</CardTitle>
-              <CardDescription>
-                Helpful documentation, tutorials, and tools for {language.name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {language.resources.map((resource, index) => (
-                  <div 
-                    key={index} 
-                    className={`p-4 border rounded-lg flex items-start gap-4
-                      ${resource.type === 'link' ? 'bg-blue-500/5' : 
-                        resource.type === 'pdf' ? 'bg-red-500/5' : 
-                        resource.type === 'video' ? 'bg-purple-500/5' : 'bg-card/50'}`}
-                  >
-                    <div className={`rounded-full p-2 
-                      ${resource.type === 'link' ? 'bg-blue-500/10 text-blue-500' : 
-                        resource.type === 'pdf' ? 'bg-red-500/10 text-red-500' : 
-                        resource.type === 'video' ? 'bg-purple-500/10 text-purple-500' : 'bg-primary/10 text-primary'}`}
-                    >
-                      {resource.type === 'link' ? <ExternalLink className="h-5 w-5" /> : 
-                       resource.type === 'pdf' ? <FileText className="h-5 w-5" /> : 
-                       resource.type === 'video' ? <Code className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h3 className="font-medium mb-1">
-                        <a 
-                          href={resource.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-primary transition-colors flex items-center gap-1"
-                        >
-                          {resource.title}
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
-                      </h3>
-                      <p className="text-sm text-muted-foreground">{resource.description}</p>
-                      <div className="mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          {resource.type}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <ResourcesList 
+            resources={language.resources}
+            languageName={language.name}
+          />
         </TabsContent>
       </Tabs>
     </div>
