@@ -1,11 +1,12 @@
+
 import { 
-  mockProjects, 
   mockLanguages, 
   mockComponents, 
   mockGuides 
 } from "./mockData";
 import { ProjectData } from "@/types/project";
 import { TroubleshootingIssue, Solution } from "@/types/troubleshooting";
+import { mockProjects } from "../api/mockProjects";
 
 // Helper to simulate network delay
 const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -52,8 +53,8 @@ export const mockProjectService = {
       ...mockProjects[projectIndex],
       ...updatedData,
       updatedAt: new Date().toISOString(),
-      team: mockProjects[projectIndex].team || [],
-      troubleshooting: mockProjects[projectIndex].troubleshooting || []
+      team: updatedData.team || mockProjects[projectIndex].team || [],
+      troubleshooting: updatedData.troubleshooting || mockProjects[projectIndex].troubleshooting || []
     };
   },
   
@@ -90,6 +91,7 @@ export const mockProjectService = {
       },
       components: projectData.components || [],
       resources: projectData.resources || [],
+      team: projectData.team || [], // Ensure team is always present
       troubleshooting: projectData.troubleshooting || []
     };
     
@@ -143,6 +145,12 @@ export const mockProjectService = {
     const newIssue: TroubleshootingIssue = {
       id: `issue-${Date.now()}`,
       ...issueData,
+      solutions: issueData.solutions.map(s => ({
+        steps: s.steps,
+        code: s.code || "",
+        screenshots: s.screenshots || [],
+        resources: s.resources || [] // Ensure resources is always present
+      })),
       lastUpdated: new Date().toISOString()
     };
     
@@ -182,7 +190,17 @@ export const mockProjectService = {
       issue: issueData.issue || currentIssue.issue,
       description: issueData.description || currentIssue.description,
       symptoms: issueData.symptoms || currentIssue.symptoms,
-      solutions: issueData.solutions || currentIssue.solutions,
+      solutions: issueData.solutions 
+        ? issueData.solutions.map(s => ({
+            steps: s.steps,
+            code: s.code || "",
+            screenshots: s.screenshots || [],
+            resources: s.resources || [] // Ensure resources is always present
+          })) 
+        : currentIssue.solutions.map(s => ({
+            ...s,
+            resources: s.resources || [] // Ensure resources is always present in existing solutions
+          })),
       relatedIssues: issueData.relatedIssues || currentIssue.relatedIssues,
       tags: issueData.tags || currentIssue.tags,
       lastUpdated: new Date().toISOString(),

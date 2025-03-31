@@ -12,9 +12,9 @@ export interface Resource {
 
 export interface Solution {
   steps: string;
-  code: string; // Changed from optional to required
+  code: string; // Required
   screenshots?: Screenshot[];
-  resources?: Resource[];
+  resources: Resource[]; // Changed from optional to required
 }
 
 export interface TroubleshootingIssue {

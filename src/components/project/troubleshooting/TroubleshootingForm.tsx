@@ -117,7 +117,7 @@ const TroubleshootingForm: React.FC<TroubleshootingFormProps> = ({
       relatedIssues: initialData?.relatedIssues || [],
       solutions: values.solutions.map(solution => ({
         steps: solution.steps,
-        code: solution.code,
+        code: solution.code || "",
         screenshots: [],
         resources: []
       })),
