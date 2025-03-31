@@ -6,6 +6,7 @@ import {
   mockGuides 
 } from "./mockData";
 import { ProjectData } from "@/types/project";
+import { TroubleshootingIssue } from "@/types/troubleshooting";
 
 // Helper to simulate network delay
 const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -87,7 +88,8 @@ export const mockProjectService = {
         updatedBy: "System"
       },
       components: projectData.components || [],
-      resources: projectData.resources || []
+      resources: projectData.resources || [],
+      troubleshooting: projectData.troubleshooting || []
     };
     
     return newProject;
@@ -106,6 +108,102 @@ export const mockProjectService = {
     
     // In a real implementation, this would delete from the backend
     // For the mock, we'll just return success
+    return { success: true };
+  },
+  
+  // Add troubleshooting methods
+  getTroubleshootingIssues: async (projectId: string) => {
+    await delay();
+    if (simulateError()) {
+      throw new Error("Failed to fetch troubleshooting issues");
+    }
+    
+    const project = mockProjects.find(p => p._id === projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+    
+    return project.troubleshooting || [];
+  },
+  
+  createTroubleshootingIssue: async (
+    projectId: string, 
+    issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">
+  ) => {
+    await delay();
+    if (simulateError()) {
+      throw new Error("Failed to create troubleshooting issue");
+    }
+    
+    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+    if (projectIndex === -1) {
+      throw new Error("Project not found");
+    }
+    
+    const newIssue: TroubleshootingIssue = {
+      id: `issue-${Date.now()}`,
+      ...issueData,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    if (!mockProjects[projectIndex].troubleshooting) {
+      mockProjects[projectIndex].troubleshooting = [];
+    }
+    
+    mockProjects[projectIndex].troubleshooting.push(newIssue);
+    
+    return newIssue;
+  },
+  
+  updateTroubleshootingIssue: async (
+    projectId: string, 
+    issueId: string, 
+    issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">
+  ) => {
+    await delay();
+    if (simulateError()) {
+      throw new Error("Failed to update troubleshooting issue");
+    }
+    
+    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+    if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
+      throw new Error("Project or troubleshooting not found");
+    }
+    
+    const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
+    if (issueIndex === -1) {
+      throw new Error("Issue not found");
+    }
+    
+    const updatedIssue: TroubleshootingIssue = {
+      id: issueId,
+      ...issueData,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
+    
+    return updatedIssue;
+  },
+  
+  deleteTroubleshootingIssue: async (projectId: string, issueId: string) => {
+    await delay();
+    if (simulateError()) {
+      throw new Error("Failed to delete troubleshooting issue");
+    }
+    
+    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
+    if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
+      throw new Error("Project or troubleshooting not found");
+    }
+    
+    const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
+    if (issueIndex === -1) {
+      throw new Error("Issue not found");
+    }
+    
+    mockProjects[projectIndex].troubleshooting.splice(issueIndex, 1);
+    
     return { success: true };
   }
 };

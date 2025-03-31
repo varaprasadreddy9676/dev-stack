@@ -1,4 +1,3 @@
-
 import { ProjectData } from "@/types/project";
 import { TroubleshootingIssue } from "@/types/troubleshooting";
 
@@ -436,7 +435,7 @@ export const projectService = {
           throw new Error("Issue not found");
         }
         
-        const updatedIssue = {
+        const updatedIssue: TroubleshootingIssue = {
           ...mockProjects[projectIndex].troubleshooting[issueIndex],
           ...updatedData,
           lastUpdated: new Date().toISOString()
@@ -462,7 +461,7 @@ export const projectService = {
         throw new Error("Issue not found");
       }
       
-      const updatedIssue = {
+      const updatedIssue: TroubleshootingIssue = {
         ...mockProjects[projectIndex].troubleshooting[issueIndex],
         ...updatedData,
         lastUpdated: new Date().toISOString()
