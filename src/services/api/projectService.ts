@@ -1,5 +1,6 @@
+
 import { ProjectData } from "@/types/project";
-import { TroubleshootingIssue } from "@/types/troubleshooting";
+import { TroubleshootingIssue, Solution, Resource } from "@/types/troubleshooting";
 
 // Base API URL from environment or config
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
@@ -283,7 +284,7 @@ export const projectService = {
           ...mockProjects[projectIndex],
           ...updatedData,
           updatedAt: new Date().toISOString()
-        };
+        } as ProjectData;
         
         mockProjects[projectIndex] = updatedProject;
         return updatedProject;
@@ -304,7 +305,7 @@ export const projectService = {
         ...mockProjects[projectIndex],
         ...updatedData,
         updatedAt: new Date().toISOString()
-      };
+      } as ProjectData;
       
       mockProjects[projectIndex] = updatedProject;
       return updatedProject;
@@ -411,7 +412,7 @@ export const projectService = {
     }
   },
   
-  updateTroubleshootingIssue: async (projectId: string, issueId: string, updatedData: Partial<TroubleshootingIssue>) => {
+  updateTroubleshootingIssue: async (projectId: string, issueId: string, updatedData: Partial<Omit<TroubleshootingIssue, "id" | "lastUpdated">>) => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects/${projectId}/troubleshooting/${issueId}`, {
         method: "PUT",
@@ -435,11 +436,11 @@ export const projectService = {
           throw new Error("Issue not found");
         }
         
-        const updatedIssue: TroubleshootingIssue = {
+        const updatedIssue = {
           ...mockProjects[projectIndex].troubleshooting[issueIndex],
           ...updatedData,
           lastUpdated: new Date().toISOString()
-        };
+        } as TroubleshootingIssue;
         
         mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
         return updatedIssue;
@@ -461,11 +462,11 @@ export const projectService = {
         throw new Error("Issue not found");
       }
       
-      const updatedIssue: TroubleshootingIssue = {
+      const updatedIssue = {
         ...mockProjects[projectIndex].troubleshooting[issueIndex],
         ...updatedData,
         lastUpdated: new Date().toISOString()
-      };
+      } as TroubleshootingIssue;
       
       mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
       return updatedIssue;
