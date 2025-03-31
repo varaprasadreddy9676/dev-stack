@@ -3,28 +3,65 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Bug, Calendar, ArrowLeft, Link, FileText, Video } from "lucide-react";
+import { Bug, Calendar, ArrowLeft, Link, FileText, Video, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { TroubleshootingIssue } from "@/types/troubleshooting";
 
 interface TroubleshootingDetailProps {
   issue: TroubleshootingIssue;
   formatDate: (dateString: string) => string;
   onBack: () => void;
+  onEdit?: () => void;
+  onDelete?: (issueId: string) => void;
 }
 
 const TroubleshootingDetail: React.FC<TroubleshootingDetailProps> = ({
   issue,
   formatDate,
-  onBack
+  onBack,
+  onEdit,
+  onDelete
 }) => {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back to Issues
         </Button>
+        
+        {onEdit && onDelete && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={onEdit}>
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the troubleshooting issue.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onDelete(issue.id)}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
       
       <Card>
@@ -85,10 +122,11 @@ const TroubleshootingDetail: React.FC<TroubleshootingDetailProps> = ({
                           {solution.screenshots.map((screenshot, idx) => (
                             <div key={idx} className="border rounded-md overflow-hidden">
                               <div className="aspect-video bg-muted relative">
-                                {/* Image would be displayed here */}
-                                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                                  Screenshot Image
-                                </div>
+                                <img 
+                                  src={screenshot.imageUrl} 
+                                  alt={screenshot.caption} 
+                                  className="object-cover w-full h-full"
+                                />
                               </div>
                               <div className="p-2 text-xs text-center">
                                 {screenshot.caption}

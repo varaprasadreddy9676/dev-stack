@@ -10,6 +10,7 @@ const ProjectManagementPage: React.FC = () => {
 
   if (!id) {
     console.error("No project ID provided");
+    toast.error("No project ID provided");
     navigate("/projects");
     return null;
   }

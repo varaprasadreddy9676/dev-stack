@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Minus, Bug } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { TroubleshootingIssue } from "@/types/troubleshooting";
+import { TroubleshootingIssue, Solution } from "@/types/troubleshooting";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
@@ -43,7 +43,7 @@ interface TroubleshootingFormProps {
   projectId: string;
   onSubmit: (data: Omit<TroubleshootingIssue, "id" | "lastUpdated">) => Promise<void>;
   onCancel: () => void;
-  initialData?: Partial<TroubleshootingIssue>;
+  initialData?: TroubleshootingIssue;
 }
 
 const TroubleshootingForm: React.FC<TroubleshootingFormProps> = ({
@@ -109,7 +109,10 @@ const TroubleshootingForm: React.FC<TroubleshootingFormProps> = ({
   const handleFormSubmit = async (values: TroubleshootingFormValues) => {
     // Convert form values to TroubleshootingIssue format
     const troubleshootingData: Omit<TroubleshootingIssue, "id" | "lastUpdated"> = {
-      ...values,
+      issue: values.issue,
+      description: values.description,
+      symptoms: values.symptoms,
+      tags: values.tags,
       relatedIssues: initialData?.relatedIssues || [],
       solutions: values.solutions.map(solution => ({
         steps: solution.steps,

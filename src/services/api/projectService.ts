@@ -1,3 +1,4 @@
+
 import { ProjectData } from "@/types/project";
 import { TroubleshootingIssue } from "@/types/troubleshooting";
 
@@ -90,7 +91,52 @@ const mockProjects = [
     },
     components: [],
     resources: [],
-    team: []
+    team: [],
+    troubleshooting: []
+  },
+  {
+    _id: "proj101",
+    name: "Test Project",
+    description: "Test project for troubleshooting",
+    tags: ["test", "demo"],
+    updatedAt: "2024-04-01T09:15:00Z",
+    createdAt: "2024-03-15T09:15:00Z",
+    architecture: {
+      description: "Test architecture",
+      diagrams: []
+    },
+    structure: {
+      description: "Test structure",
+      folders: []
+    },
+    customFrameworks: [],
+    modules: [],
+    guidelines: {
+      content: "Test guidelines",
+      lastUpdated: "2024-03-20T10:30:00Z",
+      updatedBy: "Admin"
+    },
+    components: [],
+    resources: [],
+    team: [],
+    troubleshooting: [
+      {
+        id: "issue-test1",
+        issue: "Test Issue 1",
+        description: "This is a test troubleshooting issue",
+        symptoms: ["Symptom 1", "Symptom 2"],
+        solutions: [
+          {
+            steps: "These are the steps to fix the issue",
+            code: "// Sample code\nconsole.log('Testing');"
+          }
+        ],
+        relatedIssues: [],
+        tags: ["test", "demo"],
+        lastUpdated: "2024-04-01T10:00:00Z",
+        updatedBy: "tester"
+      }
+    ]
   }
 ];
 
@@ -171,7 +217,8 @@ export const projectService = {
           },
           components: [],
           resources: [],
-          team: []
+          team: [],
+          troubleshooting: []
         };
         // Add to mock projects
         mockProjects.push(newProject);
@@ -206,7 +253,8 @@ export const projectService = {
         },
         components: [],
         resources: [],
-        team: []
+        team: [],
+        troubleshooting: []
       };
       // Add to mock projects
       mockProjects.push(newProject);
@@ -325,7 +373,6 @@ export const projectService = {
           id: `issue-${Date.now()}`,
           ...issueData,
           lastUpdated: new Date().toISOString(),
-          relatedIssues: issueData.relatedIssues || []
         };
         
         // Add to mock project
@@ -350,7 +397,6 @@ export const projectService = {
         id: `issue-${Date.now()}`,
         ...issueData,
         lastUpdated: new Date().toISOString(),
-        relatedIssues: issueData.relatedIssues || []
       };
       
       // Add to mock project

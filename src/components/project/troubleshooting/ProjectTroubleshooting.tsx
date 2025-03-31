@@ -34,11 +34,14 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
     const fetchIssues = async () => {
       try {
         setLoading(true);
-        const data = await projectService.getTroubleshootingIssues(project._id);
-        setIssues(data);
+        if (project && project._id) {
+          const data = await projectService.getTroubleshootingIssues(project._id);
+          setIssues(Array.isArray(data) ? data : []);
+        }
       } catch (error) {
         console.error("Error fetching troubleshooting issues:", error);
         toast.error("Failed to load troubleshooting issues");
+        setIssues([]);
       } finally {
         setLoading(false);
       }
@@ -67,10 +70,14 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
   
   const handleAddIssue = async (issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">) => {
     try {
-      const newIssue = await projectService.createTroubleshootingIssue(project._id, issueData);
-      setIssues([...issues, newIssue]);
-      toast.success("Troubleshooting issue created successfully");
-      setViewMode("list");
+      if (project && project._id) {
+        const newIssue = await projectService.createTroubleshootingIssue(project._id, issueData);
+        if (newIssue) {
+          setIssues([...issues, newIssue]);
+          toast.success("Troubleshooting issue created successfully");
+          setViewMode("list");
+        }
+      }
     } catch (error) {
       console.error("Error creating troubleshooting issue:", error);
       toast.error("Failed to create troubleshooting issue");
@@ -78,7 +85,7 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
   };
   
   const handleUpdateIssue = async (issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">) => {
-    if (!selectedIssue) return;
+    if (!selectedIssue || !project || !project._id) return;
     
     try {
       const updatedIssue = await projectService.updateTroubleshootingIssue(
@@ -87,10 +94,12 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
         issueData
       );
       
-      setIssues(issues.map(i => i.id === selectedIssue.id ? updatedIssue : i));
-      setSelectedIssue(updatedIssue);
-      toast.success("Troubleshooting issue updated successfully");
-      setViewMode("detail");
+      if (updatedIssue) {
+        setIssues(issues.map(i => i.id === selectedIssue.id ? updatedIssue : i));
+        setSelectedIssue(updatedIssue);
+        toast.success("Troubleshooting issue updated successfully");
+        setViewMode("detail");
+      }
     } catch (error) {
       console.error("Error updating troubleshooting issue:", error);
       toast.error("Failed to update troubleshooting issue");
@@ -99,12 +108,14 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
   
   const handleDeleteIssue = async (issueId: string) => {
     try {
-      await projectService.deleteTroubleshootingIssue(project._id, issueId);
-      setIssues(issues.filter(i => i.id !== issueId));
-      toast.success("Troubleshooting issue deleted successfully");
-      if (selectedIssue?.id === issueId) {
-        setSelectedIssue(null);
-        setViewMode("list");
+      if (project && project._id) {
+        await projectService.deleteTroubleshootingIssue(project._id, issueId);
+        setIssues(issues.filter(i => i.id !== issueId));
+        toast.success("Troubleshooting issue deleted successfully");
+        if (selectedIssue?.id === issueId) {
+          setSelectedIssue(null);
+          setViewMode("list");
+        }
       }
     } catch (error) {
       console.error("Error deleting troubleshooting issue:", error);
@@ -141,6 +152,8 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
         issue={selectedIssue} 
         formatDate={formatDate}
         onBack={() => setViewMode("list")}
+        onEdit={() => setViewMode("edit")}
+        onDelete={handleDeleteIssue}
       />
     );
   }
