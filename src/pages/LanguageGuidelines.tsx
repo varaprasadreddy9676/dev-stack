@@ -2,19 +2,12 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useLanguageData } from "@/hooks/useLanguageData";
+import { formatDate } from "@/utils/formatUtils";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb";
 import LanguageHeader from "@/components/languages/LanguageHeader";
 import LanguageTabs from "@/components/languages/LanguageTabs";
-import { Skeleton } from "@/components/ui/skeleton";
-
-// Format date for display
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  }).format(date);
-};
+import LanguageGuidelinesLoading from "@/components/languages/LanguageGuidelinesLoading";
+import LanguageNotFound from "@/components/languages/LanguageNotFound";
 
 const LanguageGuidelines = () => {
   const { id } = useParams();
@@ -24,23 +17,12 @@ const LanguageGuidelines = () => {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="container py-10">
-        <Skeleton className="h-8 w-64 mb-6" />
-        <Skeleton className="h-20 w-full mb-8" />
-        <Skeleton className="h-96 w-full" />
-      </div>
-    );
+    return <LanguageGuidelinesLoading />;
   }
 
   // No language data
   if (!language) {
-    return (
-      <div className="container py-10">
-        <h1 className="text-2xl font-bold mb-4">Language Not Found</h1>
-        <p>The requested language guidelines could not be found.</p>
-      </div>
-    );
+    return <LanguageNotFound />;
   }
 
   const breadcrumbItems = [
