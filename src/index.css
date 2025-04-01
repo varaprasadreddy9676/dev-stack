@@ -140,4 +140,14 @@
   .mobile-card {
     @apply p-3 md:p-5;
   }
+
+  /* Solid background for sheet components */
+  .solid-bg {
+    @apply bg-background dark:bg-background;
+    background-color: hsl(var(--background)) !important;
+  }
+
+  .dark .solid-bg {
+    background-color: hsl(var(--background)) !important;
+  }
 }

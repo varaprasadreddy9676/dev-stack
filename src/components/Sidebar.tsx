@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -46,7 +45,7 @@ export function Sidebar({ className }: SidebarProps) {
 
   const MobileSidebarContent = () => (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
         <Link to="/" className="flex items-center">
           <div className="text-primary font-bold text-xl">DevHub</div>
         </Link>
@@ -122,7 +121,7 @@ export function Sidebar({ className }: SidebarProps) {
           className={cn(
             "rounded-full p-1.5 hover:bg-sidebar-accent text-sidebar-foreground transition-all",
             collapsed ? "ml-3.5" : "ml-0",
-            isMobile && "hidden" // Hide toggle on mobile
+            isMobile && "hidden"
           )}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -201,7 +200,7 @@ export function Sidebar({ className }: SidebarProps) {
             <span className="sr-only">Toggle Menu</span>
           </button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 bg-sidebar-background text-sidebar-foreground w-[280px] max-w-[80vw]">
+        <SheetContent side="left" className="p-0 w-[280px] max-w-[85vw] border-r solid-bg">
           <MobileSidebarContent />
         </SheetContent>
       </Sheet>
