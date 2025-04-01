@@ -1,9 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Home, Folder, BookOpen, Layout, Settings, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, Folder, BookOpen, Layout, Settings, Search, ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   className?: string;
@@ -12,9 +14,22 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
+
+  // Set sidebar expanded on larger screens, collapsed on mobile by default
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebar-collapsed");
+    if (savedState !== null) {
+      setCollapsed(JSON.parse(savedState));
+    } else {
+      setCollapsed(isMobile);
+    }
+  }, [isMobile]);
 
   const toggleSidebar = () => {
-    setCollapsed(!collapsed);
+    const newState = !collapsed;
+    setCollapsed(newState);
+    localStorage.setItem("sidebar-collapsed", JSON.stringify(newState));
   };
 
   const navigation = [
@@ -29,14 +44,8 @@ export function Sidebar({ className }: SidebarProps) {
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
-  return (
-    <div
-      className={cn(
-        "flex h-screen flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out",
-        collapsed ? "w-[70px]" : "w-[250px]",
-        className
-      )}
-    >
+  const SidebarContent = () => (
+    <>
       <div className="flex items-center justify-between px-4 py-5">
         {!collapsed && (
           <Link to="/" className="flex items-center">
@@ -47,7 +56,8 @@ export function Sidebar({ className }: SidebarProps) {
           onClick={toggleSidebar}
           className={cn(
             "rounded-full p-1.5 hover:bg-sidebar-accent text-sidebar-foreground transition-all",
-            collapsed ? "ml-3.5" : "ml-0"
+            collapsed ? "ml-3.5" : "ml-0",
+            isMobile && "hidden" // Hide toggle on mobile
           )}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -113,6 +123,36 @@ export function Sidebar({ className }: SidebarProps) {
           </nav>
         </div>
       </div>
+    </>
+  );
+
+  // For mobile, we'll use a Sheet component that slides in from the left
+  if (isMobile) {
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <button className="fixed left-4 top-3 z-40 rounded-md p-2 text-foreground bg-background/80 backdrop-blur-sm border">
+            <Menu size={20} />
+            <span className="sr-only">Toggle Menu</span>
+          </button>
+        </SheetTrigger>
+        <SheetContent side="left" className="p-0 bg-sidebar text-sidebar-foreground w-[280px]">
+          <SidebarContent />
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // For desktop, we'll use the standard sidebar
+  return (
+    <div
+      className={cn(
+        "h-screen flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out hidden md:flex",
+        collapsed ? "w-[70px]" : "w-[250px]",
+        className
+      )}
+    >
+      <SidebarContent />
     </div>
   );
 }

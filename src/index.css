@@ -123,4 +123,21 @@
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-[1.02];
   }
+  
+  /* Mobile responsive utilities */
+  .mobile-container {
+    @apply px-4 py-3 md:px-6 md:py-4;
+  }
+  
+  .mobile-heading {
+    @apply text-xl md:text-2xl lg:text-3xl font-bold;
+  }
+  
+  .mobile-text {
+    @apply text-sm md:text-base;
+  }
+  
+  .mobile-card {
+    @apply p-3 md:p-5;
+  }
 }
