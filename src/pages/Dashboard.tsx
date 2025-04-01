@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { RecentProjects } from "@/components/dashboard/RecentProjects";
 import { CodingGuidelines } from "@/components/dashboard/CodingGuidelines";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { ProjectForm, ProjectFormValues } from "@/components/dashboard/ProjectForm";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Sample data
 const recentProjects = [
@@ -139,6 +139,7 @@ const allActivity = [
 
 const Dashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -168,16 +169,16 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container py-8 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div className="py-2 sm:py-4 md:py-6 animate-fade-in">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4 md:mb-6 px-2 md:px-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-1">Developer Portal</h1>
-          <p className="text-muted-foreground">Centralized hub for all development resources</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-0 md:mb-1">Developer Portal</h1>
+          <p className="text-base md:text-base text-muted-foreground">Centralized hub for all development resources</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button size={isMobile ? "default" : "default"} className="mt-2 md:mt-0">
               <Plus className="mr-2 h-4 w-4" />
               New Project
             </Button>
@@ -195,8 +196,8 @@ const Dashboard = () => {
         </Dialog>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-6 px-2 md:px-0">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
           <RecentProjects 
             projects={recentProjects} 
             formatDate={formatDate}

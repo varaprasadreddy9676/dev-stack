@@ -16,6 +16,7 @@ import ProjectComponents from "./ProjectComponents";
 import ProjectResources from "./ProjectResources";
 import ProjectTroubleshooting from "./troubleshooting/ProjectTroubleshooting";
 import { useProjectData } from "@/hooks/useProjectData";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProjectManagementProps {
   projectId: string;
@@ -25,13 +26,14 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
   const navigate = useNavigate();
   const { project, loading, saveProject } = useProjectData(projectId);
   const [activeTab, setActiveTab] = useState("overview");
+  const isMobile = useIsMobile();
 
   if (loading) {
-    return <div className="container py-8">Loading project data...</div>;
+    return <div className="py-4 px-3 md:py-8 md:px-0">Loading project data...</div>;
   }
 
   if (!project) {
-    return <div className="container py-8">Project not found</div>;
+    return <div className="py-4 px-3 md:py-8 md:px-0">Project not found</div>;
   }
 
   const handleSaveProject = async (updatedData) => {
@@ -45,20 +47,20 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
   };
 
   return (
-    <div className="container py-8 animate-fade-in">
-      <div className="flex justify-between items-center mb-6">
+    <div className="py-4 px-3 md:py-8 md:px-0 animate-fade-in">
+      <div className="flex justify-between items-start md:items-center flex-col md:flex-row mb-4 md:mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-          <p className="text-muted-foreground">{project.description}</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{project.name}</h1>
+          <p className="text-base text-muted-foreground">{project.description}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-3 md:mt-0">
           <Button onClick={() => navigate(`/projects/${projectId}`)}>View Project</Button>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-1 md:gap-2 mb-4 md:mb-6">
         {project.tags.map((tag) => (
-          <Badge key={tag} variant="secondary">
+          <Badge key={tag} variant="secondary" className="text-xs md:text-sm">
             {tag}
           </Badge>
         ))}
@@ -68,67 +70,68 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
         defaultValue="overview"
         value={activeTab}
         onValueChange={setActiveTab}
-        className="space-y-6"
+        className="space-y-4 md:space-y-6"
       >
-        <div className="border-b overflow-x-auto">
+        <div className="border-b overflow-x-auto scrollbar-none -mx-3 px-3 md:mx-0 md:px-0">
           <TabsList className="w-full justify-start h-auto p-0 bg-transparent">
             <TabsTrigger
               value="overview"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger
               value="architecture"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Architecture
             </TabsTrigger>
             <TabsTrigger
               value="structure"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Structure
             </TabsTrigger>
             <TabsTrigger
               value="frameworks"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Frameworks
             </TabsTrigger>
             <TabsTrigger
               value="modules"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Modules
             </TabsTrigger>
             <TabsTrigger
               value="guidelines"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Guidelines
             </TabsTrigger>
             <TabsTrigger
               value="components"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Components
             </TabsTrigger>
             <TabsTrigger
               value="resources"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
               Resources
             </TabsTrigger>
             <TabsTrigger
               value="troubleshooting"
-              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
             >
-              Troubleshooting
+              Trouble
             </TabsTrigger>
           </TabsList>
         </div>
 
+        {/* Tab content */}
         <TabsContent value="overview">
           <ProjectOverview project={project} onSave={handleSaveProject} />
         </TabsContent>

@@ -16,7 +16,7 @@ export default function MainLayout() {
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-14 items-center justify-between px-4">
+            <div className="flex h-12 md:h-14 items-center justify-between px-2 md:px-4">
               <div className="flex items-center gap-4 ml-8 md:ml-0">
                 {!isMobile && (
                   <Button variant="outline" size="sm" className="h-9 w-9 px-0">
@@ -24,7 +24,7 @@ export default function MainLayout() {
                     <span className="sr-only">Search</span>
                   </Button>
                 )}
-                <h1 className="text-sm font-medium">
+                <h1 className="text-base md:text-sm font-medium">
                   Developer Portal
                 </h1>
               </div>
@@ -33,7 +33,7 @@ export default function MainLayout() {
               </div>
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-4 md:p-6">
+          <main className="flex-1 overflow-auto p-2 md:p-6">
             <Outlet />
           </main>
         </div>

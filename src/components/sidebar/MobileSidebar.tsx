@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -33,14 +33,12 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
             <Link to="/" className="flex items-center">
               <div className="text-primary font-bold text-xl">DevHub</div>
             </Link>
-            <SheetClose className="rounded-full p-2 text-sidebar-foreground hover:bg-sidebar-accent">
-              <X size={20} />
-            </SheetClose>
+            {/* No need for explicit SheetClose here - it's now handled by the Sheet component */}
           </div>
           
-          <div className="space-y-6 flex-1 py-4">
+          <div className="space-y-6 flex-1 py-4 overflow-y-auto">
             <div className="px-3">
-              <h2 className="mb-3 text-sidebar-foreground/70 text-xs font-semibold uppercase tracking-wider px-3">
+              <h2 className="mb-2 text-sidebar-foreground/70 text-xs font-semibold uppercase tracking-wider px-2">
                 Navigation
               </h2>
               <nav className="space-y-1">
@@ -50,7 +48,7 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
                       to={item.href}
                       className={cn(
                         buttonVariants({ variant: "ghost" }),
-                        "w-full justify-start px-3 py-2 text-base",
+                        "w-full justify-start px-3 py-2 h-auto text-base",
                         location.pathname === item.href
                           ? "bg-sidebar-accent text-sidebar-primary"
                           : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -65,7 +63,7 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
             </div>
 
             <div className="px-3">
-              <h2 className="mb-3 text-sidebar-foreground/70 text-xs font-semibold uppercase tracking-wider px-3">
+              <h2 className="mb-2 text-sidebar-foreground/70 text-xs font-semibold uppercase tracking-wider px-2">
                 Utilities
               </h2>
               <nav className="space-y-1">
@@ -75,7 +73,7 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
                       to={item.href}
                       className={cn(
                         buttonVariants({ variant: "ghost" }),
-                        "w-full justify-start px-3 py-2 text-base",
+                        "w-full justify-start px-3 py-2 h-auto text-base",
                         location.pathname === item.href
                           ? "bg-sidebar-accent text-sidebar-primary"
                           : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"

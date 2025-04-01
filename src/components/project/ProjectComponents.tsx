@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   Card, 
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ProjectData } from "@/types/project";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProjectComponentsProps {
   project: ProjectData;
@@ -26,6 +28,7 @@ const ProjectComponents: React.FC<ProjectComponentsProps> = ({ project, onSave }
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [components, setComponents] = useState<string[]>([...project.components]);
   const [newComponent, setNewComponent] = useState<string>("");
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,10 +54,10 @@ const ProjectComponents: React.FC<ProjectComponentsProps> = ({ project, onSave }
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-row items-center justify-between pt-4 pb-3 px-4">
         <div>
-          <CardTitle>Project Components</CardTitle>
-          <CardDescription>Reusable components used in this project</CardDescription>
+          <CardTitle className="text-lg md:text-xl">Project Components</CardTitle>
+          <CardDescription className="text-sm">Reusable components used in this project</CardDescription>
         </div>
         {isEditing ? (
           <div className="flex gap-2">
@@ -63,16 +66,16 @@ const ProjectComponents: React.FC<ProjectComponentsProps> = ({ project, onSave }
               size="sm" 
               onClick={() => setIsEditing(false)}
             >
-              <XIcon className="h-4 w-4 mr-2" />
-              Cancel
+              <XIcon className="h-4 w-4 mr-1 md:mr-2" />
+              {!isMobile && "Cancel"}
             </Button>
             <Button 
               variant="default" 
               size="sm" 
               onClick={handleSubmit}
             >
-              <SaveIcon className="h-4 w-4 mr-2" />
-              Save
+              <SaveIcon className="h-4 w-4 mr-1 md:mr-2" />
+              {!isMobile && "Save"}
             </Button>
           </div>
         ) : (
@@ -81,14 +84,14 @@ const ProjectComponents: React.FC<ProjectComponentsProps> = ({ project, onSave }
             size="sm" 
             onClick={() => setIsEditing(true)}
           >
-            <PencilIcon className="h-4 w-4 mr-2" />
-            Edit
+            <PencilIcon className="h-4 w-4 mr-1 md:mr-2" />
+            {!isMobile && "Edit"}
           </Button>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-4">
         {isEditing ? (
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             <div className="flex gap-2">
               <Input 
                 value={newComponent} 
@@ -99,19 +102,20 @@ const ProjectComponents: React.FC<ProjectComponentsProps> = ({ project, onSave }
               <Button 
                 onClick={addComponent}
                 disabled={!newComponent.trim()}
+                size={isMobile ? "sm" : "default"}
               >
-                <PlusIcon className="h-4 w-4 mr-2" />
-                Add
+                <PlusIcon className="h-4 w-4 mr-1 md:mr-2" />
+                {!isMobile && "Add"}
               </Button>
             </div>
             
             {components.length === 0 ? (
-              <p className="text-muted-foreground italic">No components added yet.</p>
+              <p className="text-muted-foreground italic text-sm">No components added yet.</p>
             ) : (
               <div className="space-y-2">
                 {components.map((component, index) => (
                   <div key={index} className="flex justify-between items-center p-2 bg-muted/30 rounded-md">
-                    <span>{component}</span>
+                    <span className="text-sm md:text-base">{component}</span>
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -127,15 +131,15 @@ const ProjectComponents: React.FC<ProjectComponentsProps> = ({ project, onSave }
         ) : (
           <div>
             {project.components.length === 0 ? (
-              <p className="text-muted-foreground italic">No components defined for this project.</p>
+              <p className="text-muted-foreground italic text-sm">No components defined for this project.</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
                 {project.components.map((component, index) => (
                   <div 
                     key={index} 
-                    className="p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors"
+                    className="p-2 md:p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors"
                   >
-                    <div className="font-medium">{component}</div>
+                    <div className="font-medium text-sm md:text-base">{component}</div>
                   </div>
                 ))}
               </div>

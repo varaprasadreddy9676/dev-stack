@@ -126,11 +126,15 @@
   
   /* Mobile responsive utilities */
   .mobile-container {
-    @apply px-4 py-3 md:px-6 md:py-4;
+    @apply px-3 py-2 md:px-6 md:py-4;
   }
   
   .mobile-heading {
-    @apply text-xl md:text-2xl lg:text-3xl font-bold;
+    @apply text-2xl md:text-2xl lg:text-3xl font-bold;
+  }
+  
+  .mobile-subheading {
+    @apply text-base md:text-lg font-medium;
   }
   
   .mobile-text {
@@ -139,6 +143,33 @@
   
   .mobile-card {
     @apply p-3 md:p-5;
+  }
+
+  /* Mobile-specific font sizing */
+  @media (max-width: 640px) {
+    h1 {
+      @apply text-2xl;
+    }
+    
+    h2 {
+      @apply text-xl;
+    }
+    
+    h3 {
+      @apply text-lg;
+    }
+    
+    p {
+      @apply text-base leading-normal;
+    }
+    
+    .card-title {
+      @apply text-lg;
+    }
+    
+    .card-description {
+      @apply text-sm;
+    }
   }
 
   /* Solid background for sheet components */

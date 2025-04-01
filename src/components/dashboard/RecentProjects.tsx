@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, LayoutGrid, Monitor, Code, FileText, Folder } fro
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Define project type
 type Project = {
@@ -40,9 +41,11 @@ const getProjectTypeIcon = (type: string) => {
 };
 
 export const RecentProjects = ({ projects, formatDate }: RecentProjectsProps) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-3 md:mb-4">
         <h2 className="text-xl font-semibold">Recent Projects</h2>
         <Button variant="outline" size="sm" asChild>
           <Link to="/projects">
@@ -52,34 +55,36 @@ export const RecentProjects = ({ projects, formatDate }: RecentProjectsProps) =>
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         {projects.map((project) => (
           <Card key={project.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <CardTitle>
+            <CardHeader className="pb-2 pt-3 px-3 md:p-5 md:pb-2">
+              <CardTitle className="card-title">
                 <Link to={`/projects/${project.id}`} className="hover:text-primary transition-colors">
                   {project.name}
                 </Link>
               </CardTitle>
-              <CardDescription>{project.description}</CardDescription>
+              <CardDescription className="card-description">{project.description}</CardDescription>
             </CardHeader>
-            <CardContent className="pb-2">
-              <div className="flex flex-wrap gap-2 mb-3">
-                <Badge className="flex items-center gap-1">
+            <CardContent className="pb-2 px-3 md:px-5">
+              <div className="flex flex-wrap gap-2 mb-2 md:mb-3">
+                <Badge className="flex items-center gap-1 text-xs md:text-sm">
                   {getProjectTypeIcon(project.type)}
                   <span>{project.type}</span>
                 </Badge>
-                {project.tags.slice(0, 2).map((tag) => (
-                  <Badge key={tag} variant="secondary">
+                {project.tags.slice(0, isMobile ? 1 : 2).map((tag) => (
+                  <Badge key={tag} variant="secondary" className="text-xs md:text-sm">
                     {tag}
                   </Badge>
                 ))}
-                {project.tags.length > 2 && (
-                  <Badge variant="outline">+{project.tags.length - 2}</Badge>
+                {project.tags.length > (isMobile ? 1 : 2) && (
+                  <Badge variant="outline" className="text-xs md:text-sm">
+                    +{project.tags.length - (isMobile ? 1 : 2)}
+                  </Badge>
                 )}
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between pt-0">
+            <CardFooter className="flex justify-between pt-0 px-3 pb-3 md:px-5 md:pb-5">
               <div className="text-xs text-muted-foreground">
                 Updated {formatDate(project.updatedAt)}
               </div>

@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -48,13 +49,13 @@ const ComponentDetailView = ({
   };
 
   const content = (
-    <ScrollArea className="max-h-[80vh]">
-      <div className="space-y-4 p-1">
+    <ScrollArea className="max-h-[75vh]">
+      <div className="space-y-4 py-1 px-1">
         <div>
-          <h3 className="text-sm font-medium mb-2">Tags</h3>
-          <div className="flex flex-wrap gap-2">
+          <h3 className="text-sm font-medium mb-1">Tags</h3>
+          <div className="flex flex-wrap gap-1">
             {component.tags.map((tag: string) => (
-              <Badge key={tag} variant="secondary">
+              <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
             ))}
@@ -62,12 +63,12 @@ const ComponentDetailView = ({
         </div>
         
         <div>
-          <h3 className="text-sm font-medium mb-2">Usage Guidelines</h3>
+          <h3 className="text-sm font-medium mb-1">Usage Guidelines</h3>
           <p className="text-sm text-muted-foreground">{component.usage}</p>
         </div>
         
         <div>
-          <h3 className="text-sm font-medium mb-2">Last Updated</h3>
+          <h3 className="text-sm font-medium mb-1">Last Updated</h3>
           <p className="text-sm text-muted-foreground">
             {formatDate(component.updatedAt)}
           </p>
@@ -93,18 +94,18 @@ const ComponentDetailView = ({
     return (
       <>
         <Drawer open={isOpen} onOpenChange={onOpenChange}>
-          <DrawerContent>
-            <DrawerHeader>
-              <DrawerTitle className="flex justify-between items-center">
+          <DrawerContent className="px-3 pt-2 max-h-[85vh]">
+            <DrawerHeader className="px-0 pt-0 pb-3">
+              <DrawerTitle className="flex justify-between items-center text-lg">
                 {component.name}
-                <Badge className="ml-2">
+                <Badge className="ml-2 text-xs">
                   {component.variants} {component.variants === 1 ? 'variant' : 'variants'}
                 </Badge>
               </DrawerTitle>
-              <DrawerDescription>{component.description}</DrawerDescription>
+              <DrawerDescription className="text-sm">{component.description}</DrawerDescription>
             </DrawerHeader>
             {content}
-            <DrawerFooter>
+            <DrawerFooter className="px-0 pt-2 pb-4">
               <Button onClick={() => setIsEditDialogOpen(true)}>Edit Component</Button>
             </DrawerFooter>
           </DrawerContent>
