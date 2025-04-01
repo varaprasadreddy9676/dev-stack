@@ -2,25 +2,13 @@
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
-import { useEffect } from "react";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
-  // Fix the toggle to use next theme rather than current theme
   const toggleTheme = () => {
-    // Toggle theme using the opposite of the current theme
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    console.log("Theme toggled to:", newTheme);
+    setTheme(theme === "light" ? "dark" : "light");
   };
-
-  // Debug the current theme
-  useEffect(() => {
-    console.log("Current theme:", theme);
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
-  }, [theme]);
 
   return (
     <Button
