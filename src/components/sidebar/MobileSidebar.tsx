@@ -1,9 +1,10 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { APP_CONFIG } from "@/config/config";
 
 interface NavigationItem {
   name: string;
@@ -31,12 +32,12 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
             <Link to="/" className="flex items-center">
-              <div className="text-primary font-bold text-xl">DevHub</div>
+              <div className="text-primary font-bold text-xl">{APP_CONFIG.APP_NAME}</div>
             </Link>
-            {/* No need for explicit SheetClose here - it's now handled by the Sheet component */}
+            {/* SheetClose is handled by the Sheet component */}
           </div>
           
-          <div className="space-y-6 flex-1 py-4 overflow-y-auto">
+          <div className="space-y-4 flex-1 py-4 overflow-y-auto">
             <div className="px-3">
               <h2 className="mb-2 text-sidebar-foreground/70 text-xs font-semibold uppercase tracking-wider px-2">
                 Navigation

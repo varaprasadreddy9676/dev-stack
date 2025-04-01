@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import ProjectExplorer from "./pages/ProjectExplorer";
@@ -17,41 +18,44 @@ import LanguageGuidelines from "./pages/LanguageGuidelines";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 
-// Create a client
+// Create a client with production-ready defaults
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: 2,
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="projects" element={<ProjectExplorer />} />
-              <Route path="projects/new" element={<NewProject />} />
-              <Route path="projects/:id" element={<ProjectDetail />} />
-              <Route path="projects/:id/edit" element={<ProjectManagement />} />
-              <Route path="components" element={<Components />} />
-              <Route path="guidelines" element={<CodingGuidelines />} />
-              <Route path="guidelines/:id" element={<LanguageGuidelines />} />
-              <Route path="search" element={<SearchResults />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner position="top-right" closeButton richColors />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="projects" element={<ProjectExplorer />} />
+                <Route path="projects/new" element={<NewProject />} />
+                <Route path="projects/:id" element={<ProjectDetail />} />
+                <Route path="projects/:id/edit" element={<ProjectManagement />} />
+                <Route path="components" element={<Components />} />
+                <Route path="guidelines" element={<CodingGuidelines />} />
+                <Route path="guidelines/:id" element={<LanguageGuidelines />} />
+                <Route path="search" element={<SearchResults />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

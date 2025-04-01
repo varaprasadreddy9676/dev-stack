@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { APP_CONFIG } from "@/config/config";
 
 export default function MainLayout() {
   const isMobile = useIsMobile();
@@ -25,7 +26,7 @@ export default function MainLayout() {
                   </Button>
                 )}
                 <h1 className="text-base md:text-sm font-medium">
-                  Developer Portal
+                  {APP_CONFIG.APP_NAME}
                 </h1>
               </div>
               <div className="flex items-center gap-2">
@@ -33,7 +34,7 @@ export default function MainLayout() {
               </div>
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-2 md:p-6">
+          <main className="flex-1 overflow-auto p-2 md:p-4 lg:p-6">
             <Outlet />
           </main>
         </div>
