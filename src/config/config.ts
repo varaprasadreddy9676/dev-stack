@@ -18,12 +18,15 @@ export const AUTH_CONFIG = {
 // Feature flags
 export const FEATURES = {
   ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS === "true" || false,
+  ENABLE_FAVORITES: true,
+  ENABLE_SHARING: true,
 };
 
 // App settings
 export const APP_CONFIG = {
   APP_NAME: "DevHub",
   APP_VERSION: "1.0.0",
+  SHARE_BASE_URL: window.location.origin,
 };
 
 // Timeouts

@@ -1,12 +1,16 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Bug, Calendar, ArrowLeft, Link, FileText, Video, Edit, Trash2 } from "lucide-react";
+import { Bug, Calendar, ArrowLeft, Link, FileText, Video, Edit, Trash2, Star, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { TroubleshootingIssue } from "@/types/troubleshooting";
+import TroubleshootingSolution from "./TroubleshootingSolution";
+import ShareDialog from "@/components/common/ShareDialog";
+import { useFavorites } from "@/hooks/useFavorites";
+import { FEATURES } from "@/config/config";
 
 interface TroubleshootingDetailProps {
   issue: TroubleshootingIssue;
@@ -23,6 +27,17 @@ const TroubleshootingDetail: React.FC<TroubleshootingDetailProps> = ({
   onEdit,
   onDelete
 }) => {
+  const [expandedSolution, setExpandedSolution] = useState<number | null>(null);
+  const { isFavorite, toggleFavorite, isLoading: isFavoriteLoading } = useFavorites('guides');
+
+  const toggleSolution = (index: number) => {
+    if (expandedSolution === index) {
+      setExpandedSolution(null);
+    } else {
+      setExpandedSolution(index);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -31,37 +46,63 @@ const TroubleshootingDetail: React.FC<TroubleshootingDetailProps> = ({
           Back to Issues
         </Button>
         
-        {onEdit && onDelete && (
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={onEdit}>
-              <Edit className="h-4 w-4 mr-1" />
-              Edit
+        <div className="flex gap-2">
+          {FEATURES.ENABLE_FAVORITES && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => toggleFavorite(issue.id, issue.issue)}
+              disabled={isFavoriteLoading}
+            >
+              <Star 
+                className={`h-4 w-4 mr-1 ${isFavorite(issue.id) ? "fill-yellow-400 text-yellow-400" : ""}`} 
+              />
+              {isFavorite(issue.id) ? "Favorited" : "Favorite"}
             </Button>
-            
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Delete
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the troubleshooting issue.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onDelete(issue.id)}>
+          )}
+          
+          {FEATURES.ENABLE_SHARING && (
+            <ShareDialog
+              title={issue.issue}
+              type="Troubleshooting Issue"
+              id={issue.id}
+              path={`/troubleshooting/${issue.id}`}
+              description="Share this troubleshooting issue with your team"
+            />
+          )}
+          
+          {onEdit && onDelete && (
+            <>
+              <Button variant="outline" size="sm" onClick={onEdit}>
+                <Edit className="h-4 w-4 mr-1" />
+                Edit
+              </Button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="h-4 w-4 mr-1" />
                     Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        )}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the troubleshooting issue.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => onDelete(issue.id)}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
+        </div>
       </div>
       
       <Card>
@@ -98,67 +139,25 @@ const TroubleshootingDetail: React.FC<TroubleshootingDetailProps> = ({
           
           <div>
             <h3 className="text-lg font-medium mb-4">Solutions</h3>
-            <div className="space-y-6">
+            <div className="space-y-4">
               {issue.solutions.map((solution, index) => (
-                <div key={index} className="space-y-3">
-                  <div className="rounded-md border p-4">
-                    <h4 className="font-medium mb-2">Solution {index + 1}</h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <p>{solution.steps}</p>
-                    </div>
-                    
-                    {solution.code && (
-                      <div className="mt-3 bg-muted p-3 rounded-md">
-                        <pre className="text-xs font-mono whitespace-pre-wrap">
-                          {solution.code}
-                        </pre>
-                      </div>
+                <div key={index} className="border rounded-md">
+                  <Button
+                    variant="ghost"
+                    className="w-full flex items-center justify-between p-4 h-auto"
+                    onClick={() => toggleSolution(index)}
+                  >
+                    <span className="font-medium">Solution {index + 1}</span>
+                    {expandedSolution === index ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
                     )}
-                    
-                    {solution.screenshots && solution.screenshots.length > 0 && (
-                      <div className="mt-4 space-y-2">
-                        <h5 className="text-sm font-medium">Screenshots</h5>
-                        <div className="grid grid-cols-1 gap-4">
-                          {solution.screenshots.map((screenshot, idx) => (
-                            <div key={idx} className="border rounded-md overflow-hidden">
-                              <div className="aspect-video bg-muted relative">
-                                <img 
-                                  src={screenshot.imageUrl} 
-                                  alt={screenshot.caption} 
-                                  className="object-cover w-full h-full"
-                                />
-                              </div>
-                              <div className="p-2 text-xs text-center">
-                                {screenshot.caption}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {solution.resources && solution.resources.length > 0 && (
-                      <div className="mt-4">
-                        <h5 className="text-sm font-medium mb-2">Resources</h5>
-                        <div className="space-y-2">
-                          {solution.resources.map((resource, idx) => (
-                            <a 
-                              key={idx} 
-                              href={resource.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-sm text-primary hover:underline"
-                            >
-                              {resource.type === "link" && <Link className="h-4 w-4" />}
-                              {resource.type === "pdf" && <FileText className="h-4 w-4" />}
-                              {resource.type === "video" && <Video className="h-4 w-4" />}
-                              {resource.title}
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  </Button>
+                  
+                  {expandedSolution === index && (
+                    <TroubleshootingSolution solution={solution} index={index} />
+                  )}
                 </div>
               ))}
             </div>

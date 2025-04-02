@@ -8,7 +8,6 @@ import {
   BookOpen, 
   Code, 
   Component, 
-  GitFork, 
   Share, 
   Star, 
   GitBranch, 
@@ -21,6 +20,9 @@ import {
   GalleryHorizontalEndIcon,
   Bug
 } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
+import ShareDialog from "@/components/common/ShareDialog";
+import { FEATURES } from "@/config/config";
 
 const projectData = {
   id: "proj123",
@@ -185,6 +187,7 @@ const guides = [
 const ProjectDetail = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
+  const { isFavorite, toggleFavorite, isLoading: isFavoriteLoading } = useFavorites('projects');
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -220,15 +223,30 @@ const ProjectDetail = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <Star className="mr-1 h-4 w-4" /> Star
-            </Button>
-            <Button variant="outline" size="sm">
-              <GitFork className="mr-1 h-4 w-4" /> Fork
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share className="mr-1 h-4 w-4" /> Share
-            </Button>
+            {FEATURES.ENABLE_FAVORITES && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => toggleFavorite(projectData.id, projectData.name)}
+                disabled={isFavoriteLoading}
+              >
+                <Star 
+                  className={`mr-1 h-4 w-4 ${isFavorite(projectData.id) ? "fill-yellow-400 text-yellow-400" : ""}`} 
+                />
+                {isFavorite(projectData.id) ? "Favorited" : "Favorite"}
+              </Button>
+            )}
+            
+            {FEATURES.ENABLE_SHARING && (
+              <ShareDialog
+                title={projectData.name}
+                type="Project"
+                id={projectData.id}
+                path={`/projects/${projectData.id}`}
+                description="Share this project with your team or colleagues"
+              />
+            )}
+            
             <Button variant="default" size="sm" asChild>
               <Link to={`/projects/${id}/edit`}>
                 <PencilIcon className="mr-1 h-4 w-4" /> Edit Project
@@ -654,7 +672,7 @@ const ProjectDetail = () => {
               <Bug className="mr-2 h-5 w-5 text-amber-500" />
               Troubleshooting
             </h2>
-            <Button size="sm" asChild>
+            <Button variant="default" size="sm" asChild>
               <Link to={`/projects/${id}/edit?tab=troubleshooting`}>
                 <PencilIcon className="mr-1 h-4 w-4" /> Manage Issues
               </Link>
@@ -693,8 +711,15 @@ const ProjectDetail = () => {
                         <CalendarDays className="h-3 w-3 mr-1" />
                         {formatDate(issue.lastUpdated)}
                       </div>
-                      <Button variant="link" size="sm" className="p-0 h-auto">
-                        View Solutions
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        className="p-0 h-auto"
+                        asChild
+                      >
+                        <Link to={`/projects/${id}/troubleshooting/${issue.id}`}>
+                          View Solutions
+                        </Link>
                       </Button>
                     </div>
                   </div>
