@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
+import { User, UserCheck } from "lucide-react";
 
 const profileSchema = z.object({
   username: z
@@ -59,8 +61,8 @@ export default function UserProfile() {
 
   if (!user) {
     return (
-      <Card>
-        <CardHeader className="p-3 md:p-6">
+      <Card className="w-full shadow-sm">
+        <CardHeader className="p-4 md:p-6">
           <CardTitle className="text-lg md:text-xl">Profile</CardTitle>
           <CardDescription>You need to be logged in to view your profile</CardDescription>
         </CardHeader>
@@ -69,14 +71,17 @@ export default function UserProfile() {
   }
 
   return (
-    <Card>
-      <CardHeader className="p-3 md:p-6">
-        <CardTitle className="text-lg md:text-xl">Your Profile</CardTitle>
+    <Card className="w-full shadow-sm">
+      <CardHeader className="p-4 md:p-6 pb-2 md:pb-3">
+        <div className="flex items-center gap-2 mb-2">
+          <User className="h-5 w-5 text-muted-foreground" />
+          <CardTitle className="text-lg md:text-xl">Your Profile</CardTitle>
+        </div>
         <CardDescription>Manage your account information</CardDescription>
       </CardHeader>
-      <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+      <CardContent className="p-4 md:p-6 pt-2 md:pt-3">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="username"
@@ -87,7 +92,7 @@ export default function UserProfile() {
                     <Input
                       placeholder="username"
                       autoComplete="username"
-                      className="text-sm md:text-base"
+                      className="h-10 md:h-11 text-sm md:text-base"
                       {...field}
                     />
                   </FormControl>
@@ -108,7 +113,7 @@ export default function UserProfile() {
                       type="email"
                       autoComplete="email"
                       disabled
-                      className="text-sm md:text-base"
+                      className="h-10 md:h-11 text-sm md:text-base bg-muted/50"
                       {...field}
                     />
                   </FormControl>
@@ -117,14 +122,28 @@ export default function UserProfile() {
               )}
             />
 
-            <div className="flex items-center gap-2">
-              <p className="text-xs md:text-sm text-muted-foreground">Role: <span className="font-medium text-foreground">{user.role}</span></p>
+            <div className="pt-2">
+              <Separator className="mb-5" />
+              <div className="flex items-center gap-2 mb-4">
+                <UserCheck className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm font-medium">Account Information</p>
+              </div>
+              <div className="bg-muted/30 rounded-md p-3 text-sm">
+                <div className="flex justify-between mb-2">
+                  <span className="text-muted-foreground">Role:</span>
+                  <span className="font-medium">{user.role}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Status:</span>
+                  <span className="font-medium">Active</span>
+                </div>
+              </div>
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full md:w-auto text-sm"
+              className="w-full mt-6 h-11 text-sm md:text-base"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
