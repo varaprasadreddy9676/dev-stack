@@ -40,7 +40,15 @@ export function useFavorites(type: FavoriteType) {
           [type]: newFavorites
         };
         
-        await updateProfile({ favorites: updatedFavorites });
+        await updateProfile({ 
+          favorites: updatedFavorites as {
+            languages: string[];
+            projects: string[];
+            components: string[];
+            guides: string[];
+          }
+        });
+        
         setFavorites(newFavorites);
         
         toast({
@@ -57,7 +65,15 @@ export function useFavorites(type: FavoriteType) {
           [type]: newFavorites
         };
         
-        await updateProfile({ favorites: updatedFavorites });
+        await updateProfile({ 
+          favorites: updatedFavorites as {
+            languages: string[];
+            projects: string[];
+            components: string[];
+            guides: string[];
+          }
+        });
+        
         setFavorites(newFavorites);
         
         toast({

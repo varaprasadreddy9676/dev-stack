@@ -19,6 +19,7 @@ import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import UserManagement from "./pages/UserManagement";
@@ -55,6 +56,7 @@ function App() {
                     <Route index element={<Dashboard />} />
                     <Route path="projects" element={<ProjectExplorer />} />
                     <Route path="profile" element={<Profile />} />
+                    <Route path="settings" element={<Settings />} />
                     
                     {/* Role-specific routes */}
                     <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
