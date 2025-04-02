@@ -12,6 +12,7 @@ export const API_CONFIG = {
 export const AUTH_CONFIG = {
   TOKEN_STORAGE_KEY: "auth_token",
   TOKEN_EXPIRY: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+  TOKEN_REFRESH_THRESHOLD: 15 * 60 * 1000, // 15 minutes in milliseconds
 };
 
 // Feature flags

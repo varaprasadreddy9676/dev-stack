@@ -18,10 +18,10 @@ import LanguageGuidelines from "./pages/LanguageGuidelines";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import UserManagement from "./pages/UserManagement";
 import { AuthProvider } from "./contexts/AuthContext";
 
 // Create a client with production-ready defaults
@@ -47,7 +47,6 @@ function App() {
               <Routes>
                 {/* Public routes */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
 
                 {/* Protected routes within MainLayout */}
@@ -61,6 +60,11 @@ function App() {
                     <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
                       <Route path="projects/new" element={<NewProject />} />
                       <Route path="projects/:id/edit" element={<ProjectManagement />} />
+                    </Route>
+
+                    {/* Admin-only routes */}
+                    <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                      <Route path="users" element={<UserManagement />} />
                     </Route>
                     
                     <Route path="projects/:id" element={<ProjectDetail />} />

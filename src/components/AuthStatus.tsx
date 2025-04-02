@@ -10,25 +10,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Settings } from "lucide-react";
+import { User, LogOut, Settings, Users } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function AuthStatus() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, hasPermission } = useAuth();
 
   const handleLogout = async () => {
     await logout();
   };
 
-  // If not authenticated, show login/register buttons
+  // If not authenticated, show login button (removed register button)
   if (!isAuthenticated) {
     return (
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/login">Login</Link>
-        </Button>
         <Button size="sm" asChild>
-          <Link to="/register">Register</Link>
+          <Link to="/login">Login</Link>
         </Button>
       </div>
     );
@@ -72,6 +69,17 @@ export function AuthStatus() {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
+        
+        {/* Only show User Management for admins */}
+        {hasPermission(["admin"]) && (
+          <DropdownMenuItem asChild>
+            <Link to="/users" className="cursor-pointer flex items-center">
+              <Users className="mr-2 h-4 w-4" />
+              <span>User Management</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
+        
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
