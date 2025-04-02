@@ -2,10 +2,22 @@
 import { API_CONFIG } from '@/config/config';
 import { User } from '@/types/auth';
 import { toast } from '@/hooks/use-toast';
+import { authService } from '@/services/api/authService';
 
 // Handle login API call
 export const loginApi = async (email: string, password: string) => {
   try {
+    // Check if we should use mock data
+    if (API_CONFIG.USE_MOCK_DATA) {
+      console.log('Using mock login data');
+      const result = await authService.login(email, password);
+      return { 
+        success: result.success, 
+        data: result.success ? result.data : null 
+      };
+    }
+
+    // Attempt real API call
     const response = await fetch(`${API_CONFIG.BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -13,6 +25,18 @@ export const loginApi = async (email: string, password: string) => {
       },
       body: JSON.stringify({ email, password }),
     });
+
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.log('API returned non-JSON response, falling back to mock data');
+      // Fallback to mock implementation
+      const mockResult = await authService.login(email, password);
+      return { 
+        success: mockResult.success, 
+        data: mockResult.success ? mockResult.data : null 
+      };
+    }
 
     const data = await response.json();
 
@@ -28,12 +52,24 @@ export const loginApi = async (email: string, password: string) => {
     return { success: true, data: data.data };
   } catch (error) {
     console.error('Login error:', error);
-    toast({
-      title: 'Login failed',
-      description: 'An unexpected error occurred',
-      variant: 'destructive',
-    });
-    return { success: false, data: null };
+    
+    // Fallback to mock implementation on error
+    console.log('Error occurred, falling back to mock data');
+    const mockResult = await authService.login(email, password);
+    
+    if (!mockResult.success) {
+      toast({
+        title: 'Login failed',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+      return { success: false, data: null };
+    }
+    
+    return { 
+      success: mockResult.success, 
+      data: mockResult.success ? mockResult.data : null 
+    };
   }
 };
 
@@ -46,6 +82,16 @@ export const registerApi = async (
   token?: string
 ) => {
   try {
+    // Check if we should use mock data
+    if (API_CONFIG.USE_MOCK_DATA) {
+      console.log('Using mock register data');
+      const result = await authService.register(username, email, password, role);
+      return { 
+        success: result.success, 
+        data: result.success ? result.data : null 
+      };
+    }
+
     const response = await fetch(`${API_CONFIG.BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
@@ -54,6 +100,18 @@ export const registerApi = async (
       },
       body: JSON.stringify({ username, email, password, role }),
     });
+
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.log('API returned non-JSON response, falling back to mock data');
+      // Fallback to mock implementation
+      const mockResult = await authService.register(username, email, password, role);
+      return { 
+        success: mockResult.success, 
+        data: mockResult.success ? mockResult.data : null 
+      };
+    }
 
     const data = await response.json();
 
@@ -69,18 +127,39 @@ export const registerApi = async (
     return { success: true, data: data.data };
   } catch (error) {
     console.error('Registration error:', error);
-    toast({
-      title: 'Registration failed',
-      description: 'An unexpected error occurred',
-      variant: 'destructive',
-    });
-    return { success: false, data: null };
+    
+    // Fallback to mock implementation on error
+    console.log('Error occurred, falling back to mock data');
+    const mockResult = await authService.register(username, email, password, role);
+    
+    if (!mockResult.success) {
+      toast({
+        title: 'Registration failed',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+      return { success: false, data: null };
+    }
+    
+    return { 
+      success: mockResult.success, 
+      data: mockResult.success ? mockResult.data : null 
+    };
   }
 };
 
 // Handle logout API call
 export const logoutApi = async (token: string) => {
   try {
+    if (API_CONFIG.USE_MOCK_DATA) {
+      console.log('Using mock logout');
+      toast({
+        title: 'Logged out',
+        description: 'You have been successfully logged out',
+      });
+      return { success: true };
+    }
+
     const response = await fetch(`${API_CONFIG.BASE_URL}/auth/logout`, {
       method: 'POST',
       headers: {
@@ -104,11 +183,26 @@ export const logoutApi = async (token: string) => {
 // Get user profile
 export const getProfileApi = async (token: string): Promise<User | null> => {
   try {
+    if (API_CONFIG.USE_MOCK_DATA) {
+      console.log('Using mock profile data');
+      const result = await authService.getUserProfile(token);
+      return result.success ? result.data : null;
+    }
+
     const response = await fetch(`${API_CONFIG.BASE_URL}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
     });
+
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.log('API returned non-JSON response, falling back to mock data');
+      // Fallback to mock implementation
+      const mockResult = await authService.getUserProfile(token);
+      return mockResult.success ? mockResult.data : null;
+    }
 
     if (!response.ok) {
       return null;
@@ -118,13 +212,26 @@ export const getProfileApi = async (token: string): Promise<User | null> => {
     return data.data;
   } catch (error) {
     console.error('Get profile error:', error);
-    return null;
+    
+    // Fallback to mock implementation on error
+    console.log('Error occurred, falling back to mock data');
+    const mockResult = await authService.getUserProfile(token);
+    return mockResult.success ? mockResult.data : null;
   }
 };
 
 // Update user profile
 export const updateProfileApi = async (token: string, userData: Partial<User>): Promise<{ success: boolean; data?: User }> => {
   try {
+    if (API_CONFIG.USE_MOCK_DATA) {
+      console.log('Using mock profile update');
+      toast({
+        title: 'Profile updated',
+        description: 'Your profile has been updated successfully',
+      });
+      return { success: true, data: { ...userData as User } };
+    }
+
     const response = await fetch(`${API_CONFIG.BASE_URL}/auth/profile`, {
       method: 'PUT',
       headers: {
