@@ -22,7 +22,7 @@ import Profile from "./pages/Profile";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import UserManagement from "./pages/UserManagement";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/auth";
 
 // Create a client with production-ready defaults
 const queryClient = new QueryClient({
