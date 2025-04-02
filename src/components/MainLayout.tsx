@@ -17,7 +17,7 @@ export default function MainLayout() {
       <div className="flex h-screen overflow-hidden">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
-          <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
             <div className="flex h-12 md:h-14 items-center justify-between px-2 md:px-4">
               <div className="flex items-center gap-4 ml-8 md:ml-0">
                 {!isMobile && (
@@ -36,7 +36,7 @@ export default function MainLayout() {
               </div>
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-2 md:p-4 lg:p-6">
+          <main className="flex-1 overflow-auto p-0 md:p-4 lg:p-6">
             <Outlet />
           </main>
         </div>

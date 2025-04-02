@@ -41,9 +41,10 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <TooltipProvider>
+          <TooltipProvider delayDuration={isMobile() ? 500 : 300}>
             <Toaster />
-            <Sonner position="top-right" closeButton richColors />
+            <Sonner position="top-right" closeButton richColors 
+                   className="toaster-mobile sm:toaster-desktop" />
             <BrowserRouter>
               <Routes>
                 {/* Public routes */}
@@ -85,6 +86,11 @@ function App() {
       </QueryClientProvider>
     </ErrorBoundary>
   );
+}
+
+// Helper function for mobile detection
+function isMobile() {
+  return typeof window !== 'undefined' && window.innerWidth < 768;
 }
 
 export default App;

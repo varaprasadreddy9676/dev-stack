@@ -60,8 +60,8 @@ export default function UserProfile() {
   if (!user) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
+        <CardHeader className="p-3 md:p-6">
+          <CardTitle className="text-lg md:text-xl">Profile</CardTitle>
           <CardDescription>You need to be logged in to view your profile</CardDescription>
         </CardHeader>
       </Card>
@@ -70,11 +70,11 @@ export default function UserProfile() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Your Profile</CardTitle>
+      <CardHeader className="p-3 md:p-6">
+        <CardTitle className="text-lg md:text-xl">Your Profile</CardTitle>
         <CardDescription>Manage your account information</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -82,15 +82,16 @@ export default function UserProfile() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel className="text-sm md:text-base">Username</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="username"
                       autoComplete="username"
+                      className="text-sm md:text-base"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs md:text-sm" />
                 </FormItem>
               )}
             />
@@ -100,28 +101,30 @@ export default function UserProfile() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-sm md:text-base">Email</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="you@example.com"
                       type="email"
                       autoComplete="email"
                       disabled
+                      className="text-sm md:text-base"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs md:text-sm" />
                 </FormItem>
               )}
             />
 
             <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">Role: <span className="font-medium text-foreground">{user.role}</span></p>
+              <p className="text-xs md:text-sm text-muted-foreground">Role: <span className="font-medium text-foreground">{user.role}</span></p>
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
+              className="w-full md:w-auto text-sm"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
