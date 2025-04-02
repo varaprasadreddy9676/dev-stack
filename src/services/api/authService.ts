@@ -1,4 +1,3 @@
-
 import { API_BASE_URL, handleApiError, delay, shouldUseMockData } from './baseService';
 import { 
   User, 
@@ -30,7 +29,14 @@ export const register = async (
     if (!response.ok) throw data;
     return data;
   } catch (error) {
-    return handleApiError(error, 'Failed to register user') as AuthError;
+    const errorResponse = handleApiError(error, 'Failed to register user') as AuthError;
+    return {
+      ...errorResponse,
+      data: { 
+        user: {} as User, 
+        token: '' 
+      }
+    } as AuthResponse;
   }
 };
 
@@ -55,7 +61,14 @@ export const login = async (
     if (!response.ok) throw data;
     return data;
   } catch (error) {
-    return handleApiError(error, 'Failed to login') as AuthError;
+    const errorResponse = handleApiError(error, 'Failed to login') as AuthError;
+    return {
+      ...errorResponse,
+      data: { 
+        user: {} as User, 
+        token: '' 
+      }
+    } as AuthResponse;
   }
 };
 
@@ -96,7 +109,11 @@ export const getUserProfile = async (token: string): Promise<UserProfileResponse
     if (!response.ok) throw data;
     return data;
   } catch (error) {
-    return handleApiError(error, 'Failed to fetch user profile') as AuthError;
+    const errorResponse = handleApiError(error, 'Failed to fetch user profile') as AuthError;
+    return {
+      ...errorResponse,
+      data: {} as User
+    } as UserProfileResponse;
   }
 };
 
