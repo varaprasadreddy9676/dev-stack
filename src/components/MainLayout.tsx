@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { APP_CONFIG } from "@/config/config";
+import { AuthStatus } from "@/components/AuthStatus";
 
 export default function MainLayout() {
   const isMobile = useIsMobile();
@@ -30,6 +31,7 @@ export default function MainLayout() {
                 </h1>
               </div>
               <div className="flex items-center gap-2">
+                <AuthStatus />
                 <ThemeToggle />
               </div>
             </div>

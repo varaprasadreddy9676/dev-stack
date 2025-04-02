@@ -17,6 +17,12 @@ import CodingGuidelines from "./pages/CodingGuidelines";
 import LanguageGuidelines from "./pages/LanguageGuidelines";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Unauthorized from "./pages/Unauthorized";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Create a client with production-ready defaults
 const queryClient = new QueryClient({
@@ -33,27 +39,43 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner position="top-right" closeButton richColors />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<MainLayout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="projects" element={<ProjectExplorer />} />
-                <Route path="projects/new" element={<NewProject />} />
-                <Route path="projects/:id" element={<ProjectDetail />} />
-                <Route path="projects/:id/edit" element={<ProjectManagement />} />
-                <Route path="components" element={<Components />} />
-                <Route path="guidelines" element={<CodingGuidelines />} />
-                <Route path="guidelines/:id" element={<LanguageGuidelines />} />
-                <Route path="search" element={<SearchResults />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner position="top-right" closeButton richColors />
+            <BrowserRouter>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
+
+                {/* Protected routes within MainLayout */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" element={<MainLayout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="projects" element={<ProjectExplorer />} />
+                    <Route path="profile" element={<Profile />} />
+                    
+                    {/* Role-specific routes */}
+                    <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
+                      <Route path="projects/new" element={<NewProject />} />
+                      <Route path="projects/:id/edit" element={<ProjectManagement />} />
+                    </Route>
+                    
+                    <Route path="projects/:id" element={<ProjectDetail />} />
+                    <Route path="components" element={<Components />} />
+                    <Route path="guidelines" element={<CodingGuidelines />} />
+                    <Route path="guidelines/:id" element={<LanguageGuidelines />} />
+                    <Route path="search" element={<SearchResults />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Route>
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
