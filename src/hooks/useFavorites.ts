@@ -6,7 +6,7 @@ import { toast } from '@/hooks/use-toast';
 export type FavoriteType = 'projects' | 'components' | 'guides' | 'languages';
 
 export function useFavorites(type: FavoriteType) {
-  const { user, updateUserProfile } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,7 +40,7 @@ export function useFavorites(type: FavoriteType) {
           [type]: newFavorites
         };
         
-        await updateUserProfile({ favorites: updatedFavorites });
+        await updateProfile({ favorites: updatedFavorites });
         setFavorites(newFavorites);
         
         toast({
@@ -57,7 +57,7 @@ export function useFavorites(type: FavoriteType) {
           [type]: newFavorites
         };
         
-        await updateUserProfile({ favorites: updatedFavorites });
+        await updateProfile({ favorites: updatedFavorites });
         setFavorites(newFavorites);
         
         toast({
