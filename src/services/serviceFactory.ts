@@ -11,9 +11,10 @@ import {
   mockGuideService 
 } from "./mock/mockService";
 
-// Check if we should use mock data
-// This can be controlled via environment variable or other configuration
-const useMockData = import.meta.env.VITE_USE_MOCK_DATA === "true" || true; // Default to true for development
+import { API_CONFIG } from "@/config/config";
+
+// Use the centralized config to determine if mock data should be used
+const useMockData = API_CONFIG.USE_MOCK_DATA;
 
 // Export the appropriate services based on configuration
 export const projectService = useMockData ? mockProjectService : realProjectService;
