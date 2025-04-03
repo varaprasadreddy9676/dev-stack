@@ -1,203 +1,147 @@
-import { API_BASE_URL, handleApiError, delay, shouldUseMockData } from './baseService';
-import { 
-  User, 
-  AuthResponse, 
-  UserProfileResponse,
-  AuthError
-} from '@/types/auth';
-
-// Registration endpoint
-export const register = async (
-  username: string,
-  email: string,
-  password: string,
-  role: string = 'developer'
-): Promise<AuthResponse> => {
-  try {
-    if (shouldUseMockData()) {
-      await delay();
-      return mockRegister(username, email, role);
+// Mock authentication service
+const authService = {
+  // Login with mock credentials
+  login: async (email: string, password: string) => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Admin user
+    if (email === 'admin@example.com' && password === 'AdminPass123!') {
+      return {
+        success: true,
+        data: {
+          user: {
+            _id: '1',
+            username: 'admin',
+            email: 'admin@example.com',
+            role: 'admin',
+            createdAt: new Date().toISOString(),
+          },
+          token: 'mock-admin-token-xyz',
+        },
+      };
+    }
+    
+    // Content manager user
+    if (email === 'content@example.com' && password === 'ContentPass123!') {
+      return {
+        success: true,
+        data: {
+          user: {
+            _id: '2',
+            username: 'contentmanager',
+            email: 'content@example.com',
+            role: 'content_manager',
+            createdAt: new Date().toISOString(),
+          },
+          token: 'mock-content-manager-token-xyz',
+        },
+      };
+    }
+    
+    // Developer user
+    if (email === 'dev@example.com' && password === 'DevPass123!') {
+      return {
+        success: true,
+        data: {
+          user: {
+            _id: '3',
+            username: 'developer1',
+            email: 'dev@example.com',
+            role: 'developer',
+            createdAt: new Date().toISOString(),
+          },
+          token: 'mock-developer-token-xyz',
+        },
+      };
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password, role }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw data;
-    return data;
-  } catch (error) {
-    const errorResponse = handleApiError(error, 'Failed to register user') as AuthError;
     return {
-      ...errorResponse,
-      data: { 
-        user: {} as User, 
-        token: '' 
-      }
-    } as AuthResponse;
-  }
-};
-
-// Login endpoint
-export const login = async (
-  email: string,
-  password: string
-): Promise<AuthResponse> => {
-  try {
-    if (shouldUseMockData()) {
-      await delay();
-      return mockLogin(email);
-    }
-
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw data;
-    return data;
-  } catch (error) {
-    const errorResponse = handleApiError(error, 'Failed to login') as AuthError;
-    return {
-      ...errorResponse,
-      data: { 
-        user: {} as User, 
-        token: '' 
-      }
-    } as AuthResponse;
-  }
-};
-
-// Logout endpoint
-export const logout = async (token: string): Promise<{ success: boolean; message: string }> => {
-  try {
-    if (shouldUseMockData()) {
-      await delay();
-      return { success: true, message: 'Logged out successfully' };
-    }
-
-    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw data;
-    return data;
-  } catch (error) {
-    return handleApiError(error, 'Failed to logout') as AuthError;
-  }
-};
-
-// Get user profile
-export const getUserProfile = async (token: string): Promise<UserProfileResponse> => {
-  try {
-    if (shouldUseMockData()) {
-      await delay();
-      return mockGetProfile();
-    }
-
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw data;
-    return data;
-  } catch (error) {
-    const errorResponse = handleApiError(error, 'Failed to fetch user profile') as AuthError;
-    return {
-      ...errorResponse,
-      data: {} as User
-    } as UserProfileResponse;
-  }
-};
-
-// Mock implementations for development
-const mockRegister = (username: string, email: string, role: string): AuthResponse => {
-  const mockUserId = Math.random().toString(36).substring(2, 15);
-  const mockToken = `mock_token_${mockUserId}`;
+      success: false,
+      message: 'Invalid email or password',
+    };
+  },
   
-  return {
-    success: true,
-    message: 'User registered successfully',
-    data: {
-      user: {
-        _id: mockUserId,
-        username,
-        email,
-        role: role as 'admin' | 'content_manager' | 'developer',
-        favorites: {
-          languages: [],
-          projects: [],
-          components: [],
-          guides: []
-        }
-      },
-      token: mockToken
-    }
-  };
-};
+  // Register a new user (mock implementation)
+  register: async (username: string, email: string, password: string, role: string = 'developer') => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-const mockLogin = (email: string): AuthResponse => {
-  const mockUserId = Math.random().toString(36).substring(2, 15);
-  const mockToken = `mock_token_${mockUserId}`;
-  
-  // Extract username from email
-  const username = email.split('@')[0];
-  
-  return {
-    success: true,
-    message: 'Login successful',
-    data: {
-      user: {
-        _id: mockUserId,
-        username,
-        email,
-        role: 'developer',
-        favorites: {
-          languages: [],
-          projects: [],
-          components: [],
-          guides: []
-        }
-      },
-      token: mockToken
+    // Check if the email is already registered (very basic check)
+    if (email.endsWith('@example.com')) {
+      return {
+        success: false,
+        message: 'Email already registered',
+      };
     }
-  };
-};
 
-const mockGetProfile = (): UserProfileResponse => {
-  const mockUserId = Math.random().toString(36).substring(2, 15);
-  
-  return {
-    success: true,
-    message: 'User profile retrieved',
-    data: {
-      _id: mockUserId,
-      username: 'mockuser',
-      email: 'mock@example.com',
-      role: 'developer',
-      projects: [],
-      favorites: {
-        languages: [],
-        projects: [],
-        components: [],
-        guides: []
-      },
+    const newUser = {
+      _id: Math.random().toString(36).substring(2, 15), // Generate a random ID
+      username,
+      email,
+      role,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    };
+
+    return {
+      success: true,
+      data: {
+        user: newUser,
+        token: 'mock-new-user-token-xyz',
+      },
+    };
+  },
+
+  // Get user profile (mock implementation)
+  getUserProfile: async (token: string) => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if the token is a valid mock token
+    if (token === 'mock-admin-token-xyz') {
+      return {
+        success: true,
+        data: {
+          _id: '1',
+          username: 'admin',
+          email: 'admin@example.com',
+          role: 'admin',
+          createdAt: new Date().toISOString(),
+        },
+      };
     }
-  };
+
+    if (token === 'mock-content-manager-token-xyz') {
+      return {
+        success: true,
+        data: {
+          _id: '2',
+          username: 'contentmanager',
+          email: 'content@example.com',
+          role: 'content_manager',
+          createdAt: new Date().toISOString(),
+        },
+      };
+    }
+
+    if (token === 'mock-developer-token-xyz') {
+      return {
+        success: true,
+        data: {
+          _id: '3',
+          username: 'developer1',
+          email: 'dev@example.com',
+          role: 'developer',
+          createdAt: new Date().toISOString(),
+        },
+      };
+    }
+
+    return {
+      success: false,
+      message: 'Invalid token',
+    };
+  },
 };
 
-export const authService = {
-  register,
-  login,
-  logout,
-  getUserProfile
-};
+export { authService };

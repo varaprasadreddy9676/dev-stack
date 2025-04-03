@@ -1,10 +1,11 @@
 
-import { Home, Folder, BookOpen, Layout, Settings, Search } from "lucide-react";
+import { Home, Folder, BookOpen, Layout, Settings, Search, Users } from "lucide-react";
 
 export interface NavigationItem {
   name: string;
   href: string;
   icon: React.ElementType;
+  requiredRole?: string[];
 }
 
 export const navigationItems: NavigationItem[] = [
@@ -12,6 +13,7 @@ export const navigationItems: NavigationItem[] = [
   { name: "Projects", href: "/projects", icon: Folder },
   { name: "Components", href: "/components", icon: Layout },
   { name: "Coding Guidelines", href: "/guidelines", icon: BookOpen },
+  { name: "User Management", href: "/users", icon: Users, requiredRole: ["admin"] },
 ];
 
 export const utilityItems: NavigationItem[] = [

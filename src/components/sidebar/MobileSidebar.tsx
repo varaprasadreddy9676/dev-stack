@@ -1,16 +1,13 @@
 
-import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/auth";
 import { Menu, X } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { NavigationItem } from "./sidebarData";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { APP_CONFIG } from "@/config/config";
-
-interface NavigationItem {
-  name: string;
-  href: string;
-  icon: React.ElementType;
-}
 
 interface MobileSidebarProps {
   navigation: NavigationItem[];
@@ -18,76 +15,102 @@ interface MobileSidebarProps {
 }
 
 export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
+  const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { hasPermission } = useAuth();
+
+  // Function to determine if an item should be shown based on required role
+  const shouldShowItem = (item: NavigationItem) => {
+    if (!item.requiredRole) return true;
+    return hasPermission(item.requiredRole);
+  };
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="fixed left-4 top-3 z-40 rounded-md p-2 text-foreground bg-background/80 backdrop-blur-sm border">
-          <Menu size={20} />
-          <span className="sr-only">Toggle Menu</span>
-        </button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden"
+        >
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Toggle menu</span>
+        </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="p-0 w-[280px] max-w-[85vw] border-r solid-bg">
+      <SheetContent side="left" className="p-0">
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-            <Link to="/" className="flex items-center">
-              <div className="text-primary font-bold text-xl">{APP_CONFIG.APP_NAME}</div>
-            </Link>
-            {/* SheetClose is handled by the Sheet component */}
+          <div className="flex items-center justify-between border-b px-4 py-2">
+            <span className="font-semibold text-lg">DevHub</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setOpen(false)}
+            >
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close menu</span>
+            </Button>
           </div>
           
-          <div className="space-y-4 flex-1 py-4 overflow-y-auto">
-            <div className="px-3">
-              <h2 className="mb-2 text-sidebar-foreground/70 text-xs font-semibold uppercase tracking-wider px-2">
-                Navigation
-              </h2>
-              <nav className="space-y-1">
-                {navigation.map((item) => (
-                  <SheetClose key={item.name} asChild>
-                    <Link
-                      to={item.href}
-                      className={cn(
-                        buttonVariants({ variant: "ghost" }),
-                        "w-full justify-start px-3 py-2 h-auto text-base",
-                        location.pathname === item.href
-                          ? "bg-sidebar-accent text-sidebar-primary"
-                          : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      )}
-                    >
-                      <item.icon className="h-5 w-5 mr-3" />
-                      <span>{item.name}</span>
-                    </Link>
-                  </SheetClose>
-                ))}
-              </nav>
+          <nav className="flex-1 overflow-auto px-2 py-4 bg-background">
+            <div className="space-y-1">
+              {navigation.filter(shouldShowItem).map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center px-2 py-2 text-base font-medium rounded-md",
+                    location.pathname === item.href
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                  onClick={() => setOpen(false)}
+                >
+                  <item.icon
+                    className={cn(
+                      "mr-4 h-5 w-5 flex-shrink-0",
+                      location.pathname === item.href
+                        ? "text-accent-foreground"
+                        : "text-muted-foreground"
+                    )}
+                    aria-hidden="true"
+                  />
+                  {item.name}
+                </Link>
+              ))}
             </div>
-
-            <div className="px-3">
-              <h2 className="mb-2 text-sidebar-foreground/70 text-xs font-semibold uppercase tracking-wider px-2">
+            
+            <div className="mt-10">
+              <p className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Utilities
-              </h2>
-              <nav className="space-y-1">
-                {utilities.map((item) => (
-                  <SheetClose key={item.name} asChild>
-                    <Link
-                      to={item.href}
+              </p>
+              <div className="mt-2 space-y-1">
+                {utilities.filter(shouldShowItem).map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      "flex items-center px-2 py-2 text-base font-medium rounded-md",
+                      location.pathname === item.href
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                    onClick={() => setOpen(false)}
+                  >
+                    <item.icon
                       className={cn(
-                        buttonVariants({ variant: "ghost" }),
-                        "w-full justify-start px-3 py-2 h-auto text-base",
+                        "mr-4 h-5 w-5 flex-shrink-0",
                         location.pathname === item.href
-                          ? "bg-sidebar-accent text-sidebar-primary"
-                          : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                          ? "text-accent-foreground"
+                          : "text-muted-foreground"
                       )}
-                    >
-                      <item.icon className="h-5 w-5 mr-3" />
-                      <span>{item.name}</span>
-                    </Link>
-                  </SheetClose>
+                      aria-hidden="true"
+                    />
+                    {item.name}
+                  </Link>
                 ))}
-              </nav>
+              </div>
             </div>
-          </div>
+          </nav>
         </div>
       </SheetContent>
     </Sheet>
