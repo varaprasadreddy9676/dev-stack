@@ -1,6 +1,6 @@
 
 import React from "react";
-import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
+import DocViewer, { DocViewerRenderers, ITheme } from "@cyntler/react-doc-viewer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 
@@ -23,6 +23,16 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
   documents,
   title = "Document Viewer"
 }) => {
+  // Create a custom theme that uses our app's colors
+  const customTheme: ITheme = {
+    primary: "rgb(var(--primary))",
+    secondary: "rgb(var(--secondary))",
+    tertiary: "#f5f5f5",
+    textPrimary: "rgb(var(--foreground))",
+    textSecondary: "rgb(var(--muted-foreground))"
+    // 'background' is not a valid property in ITheme, so we've removed it
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] h-auto overflow-hidden">
@@ -34,26 +44,22 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
             <DocViewer
               documents={documents}
               pluginRenderers={DocViewerRenderers}
-              theme={{
-                primary: "rgb(var(--primary))",
-                secondary: "rgb(var(--secondary))",
-                tertiary: "#f5f5f5",
-                textPrimary: "rgb(var(--foreground))",
-                textSecondary: "rgb(var(--muted-foreground))",
-                background: "rgb(var(--background))"
-              }}
+              theme={customTheme}
               style={{ height: "100%" }}
               config={{
-                loadingRenderer: () => (
-                  <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                    <span className="ml-2">Loading document...</span>
-                  </div>
-                ),
                 header: {
                   disableFileName: false,
                   disableHeader: false,
                   retainURLParams: false
+                },
+                // Fix for the loadingRenderer - provide it as a component reference instead of a direct function
+                loadingRenderer: {
+                  overrideComponent: () => (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                      <span className="ml-2">Loading document...</span>
+                    </div>
+                  )
                 }
               }}
             />
