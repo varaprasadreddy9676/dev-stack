@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -25,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { ProjectData } from "@/types/project";
 import { updateArrayItem, removeArrayItem } from "@/utils/projectHelpers";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import DocumentViewer from "@/components/common/DocumentViewer";
 
 interface ProjectResourcesProps {
   project: ProjectData;
@@ -60,6 +60,7 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
     description: ""
   });
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [viewDocument, setViewDocument] = useState<ResourceType | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +108,14 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
   const removeResource = (index: number) => {
     const updatedResources = removeArrayItem(resources, index);
     setResources(updatedResources);
+  };
+  
+  const handleViewResource = (resource: ResourceType) => {
+    setViewDocument(resource);
+  };
+  
+  const closeDocumentViewer = () => {
+    setViewDocument(null);
   };
 
   return (
@@ -302,7 +311,14 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
                         <p className="text-sm text-muted-foreground mt-1">
                           {resource.description}
                         </p>
-                        <div className="mt-2">
+                        <div className="mt-2 flex gap-2 flex-wrap">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleViewResource(resource as ResourceType)}
+                          >
+                            View Document
+                          </Button>
                           <a 
                             href={resource.url} 
                             target="_blank" 
@@ -322,6 +338,14 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
           </div>
         )}
       </CardContent>
+      
+      {viewDocument && (
+        <DocumentViewer
+          isOpen={!!viewDocument}
+          onClose={closeDocumentViewer}
+          document={viewDocument}
+        />
+      )}
     </Card>
   );
 };
