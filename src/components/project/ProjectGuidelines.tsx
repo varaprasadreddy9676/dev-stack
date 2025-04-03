@@ -31,9 +31,8 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
       guidelines: {
         ...project.guidelines,
         content,
-        lastUpdated: new Date().toISOString(), // Convert Date to ISO string
-        // In a real app, this would be the current user's ID
-        updatedBy: "user123"
+        lastUpdated: new Date().toISOString(),
+        updatedBy: "user123" // In a real app, this would be the current user's ID
       }
     };
     
@@ -42,11 +41,11 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between p-4 md:p-6">
         <div>
-          <CardTitle>Project Guidelines</CardTitle>
-          <CardDescription>Best practices and standards</CardDescription>
+          <CardTitle className="text-lg md:text-xl">Project Guidelines</CardTitle>
+          <CardDescription className="text-sm md:text-base">Best practices and standards</CardDescription>
         </div>
         {isEditing ? (
           <div className="flex gap-2">
@@ -54,6 +53,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
               variant="outline" 
               size="sm" 
               onClick={() => setIsEditing(false)}
+              className="h-9 md:h-10 min-w-[80px] touch-friendly"
             >
               <XIcon className="h-4 w-4 mr-2" />
               Cancel
@@ -62,6 +62,7 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
               variant="default" 
               size="sm" 
               onClick={handleSubmit}
+              className="h-9 md:h-10 min-w-[80px] touch-friendly"
             >
               <SaveIcon className="h-4 w-4 mr-2" />
               Save
@@ -72,22 +73,23 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
             variant="outline" 
             size="sm" 
             onClick={() => setIsEditing(true)}
+            className="h-9 md:h-10 min-w-[80px] touch-friendly"
           >
             <PencilIcon className="h-4 w-4 mr-2" />
             Edit
           </Button>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 md:p-6 pt-2 md:pt-4">
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <RichTextEditor 
                 value={content} 
                 onChange={setContent}
                 allowHtml={true}
               />
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground mt-3">
                 Last updated: {formatDate(project.guidelines.lastUpdated)}
               </p>
             </div>
@@ -98,19 +100,21 @@ const ProjectGuidelines: React.FC<ProjectGuidelinesProps> = ({ project, onSave }
               <ReactMarkdown 
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                  h1: ({node, ...props}) => <h1 className="text-3xl font-bold mb-4" {...props} />,
-                  h2: ({node, ...props}) => <h2 className="text-2xl font-semibold mt-6 mb-3" {...props} />,
-                  p: ({node, ...props}) => <p className="mb-4 leading-relaxed" {...props} />,
-                  ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4" {...props} />,
-                  ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4" {...props} />,
-                  code: ({node, ...props}) => <code className="bg-gray-100 rounded px-1 py-0.5 text-sm" {...props} />
+                  h1: ({node, ...props}) => <h1 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-xl md:text-2xl font-semibold mt-5 md:mt-6 mb-2 md:mb-3" {...props} />,
+                  h3: ({node, ...props}) => <h3 className="text-lg md:text-xl font-medium mt-4 md:mt-5 mb-2" {...props} />,
+                  p: ({node, ...props}) => <p className="mb-3 md:mb-4 leading-relaxed text-sm md:text-base" {...props} />,
+                  ul: ({node, ...props}) => <ul className="list-disc pl-5 md:pl-6 mb-3 md:mb-4 text-sm md:text-base" {...props} />,
+                  ol: ({node, ...props}) => <ol className="list-decimal pl-5 md:pl-6 mb-3 md:mb-4 text-sm md:text-base" {...props} />,
+                  li: ({node, ...props}) => <li className="mb-1 md:mb-2" {...props} />,
+                  code: ({node, ...props}) => <code className="bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5 text-sm" {...props} />
                 }}
               >
                 {content}
               </ReactMarkdown>
             </div>
             
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs md:text-sm text-muted-foreground pt-3 border-t">
               Last updated: {formatDate(project.guidelines.lastUpdated)}
             </div>
           </div>
