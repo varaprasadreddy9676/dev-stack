@@ -17,7 +17,8 @@ import {
   Link as LinkIcon,
   FileText as FileTextIcon,
   Play as PlayIcon,
-  ExternalLink as ExternalLinkIcon
+  ExternalLink as ExternalLinkIcon,
+  Eye as EyeIcon
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { ProjectData } from "@/types/project";
 import { updateArrayItem, removeArrayItem } from "@/utils/projectHelpers";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import DocumentViewer from "@/components/common/DocumentViewer";
 
 interface ProjectResourcesProps {
   project: ProjectData;
@@ -33,7 +35,7 @@ interface ProjectResourcesProps {
 
 interface ResourceType {
   title: string;
-  type: "link" | "pdf" | "video";
+  type: "link" | "pdf" | "video" | "doc" | "docx" | "ppt" | "pptx" | "xls" | "xlsx" | "txt";
   url: string;
   description: string;
 }
@@ -41,7 +43,19 @@ interface ResourceType {
 const ResourceTypeIcons = {
   link: <LinkIcon className="h-4 w-4" />,
   pdf: <FileTextIcon className="h-4 w-4" />,
+  doc: <FileTextIcon className="h-4 w-4" />,
+  docx: <FileTextIcon className="h-4 w-4" />,
+  ppt: <FileTextIcon className="h-4 w-4" />,
+  pptx: <FileTextIcon className="h-4 w-4" />,
+  xls: <FileTextIcon className="h-4 w-4" />,
+  xlsx: <FileTextIcon className="h-4 w-4" />,
+  txt: <FileTextIcon className="h-4 w-4" />,
   video: <PlayIcon className="h-4 w-4" />
+};
+
+const isViewableDocument = (type: string): boolean => {
+  const viewableTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'];
+  return viewableTypes.includes(type.toLowerCase());
 };
 
 const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) => {
@@ -49,7 +63,7 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
   const [resources, setResources] = useState<ResourceType[]>(
     project.resources.map(resource => ({
       ...resource,
-      type: resource.type as "link" | "pdf" | "video"
+      type: resource.type as ResourceType["type"]
     }))
   );
   const [showNewResourceForm, setShowNewResourceForm] = useState<boolean>(false);
@@ -60,6 +74,7 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
     description: ""
   });
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [viewingDocument, setViewingDocument] = useState<{ resource: ResourceType, isOpen: boolean } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +122,13 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
   const removeResource = (index: number) => {
     const updatedResources = removeArrayItem(resources, index);
     setResources(updatedResources);
+  };
+
+  const viewDocument = (resource: ResourceType) => {
+    setViewingDocument({ 
+      resource, 
+      isOpen: true 
+    });
   };
 
   return (
@@ -189,7 +211,7 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
                     <Label htmlFor="resource-type">Type</Label>
                     <Select 
                       value={newResource.type}
-                      onValueChange={(value: "link" | "pdf" | "video") => setNewResource(prev => ({ 
+                      onValueChange={(value: ResourceType["type"]) => setNewResource(prev => ({ 
                         ...prev, 
                         type: value
                       }))}
@@ -200,6 +222,13 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
                       <SelectContent>
                         <SelectItem value="link">Link</SelectItem>
                         <SelectItem value="pdf">PDF</SelectItem>
+                        <SelectItem value="doc">Word Document (.doc)</SelectItem>
+                        <SelectItem value="docx">Word Document (.docx)</SelectItem>
+                        <SelectItem value="ppt">PowerPoint (.ppt)</SelectItem>
+                        <SelectItem value="pptx">PowerPoint (.pptx)</SelectItem>
+                        <SelectItem value="xls">Excel (.xls)</SelectItem>
+                        <SelectItem value="xlsx">Excel (.xlsx)</SelectItem>
+                        <SelectItem value="txt">Text File (.txt)</SelectItem>
                         <SelectItem value="video">Video</SelectItem>
                       </SelectContent>
                     </Select>
@@ -295,14 +324,25 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
                   <div key={index} className="py-4 first:pt-0 last:pb-0">
                     <div className="flex items-start">
                       <div className="mr-3 mt-1">
-                        {ResourceTypeIcons[resource.type as "link" | "pdf" | "video"]}
+                        {ResourceTypeIcons[resource.type as keyof typeof ResourceTypeIcons] || <FileTextIcon className="h-4 w-4" />}
                       </div>
                       <div className="flex-1">
                         <h3 className="text-lg font-medium">{resource.title}</h3>
                         <p className="text-sm text-muted-foreground mt-1">
                           {resource.description}
                         </p>
-                        <div className="mt-2">
+                        <div className="mt-2 flex gap-2">
+                          {isViewableDocument(resource.type) && (
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              onClick={() => viewDocument(resource as ResourceType)}
+                              className="h-8"
+                            >
+                              <EyeIcon className="h-3.5 w-3.5 mr-1.5" />
+                              View Document
+                            </Button>
+                          )}
                           <a 
                             href={resource.url} 
                             target="_blank" 
@@ -322,6 +362,22 @@ const ProjectResources: React.FC<ProjectResourcesProps> = ({ project, onSave }) 
           </div>
         )}
       </CardContent>
+
+      {/* Document Viewer */}
+      {viewingDocument && (
+        <DocumentViewer
+          isOpen={viewingDocument.isOpen}
+          onClose={() => setViewingDocument(null)}
+          documents={[
+            {
+              uri: viewingDocument.resource.url,
+              fileName: viewingDocument.resource.title,
+              fileType: viewingDocument.resource.type
+            }
+          ]}
+          title={viewingDocument.resource.title}
+        />
+      )}
     </Card>
   );
 };
