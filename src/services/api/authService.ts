@@ -1,4 +1,7 @@
+
 // Mock authentication service
+import { User, Role } from '@/types/auth';
+
 const authService = {
   // Login with mock credentials
   login: async (email: string, password: string) => {
@@ -14,7 +17,7 @@ const authService = {
             _id: '1',
             username: 'admin',
             email: 'admin@example.com',
-            role: 'admin',
+            role: 'admin' as Role,
             createdAt: new Date().toISOString(),
           },
           token: 'mock-admin-token-xyz',
@@ -31,7 +34,7 @@ const authService = {
             _id: '2',
             username: 'contentmanager',
             email: 'content@example.com',
-            role: 'content_manager',
+            role: 'content_manager' as Role,
             createdAt: new Date().toISOString(),
           },
           token: 'mock-content-manager-token-xyz',
@@ -48,7 +51,7 @@ const authService = {
             _id: '3',
             username: 'developer1',
             email: 'dev@example.com',
-            role: 'developer',
+            role: 'developer' as Role,
             createdAt: new Date().toISOString(),
           },
           token: 'mock-developer-token-xyz',
@@ -75,11 +78,17 @@ const authService = {
       };
     }
 
+    // Ensure role is valid
+    let validRole: Role = 'developer';
+    if (role === 'admin' || role === 'content_manager' || role === 'developer') {
+      validRole = role as Role;
+    }
+
     const newUser = {
       _id: Math.random().toString(36).substring(2, 15), // Generate a random ID
       username,
       email,
-      role,
+      role: validRole,
       createdAt: new Date().toISOString(),
     };
 
@@ -105,7 +114,7 @@ const authService = {
           _id: '1',
           username: 'admin',
           email: 'admin@example.com',
-          role: 'admin',
+          role: 'admin' as Role,
           createdAt: new Date().toISOString(),
         },
       };
@@ -118,7 +127,7 @@ const authService = {
           _id: '2',
           username: 'contentmanager',
           email: 'content@example.com',
-          role: 'content_manager',
+          role: 'content_manager' as Role,
           createdAt: new Date().toISOString(),
         },
       };
@@ -131,7 +140,7 @@ const authService = {
           _id: '3',
           username: 'developer1',
           email: 'dev@example.com',
-          role: 'developer',
+          role: 'developer' as Role,
           createdAt: new Date().toISOString(),
         },
       };

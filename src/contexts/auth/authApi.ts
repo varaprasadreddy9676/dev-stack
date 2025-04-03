@@ -1,6 +1,6 @@
 
 import { API_CONFIG } from '@/config/config';
-import { User } from '@/types/auth';
+import { User, Role } from '@/types/auth';
 import { toast } from '@/hooks/use-toast';
 import { authService } from '@/services/api/authService';
 
@@ -196,7 +196,17 @@ export const getProfileApi = async (token: string): Promise<User | null> => {
     if (API_CONFIG.USE_MOCK_DATA) {
       console.log('Using mock profile data');
       const result = await authService.getUserProfile(token);
-      return result.success ? result.data : null;
+      
+      // Validate role type before returning
+      if (result.success) {
+        // Make sure the role is one of the allowed types
+        const validRole = validateRole(result.data.role);
+        return {
+          ...result.data,
+          role: validRole
+        };
+      }
+      return null;
     }
 
     const response = await fetch(`${API_CONFIG.BASE_URL}/auth/me`, {
@@ -211,7 +221,15 @@ export const getProfileApi = async (token: string): Promise<User | null> => {
       console.log('API returned non-JSON response, falling back to mock data');
       // Fallback to mock implementation
       const mockResult = await authService.getUserProfile(token);
-      return mockResult.success ? mockResult.data : null;
+      if (mockResult.success) {
+        // Make sure the role is one of the allowed types
+        const validRole = validateRole(mockResult.data.role);
+        return {
+          ...mockResult.data,
+          role: validRole
+        };
+      }
+      return null;
     }
 
     if (!response.ok) {
@@ -219,15 +237,36 @@ export const getProfileApi = async (token: string): Promise<User | null> => {
     }
 
     const data = await response.json();
-    return data.data;
+    // Ensure the role is valid
+    const userData = data.data;
+    userData.role = validateRole(userData.role);
+    return userData;
   } catch (error) {
     console.error('Get profile error:', error);
     
     // Fallback to mock implementation on error
     console.log('Error occurred, falling back to mock data');
     const mockResult = await authService.getUserProfile(token);
-    return mockResult.success ? mockResult.data : null;
+    if (mockResult.success) {
+      // Make sure the role is one of the allowed types
+      const validRole = validateRole(mockResult.data.role);
+      return {
+        ...mockResult.data,
+        role: validRole
+      };
+    }
+    return null;
   }
+};
+
+// Helper function to validate role strings
+const validateRole = (role: string): Role => {
+  // Check if role is one of the allowed values, or default to 'developer'
+  if (role === 'admin' || role === 'content_manager' || role === 'developer') {
+    return role as Role;
+  }
+  console.warn(`Invalid role "${role}" provided, defaulting to "developer"`);
+  return 'developer';
 };
 
 // Update user profile
