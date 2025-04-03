@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Eye, EyeOff, LogIn } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -41,10 +42,30 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
+      // Make login attempt
       const success = await login(data.email, data.password);
+      
       if (success) {
+        toast({
+          title: "Login successful",
+          description: "Welcome to DevHub",
+        });
         navigate("/");
+      } else {
+        // This will only show if the login function itself doesn't show a toast
+        toast({
+          title: "Login failed",
+          description: "Please check your credentials and try again",
+          variant: "destructive",
+        });
       }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +163,11 @@ export default function LoginForm() {
       </Form>
 
       <div className="text-center text-sm">
-        <p className="text-muted-foreground">
+        <div className="text-muted-foreground">
+          <p>For testing, use these demo credentials:</p>
+          <p className="font-semibold mt-1">admin@example.com / AdminPass123!</p>
+        </div>
+        <p className="text-muted-foreground mt-2">
           Contact an administrator if you need an account.
         </p>
       </div>

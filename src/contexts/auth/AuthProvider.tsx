@@ -4,6 +4,7 @@ import { User } from '@/types/auth';
 import { AuthContextType } from './types';
 import { isTokenExpired, saveToken, getStoredToken, removeToken } from './tokenUtils';
 import { loginApi, registerApi, logoutApi, getProfileApi, updateProfileApi } from './authApi';
+import { toast } from '@/hooks/use-toast';
 
 // Create the context with undefined initial value
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,30 +20,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
   // Initialize auth state from localStorage
   useEffect(() => {
-    const storedToken = getStoredToken();
-    
-    if (storedToken) {
-      // Check if token is expired
-      if (isTokenExpired(storedToken)) {
-        console.log('Token expired, logging out');
-        handleLogout();
-        setIsLoading(false);
-        return;
-      }
-      
-      setToken(storedToken);
-      getProfile().then(userData => {
-        if (userData) {
-          setUser(userData);
-        } else {
-          // Token is invalid, clear it
-          handleLogout();
+    const initAuth = async () => {
+      try {
+        const storedToken = getStoredToken();
+        
+        if (storedToken) {
+          // Check if token is expired
+          if (isTokenExpired(storedToken)) {
+            console.log('Token expired, logging out');
+            handleLogout();
+            setIsLoading(false);
+            return;
+          }
+          
+          setToken(storedToken);
+          const userData = await getProfile();
+          if (userData) {
+            setUser(userData);
+          } else {
+            // Token is invalid, clear it
+            handleLogout();
+          }
         }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        handleLogout();
+      } finally {
         setIsLoading(false);
-      });
-    } else {
-      setIsLoading(false);
-    }
+      }
+    };
+    
+    initAuth();
   }, []);
 
   const saveAuthData = (data: { user: User; token: string }) => {
@@ -63,34 +71,72 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     password: string, 
     role: string = 'developer'
   ): Promise<boolean> => {
-    const result = await registerApi(username, email, password, role, token);
-    
-    if (result.success && result.data) {
-      // Only save auth data if we're registering the current user
-      // For admin creating other users, we don't want to switch to that user
-      if (!token) {
-        saveAuthData(result.data);
+    try {
+      const result = await registerApi(username, email, password, role, token);
+      
+      if (result.success && result.data) {
+        // Only save auth data if we're registering the current user
+        // For admin creating other users, we don't want to switch to that user
+        if (!token) {
+          saveAuthData(result.data);
+          toast({
+            title: 'Registration successful',
+            description: 'Your account has been created',
+          });
+        } else {
+          toast({
+            title: 'User created',
+            description: `${username} has been added successfully`,
+          });
+        }
+        return true;
+      } else {
+        toast({
+          title: 'Registration failed',
+          description: 'Could not create the account',
+          variant: 'destructive',
+        });
+        return false;
       }
-      return true;
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: 'Registration error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+      return false;
     }
-    
-    return false;
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    const result = await loginApi(email, password);
-    
-    if (result.success && result.data) {
-      saveAuthData(result.data);
-      return true;
+    try {
+      const result = await loginApi(email, password);
+      
+      if (result.success && result.data) {
+        saveAuthData(result.data);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error('Login error in AuthProvider:', error);
+      return false;
     }
-    
-    return false;
   };
 
   const logout = async (): Promise<void> => {
     if (token) {
-      await logoutApi(token);
+      try {
+        await logoutApi(token);
+        toast({
+          title: 'Logged out',
+          description: 'You have been successfully logged out',
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Still proceed with local logout even if API call fails
+      }
     }
     
     // Always clean up local state regardless of server response
@@ -98,17 +144,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const getProfile = async (): Promise<User | null> => {
-    const storedToken = token || getStoredToken();
-    
-    if (!storedToken) {
+    try {
+      const storedToken = token || getStoredToken();
+      
+      if (!storedToken) {
+        return null;
+      }
+
+      const userData = await getProfileApi(storedToken);
+      if (userData) {
+        setUser(userData);
+      }
+      return userData;
+    } catch (error) {
+      console.error('Get profile error:', error);
       return null;
     }
-
-    const userData = await getProfileApi(storedToken);
-    if (userData) {
-      setUser(userData);
-    }
-    return userData;
   };
 
   const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
@@ -116,14 +167,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return false;
     }
 
-    const result = await updateProfileApi(token, userData);
-    
-    if (result.success && result.data) {
-      setUser(prevUser => prevUser ? { ...prevUser, ...result.data } : null);
-      return true;
+    try {
+      const result = await updateProfileApi(token, userData);
+      
+      if (result.success && result.data) {
+        setUser(prevUser => prevUser ? { ...prevUser, ...result.data } : null);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Update profile error:', error);
+      return false;
     }
-    
-    return false;
   };
 
   // Check if user has the required role

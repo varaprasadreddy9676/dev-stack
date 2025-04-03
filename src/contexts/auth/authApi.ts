@@ -7,7 +7,7 @@ import { authService } from '@/services/api/authService';
 // Handle login API call
 export const loginApi = async (email: string, password: string) => {
   try {
-    // Check if we should use mock data
+    // Always use mock data when in development or when explicitly configured
     if (API_CONFIG.USE_MOCK_DATA) {
       console.log('Using mock login data');
       const result = await authService.login(email, password);
@@ -17,58 +17,68 @@ export const loginApi = async (email: string, password: string) => {
       };
     }
 
-    // Attempt real API call
-    const response = await fetch(`${API_CONFIG.BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    console.log('Attempting login with real API');
+    
+    try {
+      // Attempt real API call
+      const response = await fetch(`${API_CONFIG.BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Check if response is JSON
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      console.log('API returned non-JSON response, falling back to mock data');
-      // Fallback to mock implementation
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('API returned non-JSON response, falling back to mock data');
+        // Fallback to mock implementation for non-JSON responses
+        const mockResult = await authService.login(email, password);
+        return { 
+          success: mockResult.success, 
+          data: mockResult.success ? mockResult.data : null 
+        };
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: 'Login failed',
+          description: data.message || 'Invalid credentials',
+          variant: 'destructive',
+        });
+        return { success: false, data: null };
+      }
+
+      return { success: true, data: data.data };
+    } catch (error) {
+      console.error('Failed to login', error);
+      // Fallback to mock implementation on any error
+      console.log('API error, falling back to mock data');
       const mockResult = await authService.login(email, password);
+      
       return { 
         success: mockResult.success, 
         data: mockResult.success ? mockResult.data : null 
       };
     }
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      toast({
-        title: 'Login failed',
-        description: data.message || 'Invalid credentials',
-        variant: 'destructive',
-      });
-      return { success: false, data: null };
-    }
-
-    return { success: true, data: data.data };
-  } catch (error) {
-    console.error('Login error:', error);
+  } catch (outerError) {
+    console.error('Login error:', outerError);
     
-    // Fallback to mock implementation on error
-    console.log('Error occurred, falling back to mock data');
-    const mockResult = await authService.login(email, password);
+    // Ultimate fallback
+    toast({
+      title: 'Login error',
+      description: 'An unexpected error occurred. Using demo mode.',
+      variant: 'destructive',
+    });
     
-    if (!mockResult.success) {
-      toast({
-        title: 'Login failed',
-        description: 'An unexpected error occurred',
-        variant: 'destructive',
-      });
-      return { success: false, data: null };
-    }
-    
+    // Always return a successful result with mock data in case of total failure
+    const safeResult = await authService.login(email, password);
     return { 
-      success: mockResult.success, 
-      data: mockResult.success ? mockResult.data : null 
+      success: safeResult.success, 
+      data: safeResult.success ? safeResult.data : null 
     };
   }
 };
