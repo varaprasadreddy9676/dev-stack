@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -41,14 +41,7 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between border-b px-4 py-2">
             <span className="font-semibold text-lg">DevHub</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setOpen(false)}
-            >
-              <X className="h-5 w-5" />
-              <span className="sr-only">Close menu</span>
-            </Button>
+            {/* Removed the manual close button here as SheetContent already provides one */}
           </div>
           
           <nav className="flex-1 overflow-auto px-2 py-4 bg-background">

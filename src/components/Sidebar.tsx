@@ -4,6 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileSidebar } from "./sidebar/MobileSidebar";
 import { DesktopSidebar } from "./sidebar/DesktopSidebar";
 import { navigationItems, utilityItems } from "./sidebar/sidebarData";
+import { useSidebar } from "./ui/sidebar";
 
 interface SidebarProps {
   className?: string;
@@ -12,6 +13,7 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const isMobile = useIsMobile();
+  const { state, toggleSidebar } = useSidebar();
 
   // Set sidebar expanded on larger screens, collapsed on mobile by default
   useEffect(() => {
@@ -23,7 +25,11 @@ export function Sidebar({ className }: SidebarProps) {
     }
   }, [isMobile]);
 
-  const toggleSidebar = () => {
+  const handleToggleSidebar = () => {
+    // Use the sidebar context's toggle function
+    toggleSidebar();
+    
+    // Also maintain our local collapsed state
     const newState = !collapsed;
     setCollapsed(newState);
     localStorage.setItem("sidebar-collapsed", JSON.stringify(newState));
@@ -39,8 +45,8 @@ export function Sidebar({ className }: SidebarProps) {
     <DesktopSidebar
       navigation={navigationItems}
       utilities={utilityItems}
-      collapsed={collapsed}
-      toggleSidebar={toggleSidebar}
+      collapsed={state === "collapsed"}
+      toggleSidebar={handleToggleSidebar}
       className={className}
     />
   );
