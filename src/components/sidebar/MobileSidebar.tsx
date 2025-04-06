@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NavigationItem } from "./sidebarData";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface MobileSidebarProps {
   navigation: NavigationItem[];
@@ -15,7 +16,7 @@ interface MobileSidebarProps {
 }
 
 export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
-  const [open, setOpen] = useState(false);
+  const { openMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
   const { hasPermission } = useAuth();
 
@@ -26,7 +27,7 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
   };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={openMobile} onOpenChange={setOpenMobile}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
@@ -41,7 +42,6 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between border-b px-4 py-2">
             <span className="font-semibold text-lg">DevHub</span>
-            {/* Removed the manual close button here as SheetContent already provides one */}
           </div>
           
           <nav className="flex-1 overflow-auto px-2 py-4 bg-background">
@@ -56,7 +56,7 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
-                  onClick={() => setOpen(false)}
+                  onClick={() => setOpenMobile(false)}
                 >
                   <item.icon
                     className={cn(
@@ -87,7 +87,7 @@ export function MobileSidebar({ navigation, utilities }: MobileSidebarProps) {
                         ? "bg-accent text-accent-foreground"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
-                    onClick={() => setOpen(false)}
+                    onClick={() => setOpenMobile(false)}
                   >
                     <item.icon
                       className={cn(
