@@ -6,7 +6,7 @@ export interface ProjectTroubleshootingProps {
     _id: string;
     name: string;
   };
-  onSave: (updatedData: any) => Promise<void>;
+  onSave?: (updatedData: any) => Promise<void>;
 }
 
 export interface TroubleshootingCardProps {
