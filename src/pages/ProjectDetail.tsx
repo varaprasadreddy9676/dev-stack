@@ -7,7 +7,7 @@ import { formatDate } from "@/utils/dateFormatUtils";
 
 // Sample data - would typically come from API
 const projectData = {
-  _id: "proj123", // Changed from 'id' to '_id' to match ProjectData interface
+  _id: "proj123",
   name: "Customer Portal",
   description: "Frontend application for customer account management and service requests",
   overview: "The Customer Portal serves as the primary interface for customers to manage their accounts, submit service requests, and view usage analytics. It's built with a focus on user experience and performance.",
@@ -65,7 +65,7 @@ const projectData = {
   guidelines: {
     content: "Follow these guidelines when contributing to the project...",
     lastUpdated: "2024-03-01T10:30:00Z",
-    updatedBy: "user123" // Added missing updatedBy property to match the interface
+    updatedBy: "user123"
   },
   components: [
     "Button",
@@ -99,13 +99,13 @@ const projectData = {
         {
           steps: "Clear browser cookies and cache, then attempt login again",
           code: "// No code needed for this solution",
-          resources: [] // Added required resources array
+          resources: []
         }
       ],
-      relatedIssues: [], // Added required relatedIssues array
+      relatedIssues: [],
       tags: ["authentication", "login"],
       lastUpdated: "2024-03-20T00:00:00Z",
-      updatedBy: "user123" // Added missing updatedBy property
+      updatedBy: "user123"
     },
     {
       id: "issue2",
@@ -119,13 +119,13 @@ const projectData = {
         {
           steps: "Implement data pagination to reduce initial load",
           code: "// Example code for pagination",
-          resources: [] // Added required resources array
+          resources: []
         }
       ],
-      relatedIssues: [], // Added required relatedIssues array
+      relatedIssues: [],
       tags: ["performance", "dashboard"],
       lastUpdated: "2024-03-18T00:00:00Z",
-      updatedBy: "user456" // Added missing updatedBy property
+      updatedBy: "user456"
     }
   ],
   tags: ["react", "typescript", "customer-facing"],
@@ -138,6 +138,7 @@ const projectData = {
   ]
 };
 
+// Ensure components and guides are always arrays
 const components = [
   {
     id: "comp1",
@@ -183,12 +184,7 @@ const ProjectDetail = () => {
   
   // Format date function
   const formatDateString = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(date);
+    return formatDate(dateString);
   };
 
   const handleViewComponent = (componentId: string) => {
@@ -199,18 +195,26 @@ const ProjectDetail = () => {
     console.log(`Navigate to guide detail: ${guideId}`);
   };
 
+  // Add defensive checks to ensure we have arrays
+  const safeProjectData = {
+    ...projectData,
+    components: Array.isArray(projectData.components) ? projectData.components : [],
+    resources: Array.isArray(projectData.resources) ? projectData.resources : [],
+    troubleshooting: Array.isArray(projectData.troubleshooting) ? projectData.troubleshooting : []
+  };
+
   return (
     <div className="container py-10 animate-fade-in">
       <ProjectHeader
-        id={projectData._id} // Updated to use _id instead of id
-        name={projectData.name}
-        description={projectData.description}
-        tags={projectData.tags}
+        id={safeProjectData._id}
+        name={safeProjectData.name}
+        description={safeProjectData.description}
+        tags={Array.isArray(safeProjectData.tags) ? safeProjectData.tags : []}
       />
       
       <ProjectTabs
-        project={projectData}
-        id={id || ""} // This is the route param id, keep as is
+        project={safeProjectData}
+        id={id || ""}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         formatDate={formatDateString}
