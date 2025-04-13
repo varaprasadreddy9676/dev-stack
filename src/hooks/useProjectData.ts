@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { projectService } from '@/services/serviceFactory';
+import { services } from '@/services/serviceFactory';
 import { ProjectData } from '@/types/project';
 import { toast } from 'sonner';
 
@@ -28,7 +28,7 @@ export const useProjectData = (projectId: string | undefined): ProjectDataHookRe
       
       try {
         console.log(`Fetching project with ID: ${projectId}`);
-        const data = await projectService.getProjectById(projectId);
+        const data = await services.projects.getProjectById(projectId);
         console.log(`Project data received:`, data);
         setProject(data);
       } catch (err) {
@@ -48,7 +48,7 @@ export const useProjectData = (projectId: string | undefined): ProjectDataHookRe
     if (!project || !projectId) return;
     
     try {
-      const updatedProject = await projectService.updateProject(projectId, updatedData);
+      const updatedProject = await services.projects.updateProject(projectId, updatedData);
       setProject(updatedProject);
       return updatedProject;
     } catch (err) {

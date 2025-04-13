@@ -65,21 +65,21 @@ function App() {
                     
                     {/* Role-specific routes */}
                     <Route path="projects/new" element={
-                      <ProtectedRoute allowedRoles={["admin", "content_manager"]}>
-                        <NewProject />
-                      </ProtectedRoute>
+                      <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
+                        <Route index element={<NewProject />} />
+                      </Route>
                     } />
                     <Route path="projects/:id/edit" element={
-                      <ProtectedRoute allowedRoles={["admin", "content_manager"]}>
-                        <ProjectManagement />
-                      </ProtectedRoute>
+                      <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
+                        <Route index element={<ProjectManagement />} />
+                      </Route>
                     } />
 
                     {/* Admin-only routes */}
                     <Route path="users" element={
-                      <ProtectedRoute allowedRoles={["admin"]}>
-                        <UserManagement />
-                      </ProtectedRoute>
+                      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                        <Route index element={<UserManagement />} />
+                      </Route>
                     } />
                     
                     <Route path="projects/:id" element={<ProjectDetail />} />

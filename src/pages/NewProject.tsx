@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ProjectForm } from "@/components/dashboard/ProjectForm";
-import { projectService } from "@/services/serviceFactory";
+import { services } from "@/services/serviceFactory";
 import { tagsStringToArray } from "@/utils/projectHelpers";
 
 const NewProject: React.FC = () => {
@@ -18,7 +18,7 @@ const NewProject: React.FC = () => {
         tags: projectData.tags ? tagsStringToArray(projectData.tags) : []
       };
       
-      const createdProject = await projectService.createProject(processedData);
+      const createdProject = await services.projects.createProject(processedData);
       toast.success("Project created successfully");
       navigate(`/projects/${createdProject._id}`);
     } catch (error) {

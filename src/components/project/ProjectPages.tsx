@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, FilePlus, FileText, Search, Filter, Clock } from "lucide-react";
+import { CalendarDays, FilePlus, FileText, Search } from "lucide-react";
 import { formatDate } from "@/utils/dateUtils";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -91,6 +91,17 @@ export const ProjectPages = () => {
     </Card>
   );
 
+  // Define categories for tabs
+  const getPagesByCategory = (tabValue: string) => {
+    if (tabValue === "all") return pages;
+    
+    // Since relatedEntities might not exist on PageSummary type,
+    // we'll filter by tags as an alternative
+    return pages.filter(page => 
+      page.tags.some(tag => tag.toLowerCase() === tabValue)
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -173,21 +184,11 @@ export const ProjectPages = () => {
         {["documentation", "implementation", "reference"].map((tabValue) => (
           <TabsContent key={tabValue} value={tabValue} className="mt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {pages
-                .filter((page) => 
-                  page.relatedEntities?.some((entity) => 
-                    entity.relationshipType.toLowerCase() === tabValue
-                  )
-                )
-                .map((page) => (
-                  <PageCard key={page._id} page={page} />
-                ))}
+              {getPagesByCategory(tabValue).map((page) => (
+                <PageCard key={page._id} page={page} />
+              ))}
             </div>
-            {pages.filter((page) => 
-              page.relatedEntities?.some((entity) => 
-                entity.relationshipType.toLowerCase() === tabValue
-              )
-            ).length === 0 && (
+            {getPagesByCategory(tabValue).length === 0 && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No {tabValue} pages found.</p>
               </div>
@@ -196,7 +197,6 @@ export const ProjectPages = () => {
         ))}
       </Tabs>
 
-      {/* Pagination can be added here if needed */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6">
           <Button 

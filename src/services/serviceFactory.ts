@@ -21,3 +21,6 @@ export const services = {
   projects: useMock ? mockService.projects : projectService,
   pages: useMock ? mockService.pages : pageService,
 };
+
+// Export individual services directly
+export { authService, componentService, guideService, guidelinesService, languageService, projectService, pageService };

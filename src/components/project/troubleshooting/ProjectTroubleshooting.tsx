@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useProjectData } from "@/hooks/useProjectData";
-import { projectService } from "@/services/serviceFactory";
+import { services } from "@/services/serviceFactory";
 import { TroubleshootingIssue } from "@/types/troubleshooting";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
       try {
         setLoading(true);
         if (project && project._id) {
-          const data = await projectService.getTroubleshootingIssues(project._id);
+          const data = await services.projects.getTroubleshootingIssues(project._id);
           setIssues(Array.isArray(data) ? data : []);
         }
       } catch (error) {
@@ -71,7 +71,7 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
   const handleAddIssue = async (issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">) => {
     try {
       if (project && project._id) {
-        const newIssue = await projectService.createTroubleshootingIssue(project._id, issueData);
+        const newIssue = await services.projects.createTroubleshootingIssue(project._id, issueData);
         if (newIssue) {
           setIssues([...issues, newIssue]);
           toast.success("Troubleshooting issue created successfully");
@@ -88,7 +88,7 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
     if (!selectedIssue || !project || !project._id) return;
     
     try {
-      const updatedIssue = await projectService.updateTroubleshootingIssue(
+      const updatedIssue = await services.projects.updateTroubleshootingIssue(
         project._id, 
         selectedIssue.id, 
         issueData
@@ -109,7 +109,7 @@ const ProjectTroubleshooting: React.FC<ProjectTroubleshootingProps> = ({ project
   const handleDeleteIssue = async (issueId: string) => {
     try {
       if (project && project._id) {
-        await projectService.deleteTroubleshootingIssue(project._id, issueId);
+        await services.projects.deleteTroubleshootingIssue(project._id, issueId);
         setIssues(issues.filter(i => i.id !== issueId));
         toast.success("Troubleshooting issue deleted successfully");
         if (selectedIssue?.id === issueId) {
