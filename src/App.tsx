@@ -40,6 +40,9 @@ const queryClient = new QueryClient({
   },
 });
 
+// Development flag - set to true to skip authentication during development
+const SKIP_AUTH_FOR_DEV = true;
+
 function App() {
   return (
     <ErrorBoundary>
@@ -55,8 +58,8 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
 
-                {/* Protected routes within MainLayout */}
-                <Route element={<ProtectedRoute />}>
+                {/* Protected routes within MainLayout - using ProtectedRoute conditionally */}
+                <Route element={SKIP_AUTH_FOR_DEV ? <React.Fragment /> : <ProtectedRoute />}>
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<Dashboard />} />
                     <Route path="projects" element={<ProjectExplorer />} />
@@ -65,21 +68,27 @@ function App() {
                     
                     {/* Role-specific routes */}
                     <Route path="projects/new" element={
-                      <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
-                        <Route index element={<NewProject />} />
-                      </Route>
+                      SKIP_AUTH_FOR_DEV ? <NewProject /> : (
+                        <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
+                          <Route index element={<NewProject />} />
+                        </Route>
+                      )
                     } />
                     <Route path="projects/:id/edit" element={
-                      <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
-                        <Route index element={<ProjectManagement />} />
-                      </Route>
+                      SKIP_AUTH_FOR_DEV ? <ProjectManagement /> : (
+                        <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
+                          <Route index element={<ProjectManagement />} />
+                        </Route>
+                      )
                     } />
 
                     {/* Admin-only routes */}
                     <Route path="users" element={
-                      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                        <Route index element={<UserManagement />} />
-                      </Route>
+                      SKIP_AUTH_FOR_DEV ? <UserManagement /> : (
+                        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                          <Route index element={<UserManagement />} />
+                        </Route>
+                      )
                     } />
                     
                     <Route path="projects/:id" element={<ProjectDetail />} />

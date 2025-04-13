@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,6 +14,7 @@ import ProjectGuidelines from "./ProjectGuidelines";
 import ProjectComponents from "./ProjectComponents";
 import ProjectResources from "./ProjectResources";
 import ProjectTroubleshooting from "./troubleshooting/ProjectTroubleshooting";
+import ProjectPages from "./ProjectPages";
 import { useProjectData } from "@/hooks/useProjectData";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -128,6 +128,12 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
             >
               Trouble
             </TabsTrigger>
+            <TabsTrigger
+              value="pages"
+              className="py-2 md:py-3 px-3 md:px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none text-sm"
+            >
+              Pages
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -169,6 +175,12 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ projectId }) => {
             project={{ _id: project._id, name: project.name }} 
             onSave={handleSaveProject} 
           />
+        </TabsContent>
+        
+        <TabsContent value="pages">
+          <div className="mt-4">
+            <ProjectPages />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
