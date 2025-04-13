@@ -51,11 +51,15 @@ const projectData = {
   modules: [
     {
       name: "Authentication",
-      description: "User authentication and authorization"
+      description: "User authentication and authorization",
+      documentation: "# Authentication Module\n\nProvides login, logout, and permission checking capabilities.",
+      dependencies: ["axios", "jwt-decode"]
     },
     {
       name: "Dashboard",
-      description: "User dashboard with analytics"
+      description: "User dashboard with analytics",
+      documentation: "# Dashboard Module\n\nProvides user dashboard and analytics visualization.",
+      dependencies: ["recharts", "d3"]
     }
   ],
   guidelines: {
