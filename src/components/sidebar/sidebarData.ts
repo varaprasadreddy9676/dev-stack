@@ -1,5 +1,14 @@
 
-import { Home, Folder, BookOpen, Layout, Settings, Search, Users } from "lucide-react";
+import { 
+  Home, 
+  Folder, 
+  BookOpen, 
+  Layout, 
+  Settings, 
+  Search, 
+  Users, 
+  FileText 
+} from "lucide-react";
 
 export interface NavigationItem {
   name: string;
@@ -13,6 +22,7 @@ export const navigationItems: NavigationItem[] = [
   { name: "Projects", href: "/projects", icon: Folder },
   { name: "Components", href: "/components", icon: Layout },
   { name: "Coding Guidelines", href: "/guidelines", icon: BookOpen },
+  { name: "Pages", href: "/pages", icon: FileText },
   { name: "User Management", href: "/users", icon: Users, requiredRole: ["admin"] },
 ];
 

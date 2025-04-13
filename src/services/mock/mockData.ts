@@ -268,3 +268,94 @@ export const mockGuides = [
     content: "# Component Library\n\nThis guide explains how to use the component library."
   }
 ];
+
+// Mock Pages data
+export const pagesData = [
+  {
+    _id: "page1",
+    title: "Deployment Process for Project X",
+    slug: "deployment-process-for-project-x",
+    content: "# Deployment Process\n\nThis document outlines the steps for deploying Project X to production...",
+    parent: {
+      type: "project",
+      id: "proj123"
+    },
+    relatedEntities: [
+      {
+        type: "module",
+        id: "module1",
+        relationshipType: "implementation"
+      }
+    ],
+    metadata: {
+      createdBy: "user1",
+      createdAt: new Date("2023-04-13T12:00:00Z"),
+      lastUpdatedBy: "user1",
+      lastUpdatedAt: new Date("2023-04-14T15:30:00Z"),
+      contributors: ["user1"],
+      version: 2
+    },
+    visibility: "team",
+    tags: ["deployment", "devops", "production", "kubernetes"],
+    permissions: {
+      canEdit: ["admin", "content_manager"],
+      canView: ["developer", "implementation", "support"]
+    }
+  },
+  {
+    _id: "page2",
+    title: "API Documentation",
+    slug: "api-documentation",
+    content: "# API Documentation\n\nThis document provides details on the REST API endpoints...",
+    parent: {
+      type: "project",
+      id: "proj123"
+    },
+    relatedEntities: [],
+    metadata: {
+      createdBy: "user2",
+      createdAt: new Date("2023-04-10T09:00:00Z"),
+      lastUpdatedBy: "user2",
+      lastUpdatedAt: new Date("2023-04-10T09:00:00Z"),
+      contributors: ["user2"],
+      version: 1
+    },
+    visibility: "public",
+    tags: ["api", "documentation", "reference"],
+    permissions: {
+      canEdit: ["admin", "content_manager"],
+      canView: ["developer", "implementation", "support"]
+    }
+  },
+  {
+    _id: "page3",
+    title: "Troubleshooting Guide",
+    slug: "troubleshooting-guide",
+    content: "# Troubleshooting Guide\n\nThis document provides solutions to common problems...",
+    parent: {
+      type: "module",
+      id: "module1"
+    },
+    relatedEntities: [
+      {
+        type: "project",
+        id: "proj123",
+        relationshipType: "reference"
+      }
+    ],
+    metadata: {
+      createdBy: "user1",
+      createdAt: new Date("2023-04-12T14:00:00Z"),
+      lastUpdatedBy: "user3",
+      lastUpdatedAt: new Date("2023-04-15T11:45:00Z"),
+      contributors: ["user1", "user3"],
+      version: 3
+    },
+    visibility: "team",
+    tags: ["troubleshooting", "support", "faq"],
+    permissions: {
+      canEdit: ["admin", "content_manager", "support"],
+      canView: ["developer", "implementation", "support"]
+    }
+  }
+];

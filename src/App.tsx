@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,6 +23,10 @@ import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import UserManagement from "./pages/UserManagement";
 import { AuthProvider } from "./contexts/auth";
+import Pages from "./pages/Pages";
+import NewPage from "./pages/NewPage";
+import EditPage from "./pages/EditPage";
+import PageDetail from "./pages/PageDetail";
 
 // Create a client with production-ready defaults
 const queryClient = new QueryClient({
@@ -75,6 +78,11 @@ function App() {
                     <Route path="guidelines" element={<CodingGuidelines />} />
                     <Route path="guidelines/:id" element={<LanguageGuidelines />} />
                     <Route path="search" element={<SearchResults />} />
+                    <Route path="/pages" element={<ProtectedRoute allowedRoles={["user", "admin"]}><Pages /></ProtectedRoute>} />
+                    <Route path="/pages/create" element={<ProtectedRoute allowedRoles={["user", "admin"]}><NewPage /></ProtectedRoute>} />
+                    <Route path="/pages/:id" element={<ProtectedRoute allowedRoles={["user", "admin"]}><PageDetail /></ProtectedRoute>} />
+                    <Route path="/pages/:id/edit" element={<ProtectedRoute allowedRoles={["user", "admin"]}><EditPage /></ProtectedRoute>} />
+                    <Route path="/projects/:id/new-page" element={<ProtectedRoute allowedRoles={["user", "admin"]}><NewPage /></ProtectedRoute>} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Route>

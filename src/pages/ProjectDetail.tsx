@@ -23,6 +23,7 @@ import {
 import { useFavorites } from "@/hooks/useFavorites";
 import ShareDialog from "@/components/common/ShareDialog";
 import { FEATURES } from "@/config/config";
+import { ProjectPages } from "@/components/project/ProjectPages";
 
 const projectData = {
   id: "proj123",
@@ -325,6 +326,12 @@ const ProjectDetail = () => {
               className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
             >
               Troubleshooting
+            </TabsTrigger>
+            <TabsTrigger
+              value="pages"
+              className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            >
+              Pages
             </TabsTrigger>
           </TabsList>
         </div>
@@ -727,6 +734,10 @@ const ProjectDetail = () => {
               </Card>
             ))}
           </div>
+        </TabsContent>
+        
+        <TabsContent value="pages" className="space-y-6">
+          <ProjectPages />
         </TabsContent>
       </Tabs>
     </div>
