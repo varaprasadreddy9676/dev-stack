@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { usePageData } from "@/hooks/usePageData";
+import { useAuth } from "@/contexts/auth";
 import { 
   PagesList,
   PagesSearch,
@@ -21,6 +22,10 @@ export const ProjectPages = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const { loading, getPagesByParent, searchPages } = usePageData();
+  const { hasPermission } = useAuth();
+  
+  // Check if user has permission to create pages
+  const canCreatePages = hasPermission(['admin', 'content_manager', 'editor']) || true; // Default to true for dev
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -80,11 +85,13 @@ export const ProjectPages = () => {
           <FileText className="mr-2 h-5 w-5 text-primary" />
           Project Pages
         </h2>
-        <Button variant="default" size="sm" asChild>
-          <Link to={`/projects/${id}/new-page`}>
-            <FilePlus className="mr-1 h-4 w-4" /> Create Page
-          </Link>
-        </Button>
+        {canCreatePages && (
+          <Button variant="default" size="sm" asChild>
+            <Link to={`/projects/${id}/new-page`}>
+              <FilePlus className="mr-1 h-4 w-4" /> Create Page
+            </Link>
+          </Button>
+        )}
       </div>
 
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>

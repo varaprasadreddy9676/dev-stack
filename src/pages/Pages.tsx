@@ -10,14 +10,18 @@ import {
   PageSearch,
   PageTabs
 } from "@/components/pages/page-list";
+import { PageSummary } from "@/types";
 
 const Pages = () => {
-  const [pages, setPages] = useState<any[]>([]); // Ensure pages is always initialized as an array
+  const [pages, setPages] = useState<PageSummary[]>([]); // Ensure pages is always initialized as an array
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const { searchPages, getRecentPages } = usePageData();
-  const { user } = useAuth();
+  const { user, hasPermission } = useAuth();
+  
+  // Check if user has permission to create pages
+  const canCreatePages = hasPermission(['admin', 'content_manager', 'editor']) || true; // Default to true for dev
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -27,18 +31,18 @@ const Pages = () => {
         
         if (searchQuery) {
           const results = await searchPages({ q: searchQuery });
-          fetchedPages = results.data || [];
+          fetchedPages = Array.isArray(results.data) ? results.data : [];
         } else if (activeTab === "all") {
           const results = await searchPages({});
-          fetchedPages = results.data || [];
+          fetchedPages = Array.isArray(results.data) ? results.data : [];
         } else if (activeTab === "recent") {
           const results = await getRecentPages(20);
-          fetchedPages = results.data || [];
+          fetchedPages = Array.isArray(results.data) ? results.data : [];
         } else if (activeTab === "my-pages") {
           // This would need to be implemented server-side
           // For now, we'll just return all pages as a mock
           const results = await searchPages({});
-          fetchedPages = results.data || [];
+          fetchedPages = Array.isArray(results.data) ? results.data : [];
         }
         
         setPages(fetchedPages); // Ensure we set an array even if the API call fails
@@ -88,11 +92,13 @@ const Pages = () => {
             handleSearch={handleSearch} 
           />
           
-          <Button asChild>
-            <Link to="/pages/create">
-              <Plus className="mr-1 h-4 w-4" /> New Page
-            </Link>
-          </Button>
+          {canCreatePages && (
+            <Button asChild>
+              <Link to="/pages/create">
+                <Plus className="mr-1 h-4 w-4" /> New Page
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
       
