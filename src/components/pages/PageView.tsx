@@ -1,9 +1,8 @@
 
-import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { usePageData } from "@/hooks/usePageData";
-import { Page } from "@/types";
 import { useAuth } from "@/contexts/auth";
+import { usePageViewData } from "./page-view/usePageViewData";
+import { usePagePermissions } from "./page-view/usePagePermissions";
 
 // Import components from the index file
 import {
@@ -18,53 +17,16 @@ import {
 
 export const PageView = () => {
   const { id } = useParams<{ id: string }>();
-  const [page, setPage] = useState<Page | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { getPage, deletePage } = usePageData();
   const navigate = useNavigate();
-  const { user, hasPermission } = useAuth();
+  const { user } = useAuth();
+  const { page, loading, handleDelete } = usePageViewData(id);
+  const { canEdit } = usePagePermissions(page, user?._id);
 
-  useEffect(() => {
-    const fetchPage = async () => {
-      if (id) {
-        setLoading(true);
-        const fetchedPage = await getPage(id);
-        if (fetchedPage) {
-          setPage(fetchedPage);
-        }
-        setLoading(false);
-      }
-    };
-
-    fetchPage();
-  }, [id, getPage]);
-
-  const handleDelete = async () => {
-    if (id) {
-      const success = await deletePage(id);
-      if (success) {
-        navigate(-1);
-      }
+  const onDelete = async () => {
+    const success = await handleDelete();
+    if (success) {
+      navigate(-1);
     }
-  };
-
-  // Determine if the user can edit this page based on:
-  // 1. If they are an admin (always can edit)
-  // 2. If they have the role specified in page's canEdit permissions
-  // 3. If they are the creator of the page
-  const canEdit = () => {
-    if (!page || !user) return false;
-    
-    // Admin can always edit
-    if (hasPermission(['admin'])) return true;
-    
-    // Check if user's role is in the page's canEdit permissions
-    if (user.role && page.permissions.canEdit.includes(user.role)) return true;
-    
-    // Check if user is the creator of the page
-    if (page.metadata.createdBy === user._id) return true;
-    
-    return false;
   };
 
   if (loading) {
@@ -84,7 +46,7 @@ export const PageView = () => {
         title={page.title}
         tags={page.tags}
         canEdit={canEdit()}
-        onDelete={handleDelete}
+        onDelete={onDelete}
       />
       
       <PageMetadataDisplay metadata={page.metadata} />
