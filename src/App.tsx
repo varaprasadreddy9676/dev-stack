@@ -58,55 +58,61 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
 
-                {/* Protected routes within MainLayout - using ProtectedRoute conditionally */}
-                <Route element={SKIP_AUTH_FOR_DEV ? <React.Fragment /> : <ProtectedRoute />}>
+                {/* Protected routes within MainLayout */}
+                {SKIP_AUTH_FOR_DEV ? (
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<Dashboard />} />
                     <Route path="projects" element={<ProjectExplorer />} />
-                    <Route path="profile" element={<Profile />} />
-                    <Route path="settings" element={<Settings />} />
-                    
-                    {/* Role-specific routes */}
-                    <Route path="projects/new" element={
-                      SKIP_AUTH_FOR_DEV ? <NewProject /> : (
-                        <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
-                          <Route index element={<NewProject />} />
-                        </Route>
-                      )
-                    } />
-                    <Route path="projects/:id/edit" element={
-                      SKIP_AUTH_FOR_DEV ? <ProjectManagement /> : (
-                        <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
-                          <Route index element={<ProjectManagement />} />
-                        </Route>
-                      )
-                    } />
-
-                    {/* Admin-only routes */}
-                    <Route path="users" element={
-                      SKIP_AUTH_FOR_DEV ? <UserManagement /> : (
-                        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                          <Route index element={<UserManagement />} />
-                        </Route>
-                      )
-                    } />
-                    
+                    <Route path="projects/new" element={<NewProject />} />
                     <Route path="projects/:id" element={<ProjectDetail />} />
+                    <Route path="projects/:id/edit" element={<ProjectManagement />} />
                     <Route path="components" element={<Components />} />
                     <Route path="guidelines" element={<CodingGuidelines />} />
                     <Route path="guidelines/:id" element={<LanguageGuidelines />} />
                     <Route path="search" element={<SearchResults />} />
-                    
+                    <Route path="users" element={<UserManagement />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="settings" element={<Settings />} />
                     <Route path="pages" element={<Pages />} />
                     <Route path="pages/create" element={<NewPage />} />
                     <Route path="pages/:id" element={<PageDetail />} />
                     <Route path="pages/:id/edit" element={<EditPage />} />
                     <Route path="projects/:id/new-page" element={<NewPage />} />
-                    
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Route>
-                </Route>
+                ) : (
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/" element={<MainLayout />}>
+                      <Route index element={<Dashboard />} />
+                      <Route path="projects" element={<ProjectExplorer />} />
+                      <Route path="profile" element={<Profile />} />
+                      <Route path="settings" element={<Settings />} />
+                      
+                      <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
+                        <Route path="projects/new" element={<NewProject />} />
+                        <Route path="projects/:id/edit" element={<ProjectManagement />} />
+                      </Route>
+                      
+                      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                        <Route path="users" element={<UserManagement />} />
+                      </Route>
+                      
+                      <Route path="projects/:id" element={<ProjectDetail />} />
+                      <Route path="components" element={<Components />} />
+                      <Route path="guidelines" element={<CodingGuidelines />} />
+                      <Route path="guidelines/:id" element={<LanguageGuidelines />} />
+                      <Route path="search" element={<SearchResults />} />
+                      
+                      <Route path="pages" element={<Pages />} />
+                      <Route path="pages/create" element={<NewPage />} />
+                      <Route path="pages/:id" element={<PageDetail />} />
+                      <Route path="pages/:id/edit" element={<EditPage />} />
+                      <Route path="projects/:id/new-page" element={<NewPage />} />
+                      
+                      <Route path="*" element={<NotFound />} />
+                    </Route>
+                  </Route>
+                )}
               </Routes>
             </BrowserRouter>
           </TooltipProvider>
