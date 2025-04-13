@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { ParentSelector } from "./ParentSelector";
+import { ParentSelector } from "./parent-selector";
 import { PageParentType } from "@/types";
 
 interface PageSettingsCardProps {
