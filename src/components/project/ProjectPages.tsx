@@ -1,23 +1,21 @@
 
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { usePageData } from "@/hooks/usePageData";
-import { PageSummary } from "@/types";
+import { 
+  PagesList,
+  PagesSearch,
+  PagesPagination 
+} from "./pages";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, FilePlus } from "lucide-react";
-import { 
-  PageCard, 
-  EmptyPageState, 
-  PagesSearch, 
-  PagesPagination, 
-  PagesList 
-} from "./pages";
+import { Link } from "react-router-dom";
 
 export const ProjectPages = () => {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("all");
-  const [pages, setPages] = useState<PageSummary[]>([]);
+  const [pages, setPages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -46,13 +44,13 @@ export const ProjectPages = () => {
     fetchPages();
   }, [id, currentPage, searchQuery, getPagesByParent, searchPages]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
   };
 
   // Define categories for tabs
-  const getPagesByCategory = (tabValue: string) => {
+  const getPagesByCategory = (tabValue) => {
     if (tabValue === "all") return pages;
     
     // Filter by tags as an alternative
@@ -120,5 +118,4 @@ export const ProjectPages = () => {
   );
 };
 
-// Add a default export to prevent the TypeScript error
 export default ProjectPages;
