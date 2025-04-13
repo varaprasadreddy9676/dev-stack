@@ -42,19 +42,24 @@ const Pages = () => {
       try {
         if (searchQuery) {
           const results = await searchPages({ q: searchQuery });
-          setPages(results.data);
+          setPages(results.data || []);
         } else if (activeTab === "all") {
           const results = await searchPages({});
-          setPages(results.data);
+          setPages(results.data || []);
         } else if (activeTab === "recent") {
           const results = await getRecentPages(20);
-          setPages(results.data);
+          setPages(results.data || []);
         } else if (activeTab === "my-pages") {
           // This would need to be implemented server-side
           // For now, we'll just return all pages as a mock
           const results = await searchPages({});
-          setPages(results.data);
+          setPages(results.data || []);
+        } else {
+          setPages([]);
         }
+      } catch (error) {
+        console.error("Error fetching pages:", error);
+        setPages([]);
       } finally {
         setLoading(false);
       }
@@ -247,6 +252,14 @@ const Pages = () => {
                   </CardContent>
                 </Card>
               ))
+            ) : pages.length === 0 ? (
+              <div className="col-span-full text-center py-10">
+                <Clock className="h-16 w-16 mx-auto text-muted-foreground opacity-30 mb-4" />
+                <h2 className="text-xl font-medium mb-2">No Recent Pages</h2>
+                <p className="text-muted-foreground mb-6">
+                  There are no recently updated pages.
+                </p>
+              </div>
             ) : (
               pages.map((page) => (
                 <Card key={page._id} className="overflow-hidden hover:shadow-md transition-shadow">
@@ -292,6 +305,19 @@ const Pages = () => {
                   </CardContent>
                 </Card>
               ))
+            ) : pages.length === 0 ? (
+              <div className="col-span-full text-center py-10">
+                <User className="h-16 w-16 mx-auto text-muted-foreground opacity-30 mb-4" />
+                <h2 className="text-xl font-medium mb-2">No Pages Created By You</h2>
+                <p className="text-muted-foreground mb-6">
+                  You haven't created any pages yet.
+                </p>
+                <Button asChild>
+                  <Link to="/pages/create">
+                    <Plus className="mr-1 h-4 w-4" /> Create New Page
+                  </Link>
+                </Button>
+              </div>
             ) : (
               pages.map((page) => (
                 <Card key={page._id} className="overflow-hidden hover:shadow-md transition-shadow">
