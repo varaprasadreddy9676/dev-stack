@@ -1,4 +1,3 @@
-
 import { delay } from "../api/baseService";
 import { User } from "@/types/auth";
 import { 
@@ -308,6 +307,32 @@ export const mockService = {
           },
           tags: page.tags
         }))
+      };
+    },
+    
+    linkPage: async (pageId: string, linkData: any): Promise<{
+      success: boolean;
+      message: string;
+      data: any;
+    }> => {
+      return {
+        success: true,
+        message: "Page linked successfully",
+        data: {
+          type: linkData.entityType,
+          id: linkData.entityId,
+          relationshipType: linkData.relationshipType
+        }
+      };
+    },
+
+    unlinkPage: async (pageId: string, unlinkData: any): Promise<{
+      success: boolean;
+      message: string;
+    }> => {
+      return { 
+        success: true, 
+        message: "Link removed successfully" 
       };
     }
   },

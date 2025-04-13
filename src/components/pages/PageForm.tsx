@@ -159,6 +159,8 @@ export const PageForm = ({
     }
   };
 
+  const createdBy = user?._id || "anonymous";
+
   return (
     <div className="container py-10 animate-fade-in">
       <div className="mb-8">
@@ -388,7 +390,7 @@ export const PageForm = ({
             <CardContent className="space-y-4 text-sm">
               <div>
                 <p className="font-medium">Created By</p>
-                <p className="text-muted-foreground">{user?.id || "Current User"}</p>
+                <p className="text-muted-foreground">{createdBy}</p>
               </div>
               <div>
                 <p className="font-medium">Date</p>
