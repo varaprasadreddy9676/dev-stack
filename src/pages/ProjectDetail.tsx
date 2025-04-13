@@ -7,7 +7,7 @@ import { formatDate } from "@/utils/dateFormatUtils";
 
 // Sample data - would typically come from API
 const projectData = {
-  id: "proj123",
+  _id: "proj123", // Changed from 'id' to '_id' to match ProjectData interface
   name: "Customer Portal",
   description: "Frontend application for customer account management and service requests",
   overview: "The Customer Portal serves as the primary interface for customers to manage their accounts, submit service requests, and view usage analytics. It's built with a focus on user experience and performance.",
@@ -60,7 +60,8 @@ const projectData = {
   ],
   guidelines: {
     content: "Follow these guidelines when contributing to the project...",
-    lastUpdated: "2024-03-01T10:30:00Z"
+    lastUpdated: "2024-03-01T10:30:00Z",
+    updatedBy: "user123" // Added missing updatedBy property to match the interface
   },
   components: [
     "Button",
@@ -93,11 +94,14 @@ const projectData = {
       solutions: [
         {
           steps: "Clear browser cookies and cache, then attempt login again",
-          code: "// No code needed for this solution"
+          code: "// No code needed for this solution",
+          resources: [] // Added required resources array
         }
       ],
+      relatedIssues: [], // Added required relatedIssues array
       tags: ["authentication", "login"],
-      lastUpdated: "2024-03-20T00:00:00Z"
+      lastUpdated: "2024-03-20T00:00:00Z",
+      updatedBy: "user123" // Added missing updatedBy property
     },
     {
       id: "issue2",
@@ -110,11 +114,14 @@ const projectData = {
       solutions: [
         {
           steps: "Implement data pagination to reduce initial load",
-          code: "// Example code for pagination"
+          code: "// Example code for pagination",
+          resources: [] // Added required resources array
         }
       ],
+      relatedIssues: [], // Added required relatedIssues array
       tags: ["performance", "dashboard"],
-      lastUpdated: "2024-03-18T00:00:00Z"
+      lastUpdated: "2024-03-18T00:00:00Z",
+      updatedBy: "user456" // Added missing updatedBy property
     }
   ],
   tags: ["react", "typescript", "customer-facing"],
@@ -191,7 +198,7 @@ const ProjectDetail = () => {
   return (
     <div className="container py-10 animate-fade-in">
       <ProjectHeader
-        id={projectData.id}
+        id={projectData._id} // Updated to use _id instead of id
         name={projectData.name}
         description={projectData.description}
         tags={projectData.tags}
@@ -199,7 +206,7 @@ const ProjectDetail = () => {
       
       <ProjectTabs
         project={projectData}
-        id={id || ""}
+        id={id || ""} // This is the route param id, keep as is
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         formatDate={formatDateString}
