@@ -5,8 +5,8 @@ import { Page } from "@/types";
 import { 
   Card, 
   CardContent,
-  Badge,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";  // Corrected import
 import { Button } from "@/components/ui/button";
 import {
   CalendarDays,
