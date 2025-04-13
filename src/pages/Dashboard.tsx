@@ -3,11 +3,11 @@ import { useState } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { RecentProjects } from "@/components/dashboard/RecentProjects";
 import { CodingGuidelines } from "@/components/dashboard/CodingGuidelines";
-import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
-import { ProjectFormValues } from "@/components/dashboard/ProjectForm";
+import { RecentActivityWidget } from "@/components/dashboard/RecentActivityWidget";
 import { RecentPages } from "@/components/dashboard/RecentPages";
 import { formatDate, formatRelativeTime } from "@/utils/dateFormatUtils";
 import { recentProjects, codingGuidelines, recentActivity, allActivity } from "@/data/dashboardData";
+import { ProjectFormValues } from "@/components/dashboard/ProjectForm";
 
 const Dashboard = () => {
   const handleProjectSubmit = (data: ProjectFormValues) => {
@@ -31,12 +31,13 @@ const Dashboard = () => {
           />
         </div>
         
-        <div>
-          <ActivityFeed 
+        <div className="space-y-4 md:space-y-6">
+          <RecentActivityWidget 
             recentActivity={recentActivity} 
-            allActivity={allActivity} 
-            formatRelativeTime={formatRelativeTime}
+            allActivity={allActivity}
           />
+          
+          <RecentPages />
         </div>
       </div>
     </div>
