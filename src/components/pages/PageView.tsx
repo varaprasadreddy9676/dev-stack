@@ -5,14 +5,16 @@ import { usePageData } from "@/hooks/usePageData";
 import { Page } from "@/types";
 import { useAuth } from "@/contexts/auth";
 
-// Import our new components
-import { PageBreadcrumbNav } from "./page-view/PageBreadcrumbNav";
-import { PageHeader } from "./page-view/PageHeader";
-import { PageMetadataDisplay } from "./page-view/PageMetadata";
-import { PageContent } from "./page-view/PageContent";
-import { PageSidebar } from "./page-view/PageSidebar";
-import { PageNotFound } from "./page-view/PageNotFound";
-import { PageLoading } from "./page-view/PageLoading";
+// Import components from the index file
+import {
+  PageBreadcrumbNav,
+  PageHeader,
+  PageMetadataDisplay,
+  PageContent,
+  PageSidebar,
+  PageNotFound,
+  PageLoading
+} from "./page-view";
 
 export const PageView = () => {
   const { id } = useParams<{ id: string }>();
