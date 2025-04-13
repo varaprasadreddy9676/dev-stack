@@ -1,18 +1,19 @@
 
 import { useParams } from "react-router-dom";
 import { PageForm } from "@/components/pages/PageForm";
+import { PageParentType } from "@/types";
 
 const NewPage = () => {
-  const { entityType, entityId } = useParams<{ entityType?: string; entityId?: string }>();
+  const { entityType, id } = useParams<{ entityType?: string; id?: string }>();
   
   // Convert route params to the proper types if they exist
-  const parentType = entityType as "project" | "module" | "language" | "component" | "guide" | "root" | undefined;
+  const parentType = entityType as PageParentType | undefined;
   
   return (
     <PageForm 
       mode="create" 
       initialParentType={parentType || "root"}
-      initialParentId={entityId || null}
+      initialParentId={id || null}
     />
   );
 };

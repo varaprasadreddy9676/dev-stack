@@ -22,17 +22,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { ParentSelector } from "./ParentSelector";
+import { PageParentType } from "@/types";
 
 interface PageSettingsCardProps {
   form: UseFormReturn<any>;
   tags: string[];
   setTags: React.Dispatch<React.SetStateAction<string[]>>;
+  initialParentType?: PageParentType;
+  initialParentId?: string | null;
 }
 
 export const PageSettingsCard: React.FC<PageSettingsCardProps> = ({ 
   form, 
   tags, 
-  setTags 
+  setTags,
+  initialParentType,
+  initialParentId
 }) => {
   const [tagInput, setTagInput] = useState("");
 
@@ -59,56 +65,11 @@ export const PageSettingsCard: React.FC<PageSettingsCardProps> = ({
       <CardContent className="space-y-4">
         <Form {...form}>
           <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="parentType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Parent Type</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a parent type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="root">Root (No Parent)</SelectItem>
-                      <SelectItem value="project">Project</SelectItem>
-                      <SelectItem value="module">Module</SelectItem>
-                      <SelectItem value="component">Component</SelectItem>
-                      <SelectItem value="language">Language</SelectItem>
-                      <SelectItem value="guide">Guide</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="parentId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Parent ID</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter parent ID" 
-                      {...field} 
-                      value={field.value || ""} 
-                      disabled={form.watch("parentType") === "root"}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    ID of the parent entity this page belongs to
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+            {/* Parent selection */}
+            <ParentSelector 
+              form={form}
+              initialParentType={initialParentType}
+              initialParentId={initialParentId}
             />
 
             <FormField

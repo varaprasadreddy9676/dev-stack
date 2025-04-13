@@ -1,12 +1,13 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePageData } from "@/hooks/usePageData";
 import { useAuth } from "@/contexts/auth";
 import { 
   CreatePageRequest, 
   UpdatePageRequest, 
-  ObjectId 
+  ObjectId,
+  PageParentType
 } from "@/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +33,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface PageFormContainerProps {
   pageId?: string;
-  initialParentType?: "project" | "module" | "language" | "component" | "guide" | "root";
+  initialParentType?: PageParentType;
   initialParentId?: string | null;
   mode: "create" | "edit";
 }
@@ -46,45 +47,54 @@ export const PageFormContainer = ({
   const { getPage, createPage, updatePage } = usePageData();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { id: projectId } = useParams<{ id: string }>();
+  const { id: routeId, entityType } = useParams<{ id: string; entityType?: string }>();
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
+  
+  // Determine parent context from route
+  const contextParentType = entityType as PageParentType | undefined || initialParentType;
+  const contextParentId = routeId || initialParentId;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       content: "",
-      parentType: initialParentType,
-      parentId: initialParentId,
+      parentType: contextParentType,
+      parentId: contextParentId,
       visibility: "team",
       tags: [],
     },
   });
 
   // Load page data for edit mode
-  useState(() => {
+  useEffect(() => {
     const fetchPageData = async () => {
       if (mode === "edit" && pageId) {
         setLoading(true);
-        const page = await getPage(pageId);
-        if (page) {
-          form.reset({
-            title: page.title,
-            content: page.content,
-            parentType: page.parent.type,
-            parentId: page.parent.id,
-            visibility: page.visibility,
-            tags: page.tags,
-          });
-          setTags(page.tags);
+        try {
+          const page = await getPage(pageId);
+          if (page) {
+            form.reset({
+              title: page.title,
+              content: page.content || "",
+              parentType: page.parent?.type || "root",
+              parentId: page.parent?.id || null,
+              visibility: page.visibility || "team",
+              tags: page.tags || [],
+            });
+            setTags(page.tags || []);
+          }
+        } catch (error) {
+          console.error("Error loading page data:", error);
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
       }
     };
 
     fetchPageData();
-  });
+  }, [pageId, mode, getPage, form]);
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
@@ -98,7 +108,7 @@ export const PageFormContainer = ({
             id: values.parentId,
           },
           visibility: values.visibility,
-          tags: values.tags,
+          tags: values.tags || [],
         };
         
         const newPage = await createPage(requestData);
@@ -114,7 +124,7 @@ export const PageFormContainer = ({
             id: values.parentId,
           },
           visibility: values.visibility,
-          tags: values.tags,
+          tags: values.tags || [],
         };
         
         const updatedPage = await updatePage(pageId, requestData);
@@ -122,9 +132,20 @@ export const PageFormContainer = ({
           navigate(`/pages/${updatedPage._id}`);
         }
       }
+    } catch (error) {
+      console.error("Error saving page:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Add breadcrumb navigation
+  const determineBackUrl = () => {
+    if (contextParentType === "project" && contextParentId) {
+      return `/projects/${contextParentId}`;
+    }
+    // Add other entity types as needed
+    return -1; // Default to browser history back
   };
 
   return (
@@ -132,7 +153,14 @@ export const PageFormContainer = ({
       <div className="mb-8">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(-1)} 
+          onClick={() => {
+            const backUrl = determineBackUrl();
+            if (typeof backUrl === "string") {
+              navigate(backUrl);
+            } else {
+              navigate(-1);
+            }
+          }}
           className="mb-4"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -156,6 +184,8 @@ export const PageFormContainer = ({
             form={form} 
             tags={tags}
             setTags={setTags}
+            initialParentType={contextParentType}
+            initialParentId={contextParentId}
           />
 
           <PageInfoCard createdBy={user?._id || "anonymous"} />
