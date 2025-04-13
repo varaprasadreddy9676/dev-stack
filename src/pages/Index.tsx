@@ -6,8 +6,8 @@ const Index = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Redirect to the dashboard when accessing the root route
-    navigate("/dashboard", { replace: true });
+    // Redirect to the root dashboard path when accessing the root route
+    navigate("/", { replace: true });
   }, [navigate]);
 
   // Return a loading state while redirect happens
