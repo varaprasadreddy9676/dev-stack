@@ -1,14 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { usePageData } from "@/hooks/usePageData";
 import { Page } from "@/types";
 import { 
-  Button,
   Card, 
   CardContent,
   Badge,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   CalendarDays,
   Clock,
@@ -74,7 +73,6 @@ export const PageView = () => {
   const canEdit = page?.permissions.canEdit.includes("admin") || 
                   (user?.role && page?.permissions.canEdit.includes(user.role));
 
-  // Determine the parent page path
   const getParentPath = () => {
     if (!page?.parent) return "/";
     

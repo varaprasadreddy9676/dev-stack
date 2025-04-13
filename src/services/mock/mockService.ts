@@ -1,416 +1,216 @@
+
+import { delay } from "../api/baseService";
 import { 
-  mockLanguages, 
-  mockComponents, 
-  mockGuides 
-} from "./mockData";
-import { ProjectData } from "@/types/project";
-import { TroubleshootingIssue, Solution } from "@/types/troubleshooting";
-import { mockProjects } from "../api/mockProjects";
+  Page, 
+  PageSummary, 
+  CreatePageRequest, 
+  UpdatePageRequest,
+  LinkPageRequest,
+  UnlinkPageRequest,
+  PageSearchParams,
+  EntityType,
+  ObjectId
+} from "@/types";
 
-// Helper to simulate network delay
-const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Helper to simulate random errors (for testing error handling)
-const simulateError = (errorRate: number = 0.1): boolean => {
-  return Math.random() < errorRate;
-};
-
-export const mockProjectService = {
-  getProjects: async () => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch projects");
-    }
-    return [...mockProjects];
-  },
-  
-  getProjectById: async (projectId: string) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch project");
-    }
-    const project = mockProjects.find(p => p._id === projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-    return { ...project };
-  },
-  
-  updateProject: async (projectId: string, updatedData: Partial<ProjectData>) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to update project");
-    }
-    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
-    if (projectIndex === -1) {
-      throw new Error("Project not found");
-    }
-    
-    // In a real implementation, this would update the backend
-    // For the mock, we'll just return the merged data
-    return {
-      ...mockProjects[projectIndex],
-      ...updatedData,
-      updatedAt: new Date().toISOString(),
-      team: updatedData.team || mockProjects[projectIndex].team || [],
-      troubleshooting: updatedData.troubleshooting || mockProjects[projectIndex].troubleshooting || []
-    };
-  },
-  
-  createProject: async (projectData: Omit<ProjectData, "_id" | "createdAt" | "updatedAt">) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to create project");
-    }
-    
-    // Generate a new ID
-    const newId = `proj${Date.now()}`;
-    const now = new Date().toISOString();
-    
-    // Create new project
-    const newProject: ProjectData = {
-      _id: newId,
-      ...projectData,
-      createdAt: now,
-      updatedAt: now,
-      architecture: projectData.architecture || {
-        description: "",
-        diagrams: []
+// Mock data for pages
+const mockData = {
+  pages: [
+    {
+      _id: "page1",
+      title: "Getting Started with Project X",
+      slug: "getting-started-project-x",
+      content: "# Getting Started\n\nThis is a guide to help you get started with Project X. Follow these steps to set up your environment and begin development.",
+      parent: {
+        type: "project",
+        id: "proj101",
       },
-      structure: projectData.structure || {
-        description: "",
-        folders: []
-      },
-      customFrameworks: projectData.customFrameworks || [],
-      modules: projectData.modules || [],
-      guidelines: projectData.guidelines || {
-        content: "",
-        lastUpdated: now,
-        updatedBy: "System"
-      },
-      components: projectData.components || [],
-      resources: projectData.resources || [],
-      team: projectData.team || [], // Ensure team is always present
-      troubleshooting: projectData.troubleshooting || []
-    };
-    
-    return newProject;
-  },
-  
-  deleteProject: async (projectId: string) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to delete project");
-    }
-    
-    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
-    if (projectIndex === -1) {
-      throw new Error("Project not found");
-    }
-    
-    // In a real implementation, this would delete from the backend
-    // For the mock, we'll just return success
-    return { success: true };
-  },
-  
-  getTroubleshootingIssues: async (projectId: string) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch troubleshooting issues");
-    }
-    
-    const project = mockProjects.find(p => p._id === projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-    
-    return project.troubleshooting || [];
-  },
-  
-  createTroubleshootingIssue: async (
-    projectId: string, 
-    issueData: Omit<TroubleshootingIssue, "id" | "lastUpdated">
-  ) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to create troubleshooting issue");
-    }
-    
-    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
-    if (projectIndex === -1) {
-      throw new Error("Project not found");
-    }
-    
-    const newIssue: TroubleshootingIssue = {
-      id: `issue-${Date.now()}`,
-      ...issueData,
-      solutions: issueData.solutions.map(s => ({
-        steps: s.steps,
-        code: s.code || "",
-        screenshots: s.screenshots || [],
-        resources: s.resources || [] // Ensure resources is always present
-      })),
-      lastUpdated: new Date().toISOString()
-    };
-    
-    if (!mockProjects[projectIndex].troubleshooting) {
-      mockProjects[projectIndex].troubleshooting = [];
-    }
-    
-    mockProjects[projectIndex].troubleshooting.push(newIssue);
-    
-    return newIssue;
-  },
-  
-  updateTroubleshootingIssue: async (
-    projectId: string, 
-    issueId: string, 
-    issueData: Partial<Omit<TroubleshootingIssue, "id" | "lastUpdated">>
-  ) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to update troubleshooting issue");
-    }
-    
-    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
-    if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
-      throw new Error("Project or troubleshooting not found");
-    }
-    
-    const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
-    if (issueIndex === -1) {
-      throw new Error("Issue not found");
-    }
-    
-    // Create a properly typed updated issue
-    const currentIssue = mockProjects[projectIndex].troubleshooting[issueIndex];
-    const updatedIssue: TroubleshootingIssue = {
-      id: issueId,
-      issue: issueData.issue || currentIssue.issue,
-      description: issueData.description || currentIssue.description,
-      symptoms: issueData.symptoms || currentIssue.symptoms,
-      solutions: issueData.solutions 
-        ? issueData.solutions.map(s => ({
-            steps: s.steps,
-            code: s.code || "",
-            screenshots: s.screenshots || [],
-            resources: s.resources || [] // Ensure resources is always present
-          })) 
-        : currentIssue.solutions.map(s => ({
-            ...s,
-            resources: s.resources || [] // Ensure resources is always present in existing solutions
-          })),
-      relatedIssues: issueData.relatedIssues || currentIssue.relatedIssues,
-      tags: issueData.tags || currentIssue.tags,
-      lastUpdated: new Date().toISOString(),
-      updatedBy: issueData.updatedBy || currentIssue.updatedBy
-    };
-    
-    mockProjects[projectIndex].troubleshooting[issueIndex] = updatedIssue;
-    
-    return updatedIssue;
-  },
-  
-  deleteTroubleshootingIssue: async (projectId: string, issueId: string) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to delete troubleshooting issue");
-    }
-    
-    const projectIndex = mockProjects.findIndex(p => p._id === projectId);
-    if (projectIndex === -1 || !mockProjects[projectIndex].troubleshooting) {
-      throw new Error("Project or troubleshooting not found");
-    }
-    
-    const issueIndex = mockProjects[projectIndex].troubleshooting.findIndex(i => i.id === issueId);
-    if (issueIndex === -1) {
-      throw new Error("Issue not found");
-    }
-    
-    mockProjects[projectIndex].troubleshooting.splice(issueIndex, 1);
-    
-    return { success: true };
-  }
-};
-
-export const mockLanguageService = {
-  getLanguages: async () => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch languages");
-    }
-    return [...mockLanguages];
-  },
-  
-  getLanguageById: async (languageId: string) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch language");
-    }
-    const language = mockLanguages.find(l => l.id === languageId);
-    if (!language) {
-      throw new Error("Language not found");
-    }
-    return { ...language };
-  }
-};
-
-export const mockComponentService = {
-  getComponents: async () => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch components");
-    }
-    return [...mockComponents];
-  },
-  
-  getComponentById: async (componentId: string) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch component");
-    }
-    const component = mockComponents.find(c => c.id === componentId);
-    if (!component) {
-      throw new Error("Component not found");
-    }
-    return { ...component };
-  }
-};
-
-export const mockGuideService = {
-  getGuides: async () => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch guides");
-    }
-    return [...mockGuides];
-  },
-  
-  getGuideById: async (guideId: string) => {
-    await delay();
-    if (simulateError()) {
-      throw new Error("Failed to fetch guide");
-    }
-    const guide = mockGuides.find(g => g.id === guideId);
-    if (!guide) {
-      throw new Error("Guide not found");
-    }
-    return { ...guide };
-  }
-};
-
-// Mock implementation of page service
-const pages = {
-  createPage: async (pageData) => {
-    const newPage = {
-      _id: `page${mockData.pagesData.length + 1}`,
-      slug: pageData.title.toLowerCase().replace(/\s+/g, '-'),
+      relatedEntities: [
+        {
+          type: "component",
+          id: "comp1",
+          relationshipType: "implementation",
+        },
+      ],
       metadata: {
-        createdBy: "currentUser",
-        createdAt: new Date(),
-        lastUpdatedBy: "currentUser",
-        lastUpdatedAt: new Date(),
-        contributors: ["currentUser"],
-        version: 1
+        createdBy: "user1",
+        createdAt: new Date("2024-03-10T10:00:00Z"),
+        lastUpdatedBy: "user1",
+        lastUpdatedAt: new Date("2024-03-15T14:30:00Z"),
+        contributors: ["user1", "user2"],
+        version: 2,
       },
+      visibility: "team",
+      tags: ["getting-started", "setup", "onboarding"],
       permissions: {
         canEdit: ["admin", "content_manager"],
-        canView: ["developer", "implementation", "support"]
+        canView: ["user", "developer", "admin", "content_manager"],
       },
-      ...pageData
+    },
+    {
+      _id: "page2",
+      title: "API Documentation",
+      slug: "api-documentation",
+      content: "# API Documentation\n\nThis document provides detailed information about the API endpoints available in this project.",
+      parent: {
+        type: "project",
+        id: "proj101",
+      },
+      relatedEntities: [
+        {
+          type: "module",
+          id: "mod1",
+          relationshipType: "documentation",
+        },
+      ],
+      metadata: {
+        createdBy: "user2",
+        createdAt: new Date("2024-03-12T09:15:00Z"),
+        lastUpdatedBy: "user2",
+        lastUpdatedAt: new Date("2024-03-18T11:45:00Z"),
+        contributors: ["user2"],
+        version: 1,
+      },
+      visibility: "public",
+      tags: ["api", "documentation", "endpoints"],
+      permissions: {
+        canEdit: ["admin", "content_manager"],
+        canView: ["user", "developer", "admin", "content_manager"],
+      },
+    },
+  ],
+};
+
+// Mock implementation of the page service
+export const mockPageService = {
+  createPage: async (pageData: CreatePageRequest): Promise<Page> => {
+    await delay(800);
+    
+    const newPage: Page = {
+      _id: `page${mockData.pages.length + 1}`,
+      title: pageData.title,
+      slug: pageData.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-'),
+      content: pageData.content,
+      parent: pageData.parent,
+      relatedEntities: pageData.relatedEntities || [],
+      metadata: {
+        createdBy: "user1", // Would be the current user ID in a real app
+        createdAt: new Date(),
+        lastUpdatedBy: "user1",
+        lastUpdatedAt: new Date(),
+        contributors: ["user1"],
+        version: 1,
+      },
+      visibility: pageData.visibility,
+      tags: pageData.tags || [],
+      permissions: {
+        canEdit: ["admin", "content_manager"],
+        canView: ["user", "developer", "admin", "content_manager"],
+      },
     };
     
-    mockData.pagesData.push(newPage);
-    return { ...newPage };
+    mockData.pages.push(newPage);
+    return newPage;
   },
   
-  getPageById: async (id) => {
-    const page = mockData.pagesData.find(p => p._id === id);
+  getPageById: async (id: ObjectId): Promise<Page> => {
+    await delay(500);
+    
+    const page = mockData.pages.find(p => p._id === id);
     if (!page) {
-      throw new Error("Page not found");
+      throw new Error(`Page with ID ${id} not found`);
     }
-    return { ...page };
+    
+    return page;
   },
   
-  updatePage: async (id, pageData) => {
-    const pageIndex = mockData.pagesData.findIndex(p => p._id === id);
+  updatePage: async (id: ObjectId, pageData: UpdatePageRequest): Promise<Page> => {
+    await delay(800);
+    
+    const pageIndex = mockData.pages.findIndex(p => p._id === id);
     if (pageIndex === -1) {
-      throw new Error("Page not found");
+      throw new Error(`Page with ID ${id} not found`);
     }
     
     const updatedPage = {
-      ...mockData.pagesData[pageIndex],
+      ...mockData.pages[pageIndex],
       ...pageData,
       metadata: {
-        ...mockData.pagesData[pageIndex].metadata,
-        lastUpdatedBy: "currentUser",
+        ...mockData.pages[pageIndex].metadata,
+        lastUpdatedBy: "user1", // Would be the current user ID in a real app
         lastUpdatedAt: new Date(),
-        version: mockData.pagesData[pageIndex].metadata.version + 1
+        version: mockData.pages[pageIndex].metadata.version + 1,
       }
     };
     
-    mockData.pagesData[pageIndex] = updatedPage;
-    return { ...updatedPage };
+    mockData.pages[pageIndex] = updatedPage;
+    return updatedPage;
   },
   
-  deletePage: async (id) => {
-    const pageIndex = mockData.pagesData.findIndex(p => p._id === id);
+  deletePage: async (id: ObjectId): Promise<{ success: boolean; message: string }> => {
+    await delay(800);
+    
+    const pageIndex = mockData.pages.findIndex(p => p._id === id);
     if (pageIndex === -1) {
-      throw new Error("Page not found");
+      throw new Error(`Page with ID ${id} not found`);
     }
     
-    mockData.pagesData.splice(pageIndex, 1);
-    return { success: true, message: "Page successfully deleted" };
-  },
-  
-  getPagesByParent: async (entityType, entityId, page = 1, limit = 10) => {
-    const pages = mockData.pagesData.filter(p => 
-      p.parent.type === entityType && p.parent.id === entityId
-    );
-    
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedData = pages.slice(startIndex, endIndex);
-    
-    const pageData = paginatedData.map(p => ({
-      _id: p._id,
-      title: p.title,
-      slug: p.slug,
-      parent: p.parent,
-      metadata: {
-        lastUpdatedBy: p.metadata.lastUpdatedBy,
-        lastUpdatedAt: p.metadata.lastUpdatedAt
-      },
-      tags: p.tags
-    }));
-    
+    mockData.pages.splice(pageIndex, 1);
     return {
-      data: pageData,
-      count: paginatedData.length,
-      total: pages.length,
-      page,
-      pageSize: limit
+      success: true,
+      message: "Page deleted successfully",
     };
   },
   
-  linkPage: async (pageId, linkData) => {
-    const pageIndex = mockData.pagesData.findIndex(p => p._id === pageId);
+  getPagesByParent: async (entityType: EntityType, entityId: ObjectId, page = 1, limit = 10) => {
+    await delay(500);
+    
+    const filteredPages = mockData.pages.filter(p => 
+      p.parent.type === entityType && p.parent.id === entityId
+    );
+    
+    const paginatedPages = filteredPages.slice((page - 1) * limit, page * limit);
+    
+    const summaries: PageSummary[] = paginatedPages.map(p => ({
+      _id: p._id,
+      title: p.title,
+      slug: p.slug,
+      snippet: p.content.substring(0, 100) + "...",
+      parent: p.parent,
+      metadata: {
+        lastUpdatedBy: p.metadata.lastUpdatedBy,
+        lastUpdatedAt: p.metadata.lastUpdatedAt,
+      },
+      tags: p.tags,
+    }));
+    
+    return {
+      data: summaries,
+      count: paginatedPages.length,
+      total: filteredPages.length,
+      page,
+      pageSize: limit,
+    };
+  },
+  
+  linkPage: async (pageId: ObjectId, linkData: LinkPageRequest) => {
+    await delay(500);
+    
+    const pageIndex = mockData.pages.findIndex(p => p._id === pageId);
     if (pageIndex === -1) {
-      throw new Error("Page not found");
+      throw new Error(`Page with ID ${pageId} not found`);
     }
     
-    const { entityType, entityId, relationshipType } = linkData;
-    const existingLinkIndex = mockData.pagesData[pageIndex].relatedEntities.findIndex(
-      r => r.type === entityType && r.id === entityId
+    const existingLinkIndex = mockData.pages[pageIndex].relatedEntities.findIndex(
+      entity => entity.type === linkData.entityType && entity.id === linkData.entityId
     );
     
     if (existingLinkIndex !== -1) {
-      mockData.pagesData[pageIndex].relatedEntities[existingLinkIndex].relationshipType = relationshipType;
+      mockData.pages[pageIndex].relatedEntities[existingLinkIndex].relationshipType = linkData.relationshipType;
     } else {
-      mockData.pagesData[pageIndex].relatedEntities.push({
-        type: entityType,
-        id: entityId,
-        relationshipType
+      mockData.pages[pageIndex].relatedEntities.push({
+        type: linkData.entityType,
+        id: linkData.entityId,
+        relationshipType: linkData.relationshipType,
       });
     }
     
@@ -418,122 +218,152 @@ const pages = {
       success: true,
       message: "Page linked successfully",
       data: {
-        type: entityType,
-        id: entityId,
-        relationshipType
-      }
+        type: linkData.entityType,
+        id: linkData.entityId,
+        relationshipType: linkData.relationshipType,
+      },
     };
   },
   
-  unlinkPage: async (pageId, unlinkData) => {
-    const pageIndex = mockData.pagesData.findIndex(p => p._id === pageId);
+  unlinkPage: async (pageId: ObjectId, unlinkData: UnlinkPageRequest) => {
+    await delay(500);
+    
+    const pageIndex = mockData.pages.findIndex(p => p._id === pageId);
     if (pageIndex === -1) {
-      throw new Error("Page not found");
+      throw new Error(`Page with ID ${pageId} not found`);
     }
     
-    const { entityType, entityId } = unlinkData;
-    const entityIndex = mockData.pagesData[pageIndex].relatedEntities.findIndex(
-      r => r.type === entityType && r.id === entityId
+    const entityIndex = mockData.pages[pageIndex].relatedEntities.findIndex(
+      entity => entity.type === unlinkData.entityType && entity.id === unlinkData.entityId
     );
     
-    if (entityIndex !== -1) {
-      mockData.pagesData[pageIndex].relatedEntities.splice(entityIndex, 1);
+    if (entityIndex === -1) {
+      throw new Error(`Entity not linked to this page`);
     }
+    
+    mockData.pages[pageIndex].relatedEntities.splice(entityIndex, 1);
     
     return {
       success: true,
-      message: "Link removed successfully"
+      message: "Link removed successfully",
     };
   },
   
-  searchPages: async (params) => {
-    let filtered = [...mockData.pagesData];
+  searchPages: async (params: PageSearchParams) => {
+    await delay(800);
+    
+    let filteredPages = [...mockData.pages];
     
     // Filter by search query
     if (params.q) {
       const query = params.q.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.title.toLowerCase().includes(query) || 
-        p.content.toLowerCase().includes(query) || 
-        p.tags.some(tag => tag.toLowerCase().includes(query))
+      filteredPages = filteredPages.filter(page => 
+        page.title.toLowerCase().includes(query) || 
+        page.content.toLowerCase().includes(query) ||
+        page.tags.some(tag => tag.toLowerCase().includes(query))
       );
     }
     
     // Filter by tags
     if (params.tags && params.tags.length > 0) {
-      const tagArray = Array.isArray(params.tags) ? params.tags : [params.tags];
-      filtered = filtered.filter(p => 
-        tagArray.some(tag => p.tags.includes(tag))
+      filteredPages = filteredPages.filter(page => 
+        params.tags?.some(tag => page.tags.includes(tag))
       );
     }
     
     // Filter by parent
     if (params.parent) {
       const [type, id] = params.parent.split(':');
-      filtered = filtered.filter(p => 
-        p.parent.type === type && p.parent.id === id
+      filteredPages = filteredPages.filter(page => 
+        page.parent.type === type && page.parent.id === id
       );
     }
     
-    // Add match score and snippets for search results
-    const results = filtered.map(p => ({
+    // Apply pagination
+    const page = params.page || 1;
+    const limit = params.limit || 10;
+    const paginatedPages = filteredPages.slice((page - 1) * limit, page * limit);
+    
+    const summaries: PageSummary[] = paginatedPages.map(p => ({
       _id: p._id,
       title: p.title,
       slug: p.slug,
       snippet: p.content.substring(0, 100) + "...",
-      matchScore: Math.random() * 0.5 + 0.5, // Random score between 0.5 and 1
+      matchScore: Math.random() * 0.5 + 0.5, // Mock relevance score
       parent: p.parent,
       metadata: {
         lastUpdatedBy: p.metadata.lastUpdatedBy,
-        lastUpdatedAt: p.metadata.lastUpdatedAt
+        lastUpdatedAt: p.metadata.lastUpdatedAt,
       },
-      tags: p.tags
+      tags: p.tags,
     }));
     
-    // Sort by match score
-    results.sort((a, b) => b.matchScore - a.matchScore);
-    
-    // Apply pagination if needed
-    const limit = params.limit || 10;
-    const page = params.page || 1;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedResults = results.slice(startIndex, endIndex);
-    
     return {
-      data: paginatedResults,
-      count: paginatedResults.length,
-      total: results.length
+      data: summaries,
+      count: paginatedPages.length,
+      total: filteredPages.length,
     };
   },
   
   getRecentPages: async (limit = 5) => {
-    const pages = [...mockData.pagesData];
+    await delay(500);
     
-    // Sort by lastUpdatedAt
-    pages.sort((a, b) => 
-      new Date(b.metadata.lastUpdatedAt).getTime() - 
-      new Date(a.metadata.lastUpdatedAt).getTime()
+    // Sort pages by last updated date
+    const sortedPages = [...mockData.pages].sort((a, b) => 
+      new Date(b.metadata.lastUpdatedAt).getTime() - new Date(a.metadata.lastUpdatedAt).getTime()
     );
     
-    const recentPages = pages.slice(0, limit).map(p => ({
+    const recentPages = sortedPages.slice(0, limit);
+    
+    const summaries: PageSummary[] = recentPages.map(p => ({
       _id: p._id,
       title: p.title,
       slug: p.slug,
       parent: p.parent,
       metadata: {
         lastUpdatedBy: p.metadata.lastUpdatedBy,
-        lastUpdatedAt: p.metadata.lastUpdatedAt
-      }
+        lastUpdatedAt: p.metadata.lastUpdatedAt,
+      },
+      tags: p.tags,
     }));
     
     return {
-      data: recentPages
+      data: summaries,
     };
-  }
+  },
 };
 
-// Export the mock service
+// Add other mock services as needed
 export const mockService = {
-  pages
+  pages: mockPageService,
+  auth: {
+    login: async () => ({ user: { id: 'user1', name: 'Test User', role: 'admin' }, token: 'mock-token' }),
+    logout: async () => true,
+    register: async () => ({ user: { id: 'user1', name: 'Test User', role: 'admin' }, token: 'mock-token' }),
+    refreshToken: async () => ({ token: 'refreshed-mock-token' }),
+    getUser: async () => ({ id: 'user1', name: 'Test User', role: 'admin' }),
+  },
+  projects: {
+    getProjects: async () => [],
+    getProjectById: async () => ({}),
+    createProject: async () => ({}),
+    updateProject: async () => ({}),
+    deleteProject: async () => ({ success: true }),
+  },
+  components: {
+    getComponents: async () => [],
+    getComponentById: async () => ({}),
+  },
+  languages: {
+    getLanguages: async () => [],
+    getLanguageById: async () => ({}),
+  },
+  guidelines: {
+    getGuidelines: async () => [],
+    getGuidelineById: async () => ({}),
+  },
+  guides: {
+    getGuides: async () => [],
+    getGuideById: async () => ({}),
+  }
 };

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageData } from "@/hooks/usePageData";
@@ -389,7 +388,7 @@ export const PageForm = ({
             <CardContent className="space-y-4 text-sm">
               <div>
                 <p className="font-medium">Created By</p>
-                <p className="text-muted-foreground">{user?.name || "Current User"}</p>
+                <p className="text-muted-foreground">{user?.id || "Current User"}</p>
               </div>
               <div>
                 <p className="font-medium">Date</p>

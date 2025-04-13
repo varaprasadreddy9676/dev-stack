@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -63,26 +64,36 @@ function App() {
                     <Route path="settings" element={<Settings />} />
                     
                     {/* Role-specific routes */}
-                    <Route element={<ProtectedRoute allowedRoles={["admin", "content_manager"]} />}>
-                      <Route path="projects/new" element={<NewProject />} />
-                      <Route path="projects/:id/edit" element={<ProjectManagement />} />
-                    </Route>
+                    <Route path="projects/new" element={
+                      <ProtectedRoute allowedRoles={["admin", "content_manager"]}>
+                        <NewProject />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="projects/:id/edit" element={
+                      <ProtectedRoute allowedRoles={["admin", "content_manager"]}>
+                        <ProjectManagement />
+                      </ProtectedRoute>
+                    } />
 
                     {/* Admin-only routes */}
-                    <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                      <Route path="users" element={<UserManagement />} />
-                    </Route>
+                    <Route path="users" element={
+                      <ProtectedRoute allowedRoles={["admin"]}>
+                        <UserManagement />
+                      </ProtectedRoute>
+                    } />
                     
                     <Route path="projects/:id" element={<ProjectDetail />} />
                     <Route path="components" element={<Components />} />
                     <Route path="guidelines" element={<CodingGuidelines />} />
                     <Route path="guidelines/:id" element={<LanguageGuidelines />} />
                     <Route path="search" element={<SearchResults />} />
-                    <Route path="/pages" element={<ProtectedRoute allowedRoles={["user", "admin"]}><Pages /></ProtectedRoute>} />
-                    <Route path="/pages/create" element={<ProtectedRoute allowedRoles={["user", "admin"]}><NewPage /></ProtectedRoute>} />
-                    <Route path="/pages/:id" element={<ProtectedRoute allowedRoles={["user", "admin"]}><PageDetail /></ProtectedRoute>} />
-                    <Route path="/pages/:id/edit" element={<ProtectedRoute allowedRoles={["user", "admin"]}><EditPage /></ProtectedRoute>} />
-                    <Route path="/projects/:id/new-page" element={<ProtectedRoute allowedRoles={["user", "admin"]}><NewPage /></ProtectedRoute>} />
+                    
+                    <Route path="pages" element={<Pages />} />
+                    <Route path="pages/create" element={<NewPage />} />
+                    <Route path="pages/:id" element={<PageDetail />} />
+                    <Route path="pages/:id/edit" element={<EditPage />} />
+                    <Route path="projects/:id/new-page" element={<NewPage />} />
+                    
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Route>
