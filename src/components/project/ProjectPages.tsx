@@ -223,3 +223,5 @@ export const ProjectPages = () => {
     </div>
   );
 };
+
+export default ProjectPages;
