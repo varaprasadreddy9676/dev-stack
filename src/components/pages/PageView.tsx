@@ -22,7 +22,7 @@ export const PageView = () => {
   const [loading, setLoading] = useState(true);
   const { getPage, deletePage } = usePageData();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, hasPermission } = useAuth();
 
   useEffect(() => {
     const fetchPage = async () => {
@@ -48,8 +48,24 @@ export const PageView = () => {
     }
   };
 
-  const canEdit = page?.permissions.canEdit.includes("admin") || 
-                  (user?.role && page?.permissions.canEdit.includes(user.role));
+  // Determine if the user can edit this page based on:
+  // 1. If they are an admin (always can edit)
+  // 2. If they have the role specified in page's canEdit permissions
+  // 3. If they are the creator of the page
+  const canEdit = () => {
+    if (!page || !user) return false;
+    
+    // Admin can always edit
+    if (hasPermission(['admin'])) return true;
+    
+    // Check if user's role is in the page's canEdit permissions
+    if (user.role && page.permissions.canEdit.includes(user.role)) return true;
+    
+    // Check if user is the creator of the page
+    if (page.metadata.createdBy === user._id) return true;
+    
+    return false;
+  };
 
   if (loading) {
     return <PageLoading />;
@@ -67,7 +83,7 @@ export const PageView = () => {
         id={id || ''}
         title={page.title}
         tags={page.tags}
-        canEdit={!!canEdit}
+        canEdit={canEdit()}
         onDelete={handleDelete}
       />
       
