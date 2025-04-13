@@ -1,5 +1,5 @@
 
-import { projectBasicService } from "./projectBasicService";
+import { projectService as projectBasicService } from "./project";
 import { troubleshootingService } from "./troubleshootingService";
 
 // Export a combined service
