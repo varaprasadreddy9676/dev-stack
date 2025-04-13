@@ -11,11 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, FilePlus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { PageSummary } from "@/types";
 
 export const ProjectPages = () => {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("all");
-  const [pages, setPages] = useState([]);
+  const [pages, setPages] = useState<PageSummary[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -24,19 +25,27 @@ export const ProjectPages = () => {
   useEffect(() => {
     const fetchPages = async () => {
       if (id) {
-        if (searchQuery) {
-          const result = await searchPages({
-            q: searchQuery,
-            parent: `project:${id}`,
-            page: currentPage,
-            limit: 10
-          });
-          setPages(result.data);
-          setTotalPages(Math.ceil(result.total / 10));
-        } else {
-          const result = await getPagesByParent("project", id, currentPage, 10);
-          setPages(result.data);
-          setTotalPages(Math.ceil(result.total / 10));
+        try {
+          let result;
+          if (searchQuery) {
+            result = await searchPages({
+              q: searchQuery,
+              parent: `project:${id}`,
+              page: currentPage,
+              limit: 10
+            });
+          } else {
+            result = await getPagesByParent("project", id, currentPage, 10);
+          }
+          
+          // Ensure pages is an array
+          const fetchedPages = Array.isArray(result.data) ? result.data : [];
+          setPages(fetchedPages);
+          setTotalPages(Math.ceil((result.total || 0) / 10));
+        } catch (error) {
+          console.error("Error fetching project pages:", error);
+          setPages([]);
+          setTotalPages(0);
         }
       }
     };
@@ -44,18 +53,23 @@ export const ProjectPages = () => {
     fetchPages();
   }, [id, currentPage, searchQuery, getPagesByParent, searchPages]);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
   };
 
   // Define categories for tabs
-  const getPagesByCategory = (tabValue) => {
+  const getPagesByCategory = (tabValue: string) => {
     if (tabValue === "all") return pages;
+    
+    // Make sure pages is an array before filtering
+    if (!Array.isArray(pages)) {
+      return [];
+    }
     
     // Filter by tags as an alternative
     return pages.filter(page => 
-      page.tags.some(tag => tag.toLowerCase() === tabValue)
+      page.tags && page.tags.some(tag => tag.toLowerCase() === tabValue)
     );
   };
 
