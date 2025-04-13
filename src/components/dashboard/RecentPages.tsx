@@ -19,7 +19,11 @@ export const RecentPages = () => {
       setLoading(true);
       try {
         const result = await getRecentPages(5);
-        setPages(result.data);
+        // Ensure pages is an array before setting it
+        setPages(Array.isArray(result.data) ? result.data : []);
+      } catch (error) {
+        console.error("Error fetching recent pages:", error);
+        setPages([]);
       } finally {
         setLoading(false);
       }
