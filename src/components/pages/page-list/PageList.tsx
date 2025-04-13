@@ -13,6 +13,9 @@ interface PageListProps {
 }
 
 export const PageList = ({ pages, loading, searchQuery, activeTab }: PageListProps) => {
+  // Ensure pages is always an array before using map
+  const pagesList = Array.isArray(pages) ? pages : [];
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -35,7 +38,7 @@ export const PageList = ({ pages, loading, searchQuery, activeTab }: PageListPro
     );
   }
 
-  if (pages.length === 0) {
+  if (pagesList.length === 0) {
     if (searchQuery) {
       return (
         <div className="col-span-full text-center py-10">
@@ -52,7 +55,7 @@ export const PageList = ({ pages, loading, searchQuery, activeTab }: PageListPro
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {pages.map((page) => (
+      {pagesList.map((page) => (
         <PageCard key={page._id} page={page} />
       ))}
     </div>

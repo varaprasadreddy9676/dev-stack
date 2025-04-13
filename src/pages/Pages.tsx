@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { usePageData } from "@/hooks/usePageData";
 import { Button } from "@/components/ui/button";
-import { FileText, Search, Plus, Settings } from "lucide-react";
+import { FileText, Plus, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/auth";
 import {
   PageList,
@@ -12,7 +12,7 @@ import {
 } from "@/components/pages/page-list";
 
 const Pages = () => {
-  const [pages, setPages] = useState<any[]>([]);
+  const [pages, setPages] = useState<any[]>([]); // Ensure pages is always initialized as an array
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
@@ -23,26 +23,28 @@ const Pages = () => {
     const fetchPages = async () => {
       setLoading(true);
       try {
+        let fetchedPages = [];
+        
         if (searchQuery) {
           const results = await searchPages({ q: searchQuery });
-          setPages(results.data || []);
+          fetchedPages = results.data || [];
         } else if (activeTab === "all") {
           const results = await searchPages({});
-          setPages(results.data || []);
+          fetchedPages = results.data || [];
         } else if (activeTab === "recent") {
           const results = await getRecentPages(20);
-          setPages(results.data || []);
+          fetchedPages = results.data || [];
         } else if (activeTab === "my-pages") {
           // This would need to be implemented server-side
           // For now, we'll just return all pages as a mock
           const results = await searchPages({});
-          setPages(results.data || []);
-        } else {
-          setPages([]);
+          fetchedPages = results.data || [];
         }
+        
+        setPages(fetchedPages); // Ensure we set an array even if the API call fails
       } catch (error) {
         console.error("Error fetching pages:", error);
-        setPages([]);
+        setPages([]); // Set empty array in case of error
       } finally {
         setLoading(false);
       }
