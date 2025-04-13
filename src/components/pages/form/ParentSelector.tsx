@@ -70,7 +70,7 @@ export const ParentSelector: React.FC<ParentSelectorProps> = ({
       
       switch (type) {
         case "project":
-          const projects = await services.projectService.getProjects();
+          const projects = await services.projects.getProjects();
           parentOptions = projects.map((project: any) => ({
             id: project._id,
             name: project.name,
